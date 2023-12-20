@@ -280,10 +280,7 @@ const _sfc_main = {
           width: "120",
           align: "center"
         }),
-        n: common_vendor.p({
-          width: "70",
-          align: "center"
-        }),
+        n: common_vendor.t(common_vendor.unref(isCount) ? "次数" : "时长"),
         o: common_vendor.p({
           width: "70",
           align: "center"
@@ -291,15 +288,13 @@ const _sfc_main = {
         p: common_vendor.f(curCityArray.value, (item, index, i0) => {
           return {
             a: common_vendor.t(index + 1),
-            b: "7c2ebfa5-14-" + i0 + "," + ("7c2ebfa5-13-" + i0),
+            b: "367b2d30-13-" + i0 + "," + ("367b2d30-12-" + i0),
             c: common_vendor.t(item.name),
-            d: "7c2ebfa5-15-" + i0 + "," + ("7c2ebfa5-13-" + i0),
-            e: common_vendor.t(item.count),
-            f: "7c2ebfa5-16-" + i0 + "," + ("7c2ebfa5-13-" + i0),
-            g: common_vendor.t(item.time),
-            h: "7c2ebfa5-17-" + i0 + "," + ("7c2ebfa5-13-" + i0),
-            i: index,
-            j: "7c2ebfa5-13-" + i0 + ",7c2ebfa5-7"
+            d: "367b2d30-14-" + i0 + "," + ("367b2d30-12-" + i0),
+            e: common_vendor.t(common_vendor.unref(isCount) ? `${item.count}` : `${item.time}`),
+            f: "367b2d30-15-" + i0 + "," + ("367b2d30-12-" + i0),
+            g: index,
+            h: "367b2d30-12-" + i0 + ",367b2d30-7"
           };
         }),
         q: common_vendor.p({
@@ -312,9 +307,6 @@ const _sfc_main = {
           align: "center"
         }),
         t: common_vendor.p({
-          align: "center"
-        }),
-        v: common_vendor.p({
           loading: _ctx.loading,
           border: true,
           stripe: true
@@ -323,5 +315,5 @@ const _sfc_main = {
     };
   }
 };
-const MiniProgramPage = /* @__PURE__ */ common_vendor._export_sfc(_sfc_main, [["__scopeId", "data-v-7c2ebfa5"], ["__file", "D:/Git/res/bubble/pages/mine/mine.vue"]]);
+const MiniProgramPage = /* @__PURE__ */ common_vendor._export_sfc(_sfc_main, [["__file", "D:/Git/res/bubble/pages/mine/mine.vue"]]);
 wx.createPage(MiniProgramPage);

@@ -50,8 +50,8 @@
 					<uni-tr>
 						<uni-th width='50' align="center">排名</uni-th>
 						<uni-th width='120' align="center">名称</uni-th>
-						<uni-th width='70' align="center">游玩次数</uni-th>
-						<uni-th width='70' align="center">总时长</uni-th>
+						<uni-th width='70' align="center">{{ isCount?'次数':'时长' }}</uni-th>
+						<!-- <uni-th width='70' align="center">时长</uni-th> -->
 					</uni-tr>
 					<uni-tr v-for="(item,index) in curCityArray" :key="index">
 						<uni-td align="center">
@@ -64,10 +64,7 @@
 							<text class="rank-list-name">{{ item.name }}</text>
 						</uni-td>
 						<uni-td align="center">
-							<text class="rank-list-count">{{ item.count }}</text>
-						</uni-td>
-						<uni-td align="center">
-							<text class="rank-list-time">{{ item.time }}</text>
+							<text class="rank-list-count">{{ isCount?`${item.count}`:`${item.time}` }}</text>
 						</uni-td>
 					</uni-tr>
 				</uni-table>
@@ -316,7 +313,7 @@
 	
 </script>
 
-<style scoped>
+<style>
 	.container {
 		padding: 24rpx;
 	}
@@ -403,10 +400,11 @@
 		margin-left: auto;
 		display: flex;
 		align-items: center;
+		justify-content: space-around;
 	}
 	
 	.rank-change{
-		/* margin-right: 50rpx; */
+		margin-right: 10rpx;
 	}
 	.rank-select{
 		margin-left: auto;
@@ -430,13 +428,8 @@
 	.change-button:active {
 		background-color: #cc4143;
 	}
-	uni-select {
-		height: 30px;
-	}
-	
-	
 	.rank-table {
-	  margin: 20rpx;
+	  margin: 10rpx 5rpx 0 15rpx;
 	}
 	
 	.uni-table th,
@@ -470,5 +463,7 @@
 	  font-size: 26rpx;
 	  color: #333;
 	}
-
+	.uni-select{
+		height: 60rpx !important;
+	}
 </style>
