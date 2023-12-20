@@ -61,8 +61,21 @@
             },
 			"scope.camera":{
 				"desc":"摄像头"
+			},
+			"scope.userProfile":{
+				"desc":"获取用户授权"
+			},
+			"scope.userInfo":{
+				"desc":"获取用户信息"
 			}
-        }
+        },
+		"plugins":{
+			"WechatMiniprogram.Wx":{
+				"version":"1.0.0",
+				"provider":"wx"
+			}
+		}
+		
     },
     "vueVersion" : "3"
 }

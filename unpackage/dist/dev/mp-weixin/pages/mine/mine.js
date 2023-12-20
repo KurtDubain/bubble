@@ -21,6 +21,8 @@ if (!Math) {
 const _sfc_main = {
   __name: "mine",
   setup(__props) {
+    const code = common_vendor.ref("");
+    const userInfo = common_vendor.ref(null);
     const totalData = common_vendor.ref([
       {
         id: 0,
@@ -195,123 +197,114 @@ const _sfc_main = {
         timeRank();
       }
     });
-    const loginWithWechat = () => {
-      common_vendor.index.getUserProfile({
-        desc: "必须授权",
+    const wxLogin = () => {
+      common_vendor.index.login({
+        provider: "weixin",
         success: (res) => {
-          const user = res.userInfo;
-          common_vendor.index.setStorageSync("user", user);
-          console.log("用户信息", user);
-          userInfo.value = user;
-          common_vendor.index.cloud.callFunction({
-            name: "getopenid",
-            success: (res2) => {
-              console.log("获取openid成功", res2.result.openid);
-              const openId = res2.result.openid;
-              common_vendor.index.cloud.database().collection("user").where({
-                _openid: openId
-              }).get().then((res3) => {
-                const data = res3.data;
-                if (data.length === 0) {
-                  console.log("用户不存在，进行数据库插入操作");
-                  common_vendor.index.cloud.database().collection("user").add({
-                    data: {
-                      nickName: user.nickName,
-                      avatarUrl: user.avatarUrl
-                    }
-                  });
-                }
-              });
-            },
-            fail: (err) => {
-              console.error("调用云函数失败", err);
-            }
-          });
+          if (res.code) {
+            code.value = res.code;
+            getUserInfo();
+            console.log("登录成功，临时登录凭证为：", res.code);
+          } else {
+            console.error("登录失败！" + res.errMsg);
+          }
+        }
+      });
+    };
+    const getUserInfo = () => {
+      common_vendor.index.getUserProfile({
+        provider: "weixin",
+        desc: "获取用户信息",
+        success: (res) => {
+          userInfo.value = res.userInfo;
+          console.log("获取用户信息成功：", res.userInfo);
         },
-        fail: (res) => {
-          console.log("授权失败", res);
+        fail: (err) => {
+          console.error("获取用户信息失败：", err);
         }
       });
     };
     return (_ctx, _cache) => {
-      return {
-        a: common_vendor.p({
-          type: "compose",
-          size: "26"
-        }),
-        b: common_vendor.o(loginWithWechat),
-        c: common_vendor.p({
+      return common_vendor.e({
+        a: common_vendor.o(wxLogin),
+        b: common_vendor.o(getUserInfo),
+        c: userInfo.value
+      }, userInfo.value ? {
+        d: userInfo.value.avatarUrl,
+        e: common_vendor.t(userInfo.value.nickName)
+      } : {}, {
+        f: common_vendor.p({
           type: "email",
           size: "26",
           color: "#cc4143"
         }),
-        d: common_vendor.p({
+        g: common_vendor.p({
           type: "forward",
           size: "24"
         }),
-        e: common_vendor.p({
+        h: common_vendor.p({
           type: "help",
           size: "26",
           color: "#cc4143"
         }),
-        f: common_vendor.p({
+        i: common_vendor.p({
           type: "forward",
           size: "24"
         }),
-        g: common_vendor.p({
+        j: common_vendor.p({
           type: "list",
           size: "26",
           color: "#cc4143"
         }),
-        h: common_vendor.t(common_vendor.unref(isCount) ? "按时长" : "按次数"),
-        i: common_vendor.o(($event) => changeIsCount()),
-        j: common_vendor.o(($event) => common_vendor.isRef(curCity) ? curCity.value = $event : curCity = $event),
-        k: common_vendor.p({
+        k: common_vendor.t(common_vendor.unref(isCount) ? "按时长" : "按次数"),
+        l: common_vendor.o(($event) => changeIsCount()),
+        m: common_vendor.o(($event) => common_vendor.isRef(curCity) ? curCity.value = $event : curCity = $event),
+        n: common_vendor.p({
           placeholder: "城市",
           localdata: cityData,
           clear: false,
           modelValue: common_vendor.unref(curCity)
         }),
-        l: common_vendor.p({
+        o: common_vendor.p({
           width: "50",
           align: "center"
         }),
-        m: common_vendor.p({
+        p: common_vendor.p({
           width: "120",
           align: "center"
         }),
-        n: common_vendor.t(common_vendor.unref(isCount) ? "次数" : "时长"),
-        o: common_vendor.p({
+        q: common_vendor.t(common_vendor.unref(isCount) ? "次数" : "时长"),
+        r: common_vendor.p({
           width: "70",
           align: "center"
         }),
-        p: common_vendor.f(curCityArray.value, (item, index, i0) => {
+        s: common_vendor.f(curCityArray.value, (item, index, i0) => {
           return {
             a: common_vendor.t(index + 1),
-            b: "367b2d30-13-" + i0 + "," + ("367b2d30-12-" + i0),
+            b: "367b2d30-12-" + i0 + "," + ("367b2d30-11-" + i0),
             c: common_vendor.t(item.name),
-            d: "367b2d30-14-" + i0 + "," + ("367b2d30-12-" + i0),
+            d: "367b2d30-13-" + i0 + "," + ("367b2d30-11-" + i0),
             e: common_vendor.t(common_vendor.unref(isCount) ? `${item.count}` : `${item.time}`),
-            f: "367b2d30-15-" + i0 + "," + ("367b2d30-12-" + i0),
+            f: "367b2d30-14-" + i0 + "," + ("367b2d30-11-" + i0),
             g: index,
-            h: "367b2d30-12-" + i0 + ",367b2d30-7"
+            h: "367b2d30-11-" + i0 + ",367b2d30-6"
           };
         }),
-        q: common_vendor.p({
-          align: "center"
-        }),
-        r: common_vendor.p({
-          align: "center"
-        }),
-        s: common_vendor.p({
-          align: "center"
-        }),
         t: common_vendor.p({
+          align: "center"
+        }),
+        v: common_vendor.p({
+          align: "center"
+        }),
+        w: common_vendor.p({
+          align: "center"
+        }),
+        x: common_vendor.p({
           loading: _ctx.loading,
           border: true,
           stripe: true
         })
-      };
+      });
     };
   }
 };

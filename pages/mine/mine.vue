@@ -2,10 +2,17 @@
 	<view class="container">
 		<view class="card_view">
 			<view class="header_view">
-				<image src="../../static/uni.png"></image>
+				<!-- <image src="../../static/uni.png"></image>
 				<text>微信用户</text>
+				<uni-icons type="compose" size="26" @click="loginWithWechat"></uni-icons>
+				<button @click="loginWithWechat" plain>wewe</button> -->
+				<button @click="wxLogin">微信登录</button>
+				    <button @click="getUserInfo">获取用户信息</button>
 				
-				<button @click="loginWithWechat"><uni-icons type="compose" size="26" ></uni-icons></button>
+				    <view v-if="userInfo">
+				      <image :src="userInfo.avatarUrl" style="width: 100px; height: 100px;"></image>
+				      <text>{{ userInfo.nickName }}</text>
+				    </view>
 			</view>
 		</view>
 		<!-- 菜单栏 -->
@@ -56,7 +63,6 @@
 					<uni-tr v-for="(item,index) in curCityArray" :key="index">
 						<uni-td align="center">
 							<view class="rank-list-index">
-								<!-- <img :src="index<3?`../../static/rank_icon/${index+1}.png`:''" alt="Badge" v-if="index<3" class="badge-icon" /> -->
 								<text class="rank-number">{{ index + 1 }}</text>
 							</view>
 						</uni-td>
@@ -78,6 +84,8 @@
 
 <script setup>
 	import { ref,onMounted, watch } from 'vue'
+	const code= ref('')
+	const userInfo = ref(null)
 	// 初始化全部数据
 	const totalData = ref([
 		{
@@ -265,50 +273,32 @@
 		}
 	})
 	// 处理用户登陆
-	const loginWithWechat = () => {
-		uni.getUserProfile({
-		    desc: '必须授权',
-		    success: res => {
-		      const user = res.userInfo;
-		      uni.setStorageSync('user', user);
-		      console.log('用户信息', user);
-		      userInfo.value = user;
-		
-		      // 这里可以处理调用云函数等后续操作
-		      // ...
-		
-		      // 示例：调用云函数
-		      uni.cloud.callFunction({
-		        name: 'getopenid',
+	const wxLogin = () => {
+		uni.login({
+		        provider: 'weixin',
 		        success: res => {
-		          console.log('获取openid成功', res.result.openid);
-		          const openId = res.result.openid;
-		
-		          // 示例：调用数据库操作
-		          uni.cloud.database().collection('user').where({
-		            _openid: openId
-		          }).get().then(res => {
-		            const data = res.data;
-		            if (data.length === 0) {
-		              console.log('用户不存在，进行数据库插入操作');
-		              uni.cloud.database().collection('user').add({
-		                data: {
-		                  nickName: user.nickName,
-		                  avatarUrl: user.avatarUrl
-		                }
-		              });
-		            }
-		          });
-		        },
-		        fail: err => {
-		          console.error('调用云函数失败', err);
+		          if (res.code) {
+		            code.value = res.code;
+					getUserInfo()
+		            console.log('登录成功，临时登录凭证为：', res.code);
+		          } else {
+		            console.error('登录失败！' + res.errMsg);
+		          }
 		        }
 		      });
-		    },
-		    fail: res => {
-		      console.log('授权失败', res);
-		    }
-		  });
+	}
+	const getUserInfo = ()=>{
+		uni.getUserProfile({
+		        provider: 'weixin',
+		        desc: '获取用户信息',
+		        success: res => {
+		          userInfo.value = res.userInfo;
+		          console.log('获取用户信息成功：', res.userInfo);
+		        },
+		        fail: err => {
+		          console.error('获取用户信息失败：', err);
+		        }
+		      });
 	}
 	
 </script>
@@ -466,4 +456,5 @@
 	.uni-select{
 		height: 60rpx !important;
 	}
+	
 </style>
