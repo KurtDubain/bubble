@@ -4,7 +4,8 @@
 			<view class="header_view">
 				<image src="../../static/uni.png"></image>
 				<text>微信用户</text>
-				<uni-icons type="compose" size="26" @click="changeUserInfo()"></uni-icons>
+				
+				<button @click="loginWithWechat"><uni-icons type="compose" size="26" ></uni-icons></button>
 			</view>
 		</view>
 		<!-- 菜单栏 -->
@@ -55,8 +56,8 @@
 					<uni-tr v-for="(item,index) in curCityArray" :key="index">
 						<uni-td align="center">
 							<view class="rank-list-index">
-								<img :src="index<3?`../../static/rank_icon/${index+1}.png`:''" alt="Badge" v-if="index<3" class="badge-icon" />
-								<text class="rank-number">{{ index < 3 ? '' : index + 1 }}</text>
+								<!-- <img :src="index<3?`../../static/rank_icon/${index+1}.png`:''" alt="Badge" v-if="index<3" class="badge-icon" /> -->
+								<text class="rank-number">{{ index + 1 }}</text>
 							</view>
 						</uni-td>
 						<uni-td align="center">
@@ -85,126 +86,126 @@
 		{
 			id:0,
 			city:'北京',
-			name:'苏州街投放点',
+			name:'苏州街',
 			count:23,
 			time:123
 		},
 		{
 			id:1,
 			city:'北京',
-			name:'通州投放点',
+			name:'通州',
 			count:43,
 			time:532
 		},
 		{
 			id:2,
 			city:'天津',
-			name:'开平镇投放点',
+			name:'开平镇',
 			count:99,
 			time:2314
 		},
 		{
 			id:3,
 			city:'天津',
-			name:'西青区投放点',
+			name:'西青区',
 			count:21,
 			time:56
 		},
 		{
 			id:4,
 			city:'天津',
-			name:'万象城投放点',
+			name:'万象城',
 			count:12,
 			time:432
 		},
 		{
 			id:5,
 			city:'上海',
-			name:'外滩投放点',
+			name:'外滩',
 			count:655,
 			time:32432
 		},
 		{
 			id:6,
 			city:'上海',
-			name:'SOHO投放点',
+			name:'SOHO',
 			count:454,
 			time:6874
 		},
 		{
 			id:7,
 			city:'上海',
-			name:'浦东投放点',
+			name:'浦东',
 			count:96,
 			time:546
 		},
 		{
 			id:8,
 			city:'北京',
-			name:'北京站投放点',
+			name:'北京站',
 			count:213,
 			time:2312
 		},
 		{
 			id:9,
 			city:'北京',
-			name:'海淀黄庄投放点',
+			name:'海淀黄庄',
 			count:223,
 			time:13
 		},
 		{
 			id:10,
 			city:'北京',
-			name:'TBD投放点',
+			name:'TBD',
 			count:423,
 			time:132
 		},
 		{
 			id:11,
 			city:'天津',
-			name:'冶里村投放点',
+			name:'冶里村',
 			count:9,
 			time:234
 		},
 		{
 			id:12,
 			city:'天津',
-			name:'路北区投放点',
+			name:'路北区',
 			count:121,
 			time:562
 		},
 		{
 			id:13,
 			city:'天津',
-			name:'唐山一中投放点',
+			name:'唐山一中',
 			count:112,
 			time:4
 		},
 		{
 			id:14,
 			city:'上海',
-			name:'11投放点',
+			name:'11',
 			count:55,
 			time:3232
 		},
 		{
 			id:15,
 			city:'上海',
-			name:'22投放点',
+			name:'22',
 			count:4514,
 			time:687124
 		},
 		{
 			id:16,
 			city:'上海',
-			name:'33投放点',
+			name:'33',
 			count:916,
 			time:51246
 		},
 		{
 			id:17,
 			city:'北京',
-			name:'秦皇岛投放点',
+			name:'秦皇岛',
 			count:212313,
 			time:23212
 		},
@@ -266,9 +267,53 @@
 			
 		}
 	})
-	const changeUserInfo = () => {
-
+	// 处理用户登陆
+	const loginWithWechat = () => {
+		uni.getUserProfile({
+		    desc: '必须授权',
+		    success: res => {
+		      const user = res.userInfo;
+		      uni.setStorageSync('user', user);
+		      console.log('用户信息', user);
+		      userInfo.value = user;
+		
+		      // 这里可以处理调用云函数等后续操作
+		      // ...
+		
+		      // 示例：调用云函数
+		      uni.cloud.callFunction({
+		        name: 'getopenid',
+		        success: res => {
+		          console.log('获取openid成功', res.result.openid);
+		          const openId = res.result.openid;
+		
+		          // 示例：调用数据库操作
+		          uni.cloud.database().collection('user').where({
+		            _openid: openId
+		          }).get().then(res => {
+		            const data = res.data;
+		            if (data.length === 0) {
+		              console.log('用户不存在，进行数据库插入操作');
+		              uni.cloud.database().collection('user').add({
+		                data: {
+		                  nickName: user.nickName,
+		                  avatarUrl: user.avatarUrl
+		                }
+		              });
+		            }
+		          });
+		        },
+		        fail: err => {
+		          console.error('调用云函数失败', err);
+		        }
+		      });
+		    },
+		    fail: res => {
+		      console.log('授权失败', res);
+		    }
+		  });
 	}
+	
 </script>
 
 <style scoped>
@@ -396,7 +441,7 @@
 	
 	.uni-table th,
 	.uni-table td {
-	  padding: 10rpx;
+	  padding: 1rpx;
 	}
 	
 	.rank-list-index {

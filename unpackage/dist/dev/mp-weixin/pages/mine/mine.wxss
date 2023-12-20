@@ -105,7 +105,7 @@ uni-select.data-v-7c2ebfa5 {
 }
 .uni-table th.data-v-7c2ebfa5,
 	.uni-table td.data-v-7c2ebfa5 {
-	  padding: 10rpx;
+	  padding: 1rpx;
 }
 .rank-list-index.data-v-7c2ebfa5 {
 	  display: flex;
