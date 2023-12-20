@@ -15,10 +15,11 @@
 				<text>扫码使用泡泡机</text>
 			</view>
 		</view>
+		
 		<!-- 操作栏 -->
 		<view v-show="!showQRScan">
 			<!-- 运行时的页面 -->
-			<view v-show="!isEnd">
+			<view v-show="!isEnd&&!playing">
 				<view  class="control_view">
 					<view style="display: flex;align-items: center;">
 						<uni-icons type="paperplane-filled" size="14"></uni-icons>
@@ -27,15 +28,75 @@
 						<uni-icons type="closeempty" size="18" @click="clickClose()"></uni-icons>
 					</view>
 					<view style="height: 64rpx;">
-						<text style="font-size: 46rpx;font-weight: 600;">{{ playing?`已使用${totalMin}分钟，共计${totalCost}元`:"5元/10分钟" }}</text>
+						<text style="font-size: 46rpx;font-weight: 600;">欢迎使用泡泡机</text>
 					</view>
 					<view style="font-size: 22rpx;display: flex;color: #868686;">
-						<text>先玩后付费/不满10分钟按10分钟计费</text>
+						<text>爱护设备，让更多的人享受乐趣</text>
 						<view style="flex: 1"></view>
 						<uni-icons type="info" size="16"></uni-icons>
 						<text>反馈/投诉</text>
 					</view>
-					<view class="button" style="width: 100%;color: white;" @click="clickPlayAndStop()">{{ playing?`停止游玩`:"开始游玩" }}</view>
+					<view class="button" style="width: 100%;color: white;" @click="clickPlay()">{{ "开始游玩" }}</view>
+				</view>
+			</view>
+			<!-- 选项弹窗 -->
+			<view  v-show="showPlayOptions">
+				<view class="popup">
+					<view class="popup-content">
+						<text class="popup-title">选择游玩方式</text>
+						<view class="popup-buttons">
+							<button @click="startPlaying(0)" class="popup-button">
+								<text class="button-text">按次付费</text>
+								<text class="button-description">5元/次=10分钟</text>
+							</button>
+							<button @click="startPlaying(1)" class="popup-button">
+								<text class="button-text">先游玩后付费</text>
+								<text class="button-description">2元/1分钟</text>
+							</button>
+						</view>
+					</view>
+				</view>
+			</view>
+			<!-- 第一种游玩方式 -->
+			<view v-show="!isEnd&&playing&&playType===0">
+				<view  class="control_view">
+					<view style="display: flex;align-items: center;">
+						<uni-icons type="paperplane-filled" size="14"></uni-icons>
+						<text style="font-size: 24rpx;">xx省xx市xx县xx村</text>
+						<view style="flex: 1"></view>
+						<uni-icons type="closeempty" size="18" @click="clickClose()"></uni-icons>
+					</view>
+					<view style="height: 64rpx;">
+						<text style="font-size: 46rpx;font-weight: 600;">距离结束:{{`${Math.floor(countDown/60)}:${countDown%60}`}}</text>
+					</view>
+					<view style="font-size: 22rpx;display: flex;color: #868686;">
+						<text>付款成功，设备已启动</text>
+						<view style="flex: 1"></view>
+						<uni-icons type="info" size="16"></uni-icons>
+						<text>反馈/投诉</text>
+					</view>
+					<view class="button" style="width: 100%;color: white;" @click="stopPlayingAhead()">提前停止游玩</view>
+				</view>
+			</view>
+			<!-- 第二种游玩模式 -->
+			<view v-show="!isEnd&&playing&&playType===1">
+				<view  class="control_view">
+					<view style="display: flex;align-items: center;">
+						<uni-icons type="paperplane-filled" size="14"></uni-icons>
+						<text style="font-size: 24rpx;">xx省xx市xx县xx村</text>
+						<view style="flex: 1"></view>
+						<uni-icons type="closeempty" size="18" @click="clickClose()"></uni-icons>
+					</view>
+					<view style="height: 64rpx;">
+						<text style="font-size: 46rpx;font-weight: 600;">{{ `已使用${totalMin}分钟，花费${totalCost}元` }}</text>
+					</view>
+					<view style="font-size: 22rpx;display: flex;color: #868686;">
+						<text>在结束游玩后记得付款哦</text>
+						<view style="flex: 1"></view>
+						<uni-icons type="info" size="16"></uni-icons>
+						<text>反馈/投诉</text>
+					</view>
+					<view class="button" style="width: 100%;color: white;" @click="clickStop()">{{ "结束游玩" }}</view>
 				</view>
 			</view>
 			
@@ -53,14 +114,16 @@
 						<text style="font-size: 46rpx;font-weight: 600;">{{ `共使用${totalMin}分钟，花费${totalCost}元` }}</text>
 					</view>
 					<view style="font-size: 22rpx;display: flex;color: #868686;">
-						<text>先玩后付费/不满10分钟按10分钟计费</text>
+						<text>游玩后记得带走个人物品哦</text>
 						<view style="flex: 1"></view>
 						<uni-icons type="info" size="16"></uni-icons>
 						<text>反馈/投诉</text>
 					</view>
-					<view class="button button-back" style="width: 100%;color: #cc1d34;" @click="clickClose()">付款已完成，感谢您的游玩，欢迎下次再来</view>
+					<view class="button button-back" style="width: 100%;color: #cc1d34;" @click="clickClose()">感谢您的游玩，欢迎下次再来</view>
 				</view>
 			</view>
+			
+			
 		</view>
 	</view>
 </template>
@@ -77,20 +140,24 @@
 	});
 	// 页面组件
 	// 是否展示初始卡片
-	const showQRScan = ref(true);
+	const showQRScan = ref(false);
 	const playing = ref(false);// 是否在游玩中
+	// const isBegin = ref(true)
 	const isEnd = ref(false) // 是否结束
 	const startTime = ref(null) // 开始时间
 	const totalSecond = ref(0) // 总秒钟
 	const totalMin = ref(0) // 总分钟
 	const totalCost= ref(0) // 总花费
+	const showPlayOptions = ref(false)//游玩模式选项是否展示
+	const countDown = ref(600)//单次游玩倒计时（十分钟）
+	const playType = ref(0)//游玩模式
 
 	const marks = [{
 		latitude: 34.220009,
 		longitude: 108.875175,
 		//iconPath: "../../static/location/on_arrow.png"
 	}];
-
+	// 初始化
 	onMounted(() => {
 		uni.login({
 			success(data) {
@@ -132,23 +199,13 @@
 	}
 
 	// 游玩和停止游玩
-	const clickPlayAndStop = () => {
+	const clickPlay = () => {
 		uni.showLoading({
 			title: "正在请求数据"
 		});
 		setTimeout(() => {
 			uni.hideLoading()
-			if(!playing.value){
-				// 开始游玩的初始化
-				startTime.value = new Date()
-				playing.value = true
-				startBilling()
-			}else{
-				// 结束游玩的处理
-				playing.value = false
-				isEnd.value = true
-				// showQRScan.value = true
-			}
+			showPlayOptions.value = true
 		},500);
 	}
 	// 计费计算处理
@@ -156,13 +213,63 @@
 		const timer = setInterval(()=>{
 			totalSecond.value = Math.floor((new Date() - startTime.value)/1000)
 			totalMin.value = Math.ceil(totalSecond.value/60)
-			totalCost.value = Math.ceil(totalMin.value/10)*5
+			totalCost.value = totalMin.value*2
 		},1000)
 		watch(playing,(newVal)=>{
 			if(!newVal){
 				clearInterval(timer)
 			}
 		})
+	}
+	// 开始游玩
+	const startPlaying = (option)=>{
+		showPlayOptions.value = false
+		startTime.value = new Date()
+		playing.value = true
+		// 处理两种不同的游玩模式
+		if(option === 0){
+			playType.value = 0
+			uni.showLoading({
+				title:'正在请求支付'
+			})
+			setTimeout(()=>{
+				uni.hideLoading()
+				// isEnd.value = true
+				startCountDown()
+			},2000)
+			
+			
+		}else{
+			playType.value = 1
+			startBilling()
+		}
+	}
+	// 开始倒计时
+	const startCountDown = ()=>{
+		const timer = setInterval(()=>{
+			countDown.value--
+			if(countDown.value<=0){
+				clearInterval(timer)
+				playing.value = false
+				isEnd.value = true
+				countDown.value = 600
+				totalCost.value = 5
+				totalMin.value = 10
+			}
+		},1000)
+	}
+	// 提前结束当前游玩
+	const stopPlayingAhead = ()=>{
+		playing.value = false
+		isEnd.value = true
+		totalCost.value = 5
+		totalMin.value = Math.ceil((600-countDown.value)/60)
+		countDown.value = 600
+	}
+	// 第二种模式的主动结束
+	const clickStop = ()=>{
+		isEnd.value = true
+		playing.value = false
 	}
 	
 	// 扫描二维码
@@ -268,5 +375,60 @@
 		border: #cc1d34 solid 2px;
 		font-weight: bold;
 	}
+	.popup {
+	  position: fixed;
+	  top: 0;
+	  left: 0;
+	  width: 100vw;
+	  height: 100vh;
+	  background: rgba(0, 0, 0, 0.5);
+	  display: flex;
+	  justify-content: center;
+	  align-items: center;
+	  z-index: 999;
+	}
 	
+	.popup-content {
+	  background: #fff;
+	  border-radius: 10px;
+	  padding: 20px;
+	  text-align: center;
+	  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	}
+	
+	.popup-title {
+	  font-size: 18px;
+	  font-weight: bold;
+	  margin-bottom: 10px;
+	}
+	
+	.popup-buttons {
+	  display: flex;
+	  justify-content: space-around;
+	  flex-direction: column;
+	}
+	
+	.popup-button {
+	  background: #cc1d34;
+	  color: #fff;
+	  /* padding: 10px 20px; */
+	  margin: 5rpx;
+	  border-radius: 5px;
+	  cursor: pointer;
+	  display: flex;
+	  flex-direction: column;
+	  align-items: center;
+	}
+	
+	.button-text {
+	  font-size: 28rpx;
+	  line-height: 50rpx;
+	}
+	
+	.button-description {
+	  font-size: 22rpx;
+	  line-height: 50rpx;
+	  color: #999;
+	}
+
 </style>

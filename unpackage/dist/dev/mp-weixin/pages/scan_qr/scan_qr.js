@@ -20,5 +20,5 @@ const _sfc_main = {
     };
   }
 };
-const MiniProgramPage = /* @__PURE__ */ common_vendor._export_sfc(_sfc_main, [["__file", "C:/Users/zealen/Desktop/前端实习（临时）/bubble/pages/scan_qr/scan_qr.vue"]]);
+const MiniProgramPage = /* @__PURE__ */ common_vendor._export_sfc(_sfc_main, [["__file", "D:/Git/res/bubble/pages/scan_qr/scan_qr.vue"]]);
 wx.createPage(MiniProgramPage);

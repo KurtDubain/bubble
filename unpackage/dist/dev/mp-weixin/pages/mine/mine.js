@@ -199,5 +199,5 @@ const _sfc_main = {
     };
   }
 };
-const MiniProgramPage = /* @__PURE__ */ common_vendor._export_sfc(_sfc_main, [["__scopeId", "data-v-7c2ebfa5"], ["__file", "C:/Users/zealen/Desktop/前端实习（临时）/bubble/pages/mine/mine.vue"]]);
+const MiniProgramPage = /* @__PURE__ */ common_vendor._export_sfc(_sfc_main, [["__scopeId", "data-v-7c2ebfa5"], ["__file", "D:/Git/res/bubble/pages/mine/mine.vue"]]);
 wx.createPage(MiniProgramPage);

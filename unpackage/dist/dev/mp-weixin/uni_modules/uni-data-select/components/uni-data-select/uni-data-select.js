@@ -292,5 +292,5 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     r: $data.current ? 1 : ""
   });
 }
-const Component = /* @__PURE__ */ common_vendor._export_sfc(_sfc_main, [["render", _sfc_render], ["__file", "C:/Users/zealen/Desktop/前端实习（临时）/bubble/uni_modules/uni-data-select/components/uni-data-select/uni-data-select.vue"]]);
+const Component = /* @__PURE__ */ common_vendor._export_sfc(_sfc_main, [["render", _sfc_render], ["__file", "D:/Git/res/bubble/uni_modules/uni-data-select/components/uni-data-select/uni-data-select.vue"]]);
 wx.createComponent(Component);
