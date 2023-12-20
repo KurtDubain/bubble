@@ -81,51 +81,6 @@
 .rank-select.data-v-7c2ebfa5{
 		margin-left: auto;
 }
-.rank-body.data-v-7c2ebfa5{
-		margin-top: 15rpx;
-		display: flex;
-		justify-content: space-evenly;
-		
-		align-items: center;
-}
-.rank-item.data-v-7c2ebfa5{
-		display: flex;
-		flex-direction: column;
-}
-.rank-container.data-v-7c2ebfa5{
-		position: relative;
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-}
-.rank-item-icon.data-v-7c2ebfa5{
-		position: absolute;
-		top: -10rpx;
-		left: -10rpx;
-		width: 5vw;
-		height: 10vw;
-		background-color: #cc4143;
-}
-.rank-item-img.data-v-7c2ebfa5{
-		width: 15vw;
-		height: 15vw;
-		border-radius: 5%;
-		background-color: gray;
-}
-.rank-item-name.data-v-7c2ebfa5{
-		text-align: center;
-		font-weight: bold;
-		font-size: 25rpx;
-}
-.rank-show-total-people.data-v-7c2ebfa5{
-		/* text-align: center; */
-		color: gray;
-		font-size: 17rpx;
-		display: flex;
-		justify-content: flex-end;
-		align-items: center;
-}
 .empty-block.data-v-7c2ebfa5{
 		height: 7vw;
 }
@@ -142,6 +97,36 @@
 .change-button.data-v-7c2ebfa5:active {
 		background-color: #cc4143;
 }
-.uni-select.data-v-7c2ebfa5 {
+uni-select.data-v-7c2ebfa5 {
 		height: 30px;
 }
+.rank-table.data-v-7c2ebfa5 {
+	  margin: 20rpx;
+}
+.uni-table th.data-v-7c2ebfa5,
+	.uni-table td.data-v-7c2ebfa5 {
+	  padding: 10rpx;
+}
+.rank-list-index.data-v-7c2ebfa5 {
+	  display: flex;
+	  align-items: center;
+	  justify-content: center;
+	  align-items: center;
+}
+.badge-icon.data-v-7c2ebfa5 {
+	  width: 60rpx; /* 调整图标大小 */
+	  height: 60rpx;
+	  margin-right: 5rpx;
+}
+.rank-number.data-v-7c2ebfa5 {
+	  font-size: 28rpx; /* 艺术字数字大小 */
+	  color: #cc1d34; /* 艺术字数字颜色 */
+	  font-weight: bold;
+}
+.rank-list-name.data-v-7c2ebfa5,
+	.rank-list-count.data-v-7c2ebfa5,
+	.rank-list-time.data-v-7c2ebfa5 {
+	  font-size: 26rpx;
+	  color: #333;
+}
+

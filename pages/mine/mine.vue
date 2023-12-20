@@ -42,86 +42,36 @@
 					</view>
 				</view>	
 			</view>
-			<view class="rank-body">
-				<view class="rank-item rank-item-bottom">
-					<view class="empty-block">
-						
-					</view>
-					<view class="rank-container">
-						<view class="rank-item-icon">
-							
-						</view>
-						<view class="rank-item-img">
-							
-						</view>
-						<view class="rank-item-name">
-							<text>{{curCityArray[1].name}}</text>
-						</view>
-						<view class="rank-show-total-people">
-							<uni-icons type="fire-filled" size="15" color="#cc4143"></uni-icons>
-							<view v-show="isCount">
-								<text>已有{{curCityArray[1].count}}人游玩</text>
+			
+			
+			<view class="rank-table">
+				<uni-table  :loading="loading" border stripe>
+					<uni-tr>
+						<uni-th width='50' align="center">排名</uni-th>
+						<uni-th width='120' align="center">名称</uni-th>
+						<uni-th width='70' align="center">游玩次数</uni-th>
+						<uni-th width='70' align="center">总时长</uni-th>
+					</uni-tr>
+					<uni-tr v-for="(item,index) in curCityArray" :key="index">
+						<uni-td align="center">
+							<view class="rank-list-index">
+								<img :src="index<3?`../../static/rank_icon/${index+1}.png`:''" alt="Badge" v-if="index<3" class="badge-icon" />
+								<text class="rank-number">{{ index < 3 ? '' : index + 1 }}</text>
 							</view>
-							<view v-show="!isCount">
-								<text>共游玩{{Math.floor(curCityArray[1].time/60)}}小时</text>
-							</view>
-						</view>
-					</view>
-				</view>
-				<view class="rank-item rank-item-top">
-					<view class="rank-container">
-					
-						<view class="rank-item-icon">
-							                        
-						</view>
-						<view class="rank-item-img">
-							
-						</view>
-						<view class="rank-item-name">
-							<text>{{curCityArray[0].name}}</text>
-						</view>
-						<view class="rank-show-total-people">
-							<uni-icons type="fire-filled" size="15" color="#cc4143"></uni-icons>
-							<view v-show="isCount">
-								<text>已有{{curCityArray[0].count}}人游玩</text>
-							</view>
-							<view v-show="!isCount">
-								<text>共游玩{{Math.floor(curCityArray[0].time/60)}}小时</text>
-							</view>
-						</view>
-					</view>
-					<view class="empty-block">
-						
-					</view>
-				</view>
-				
-				<view class="rank-item rank-item-bottom">
-					<view class="empty-block">
-						
-					</view>
-					<view class="rank-container">
-						
-						<view class="rank-item-icon">
-							
-						</view>
-						<view class="rank-item-img">
-							
-						</view>
-						<view class="rank-item-name">
-							<text>{{curCityArray[2].name}}</text>
-						</view>
-						<view class="rank-show-total-people">
-							<uni-icons type="fire-filled" size="15" color="#cc4143"></uni-icons>
-							<view v-show="isCount">
-								<text>已有{{curCityArray[2].count}}人游玩</text>
-							</view>
-							<view v-show="!isCount">
-								<text>共游玩{{Math.floor(curCityArray[2].time/60)}}小时</text>
-							</view>
-						</view>
-					</view>
-				</view>
+						</uni-td>
+						<uni-td align="center">
+							<text class="rank-list-name">{{ item.name }}</text>
+						</uni-td>
+						<uni-td align="center">
+							<text class="rank-list-count">{{ item.count }}</text>
+						</uni-td>
+						<uni-td align="center">
+							<text class="rank-list-time">{{ item.time }}</text>
+						</uni-td>
+					</uni-tr>
+				</uni-table>
 			</view>
+			
 		</view>
 		<!-- 退出登录按钮 -->
 		<view class="button">退出登录</view>
@@ -194,6 +144,69 @@
 			name:'北京站投放点',
 			count:213,
 			time:2312
+		},
+		{
+			id:9,
+			city:'北京',
+			name:'海淀黄庄投放点',
+			count:223,
+			time:13
+		},
+		{
+			id:10,
+			city:'北京',
+			name:'TBD投放点',
+			count:423,
+			time:132
+		},
+		{
+			id:11,
+			city:'天津',
+			name:'冶里村投放点',
+			count:9,
+			time:234
+		},
+		{
+			id:12,
+			city:'天津',
+			name:'路北区投放点',
+			count:121,
+			time:562
+		},
+		{
+			id:13,
+			city:'天津',
+			name:'唐山一中投放点',
+			count:112,
+			time:4
+		},
+		{
+			id:14,
+			city:'上海',
+			name:'11投放点',
+			count:55,
+			time:3232
+		},
+		{
+			id:15,
+			city:'上海',
+			name:'22投放点',
+			count:4514,
+			time:687124
+		},
+		{
+			id:16,
+			city:'上海',
+			name:'33投放点',
+			count:916,
+			time:51246
+		},
+		{
+			id:17,
+			city:'北京',
+			name:'秦皇岛投放点',
+			count:212313,
+			time:23212
 		},
 	])
 	let curCity = ref(null) //当前城市
@@ -353,52 +366,7 @@
 	.rank-select{
 		margin-left: auto;
 	}
-	.rank-body{
-		margin-top: 15rpx;
-		display: flex;
-		justify-content: space-evenly;
-		
-		align-items: center;
-	}
-	.rank-item{
-		display: flex;
-		flex-direction: column;
-	}
 	
-	.rank-container{
-		position: relative;
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-	}
-	.rank-item-icon{
-		position: absolute;
-		top: -10rpx;
-		left: -10rpx;
-		width: 5vw;
-		height: 10vw;
-		background-color: #cc4143;
-	}
-	.rank-item-img{
-		width: 15vw;
-		height: 15vw;
-		border-radius: 5%;
-		background-color: gray;
-	}
-	.rank-item-name{
-		text-align: center;
-		font-weight: bold;
-		font-size: 25rpx;
-	}
-	.rank-show-total-people{
-		/* text-align: center; */
-		color: gray;
-		font-size: 17rpx;
-		display: flex;
-		justify-content: flex-end;
-		align-items: center;
-	}
 	.empty-block{
 		height: 7vw;
 	}
@@ -417,7 +385,45 @@
 	.change-button:active {
 		background-color: #cc4143;
 	}
-	.uni-select {
+	uni-select {
 		height: 30px;
 	}
+	
+	
+	.rank-table {
+	  margin: 20rpx;
+	}
+	
+	.uni-table th,
+	.uni-table td {
+	  padding: 10rpx;
+	}
+	
+	.rank-list-index {
+	  display: flex;
+	  align-items: center;
+	  justify-content: center;
+	  align-items: center;
+	}
+	
+	.badge-icon {
+	  width: 60rpx; /* 调整图标大小 */
+	  height: 60rpx;
+	  margin-right: 5rpx;
+	}
+	
+	.rank-number {
+	  font-size: 28rpx; /* 艺术字数字大小 */
+	  color: #cc1d34; /* 艺术字数字颜色 */
+	  font-weight: bold;
+	  
+	}
+	
+	.rank-list-name,
+	.rank-list-count,
+	.rank-list-time {
+	  font-size: 26rpx;
+	  color: #333;
+	}
+
 </style>

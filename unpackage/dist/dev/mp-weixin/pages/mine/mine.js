@@ -3,12 +3,20 @@ const common_vendor = require("../../common/vendor.js");
 if (!Array) {
   const _easycom_uni_icons2 = common_vendor.resolveComponent("uni-icons");
   const _easycom_uni_data_select2 = common_vendor.resolveComponent("uni-data-select");
-  (_easycom_uni_icons2 + _easycom_uni_data_select2)();
+  const _easycom_uni_th2 = common_vendor.resolveComponent("uni-th");
+  const _easycom_uni_tr2 = common_vendor.resolveComponent("uni-tr");
+  const _easycom_uni_td2 = common_vendor.resolveComponent("uni-td");
+  const _easycom_uni_table2 = common_vendor.resolveComponent("uni-table");
+  (_easycom_uni_icons2 + _easycom_uni_data_select2 + _easycom_uni_th2 + _easycom_uni_tr2 + _easycom_uni_td2 + _easycom_uni_table2)();
 }
 const _easycom_uni_icons = () => "../../uni_modules/uni-icons/components/uni-icons/uni-icons.js";
 const _easycom_uni_data_select = () => "../../uni_modules/uni-data-select/components/uni-data-select/uni-data-select.js";
+const _easycom_uni_th = () => "../../uni_modules/uni-table/components/uni-th/uni-th.js";
+const _easycom_uni_tr = () => "../../uni_modules/uni-table/components/uni-tr/uni-tr.js";
+const _easycom_uni_td = () => "../../uni_modules/uni-table/components/uni-td/uni-td.js";
+const _easycom_uni_table = () => "../../uni_modules/uni-table/components/uni-table/uni-table.js";
 if (!Math) {
-  (_easycom_uni_icons + _easycom_uni_data_select)();
+  (_easycom_uni_icons + _easycom_uni_data_select + _easycom_uni_th + _easycom_uni_tr + _easycom_uni_td + _easycom_uni_table)();
 }
 const _sfc_main = {
   __name: "mine",
@@ -76,6 +84,69 @@ const _sfc_main = {
         name: "北京站投放点",
         count: 213,
         time: 2312
+      },
+      {
+        id: 9,
+        city: "北京",
+        name: "海淀黄庄投放点",
+        count: 223,
+        time: 13
+      },
+      {
+        id: 10,
+        city: "北京",
+        name: "TBD投放点",
+        count: 423,
+        time: 132
+      },
+      {
+        id: 11,
+        city: "天津",
+        name: "冶里村投放点",
+        count: 9,
+        time: 234
+      },
+      {
+        id: 12,
+        city: "天津",
+        name: "路北区投放点",
+        count: 121,
+        time: 562
+      },
+      {
+        id: 13,
+        city: "天津",
+        name: "唐山一中投放点",
+        count: 112,
+        time: 4
+      },
+      {
+        id: 14,
+        city: "上海",
+        name: "11投放点",
+        count: 55,
+        time: 3232
+      },
+      {
+        id: 15,
+        city: "上海",
+        name: "22投放点",
+        count: 4514,
+        time: 687124
+      },
+      {
+        id: 16,
+        city: "上海",
+        name: "33投放点",
+        count: 916,
+        time: 51246
+      },
+      {
+        id: 17,
+        city: "北京",
+        name: "秦皇岛投放点",
+        count: 212313,
+        time: 23212
       }
     ]);
     let curCity = common_vendor.ref(null);
@@ -165,36 +236,57 @@ const _sfc_main = {
           clear: false,
           modelValue: common_vendor.unref(curCity)
         }),
-        l: common_vendor.t(curCityArray.value[1].name),
+        l: common_vendor.p({
+          width: "50",
+          align: "center"
+        }),
         m: common_vendor.p({
-          type: "fire-filled",
-          size: "15",
-          color: "#cc4143"
+          width: "120",
+          align: "center"
         }),
-        n: common_vendor.t(curCityArray.value[1].count),
-        o: common_vendor.unref(isCount),
-        p: common_vendor.t(Math.floor(curCityArray.value[1].time / 60)),
-        q: !common_vendor.unref(isCount),
-        r: common_vendor.t(curCityArray.value[0].name),
+        n: common_vendor.p({
+          width: "70",
+          align: "center"
+        }),
+        o: common_vendor.p({
+          width: "70",
+          align: "center"
+        }),
+        p: common_vendor.f(curCityArray.value, (item, index, i0) => {
+          return common_vendor.e({
+            a: index < 3
+          }, index < 3 ? {
+            b: index < 3 ? `../../static/rank_icon/${index + 1}.png` : ""
+          } : {}, {
+            c: common_vendor.t(index < 3 ? "" : index + 1),
+            d: "7c2ebfa5-14-" + i0 + "," + ("7c2ebfa5-13-" + i0),
+            e: common_vendor.t(item.name),
+            f: "7c2ebfa5-15-" + i0 + "," + ("7c2ebfa5-13-" + i0),
+            g: common_vendor.t(item.count),
+            h: "7c2ebfa5-16-" + i0 + "," + ("7c2ebfa5-13-" + i0),
+            i: common_vendor.t(item.time),
+            j: "7c2ebfa5-17-" + i0 + "," + ("7c2ebfa5-13-" + i0),
+            k: index,
+            l: "7c2ebfa5-13-" + i0 + ",7c2ebfa5-7"
+          });
+        }),
+        q: common_vendor.p({
+          align: "center"
+        }),
+        r: common_vendor.p({
+          align: "center"
+        }),
         s: common_vendor.p({
-          type: "fire-filled",
-          size: "15",
-          color: "#cc4143"
+          align: "center"
         }),
-        t: common_vendor.t(curCityArray.value[0].count),
-        v: common_vendor.unref(isCount),
-        w: common_vendor.t(Math.floor(curCityArray.value[0].time / 60)),
-        x: !common_vendor.unref(isCount),
-        y: common_vendor.t(curCityArray.value[2].name),
-        z: common_vendor.p({
-          type: "fire-filled",
-          size: "15",
-          color: "#cc4143"
+        t: common_vendor.p({
+          align: "center"
         }),
-        A: common_vendor.t(curCityArray.value[2].count),
-        B: common_vendor.unref(isCount),
-        C: common_vendor.t(Math.floor(curCityArray.value[2].time / 60)),
-        D: !common_vendor.unref(isCount)
+        v: common_vendor.p({
+          loading: _ctx.loading,
+          border: true,
+          stripe: true
+        })
       };
     };
   }
