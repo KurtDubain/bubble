@@ -1,0 +1,22 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/scan_qr/scan_qr",
+    "pages/mine/mine"
+  ],
+  "window": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "uni-app",
+    "navigationBarBackgroundColor": "#ffffff",
+    "backgroundColor": "#f8f9fb"
+  },
+  "permission": {
+    "scope.userLocation": {
+      "desc": "地图定位"
+    },
+    "scope.camera": {
+      "desc": "摄像头"
+    }
+  },
+  "usingComponents": {}
+}
