@@ -15,7 +15,7 @@ const _sfc_main = {
     const map = common_vendor.ref({
       marks: []
     });
-    const showQRScan = common_vendor.ref(true);
+    const showQRScan = common_vendor.ref(false);
     const playing = common_vendor.ref(false);
     const isEnd = common_vendor.ref(false);
     const startTime = common_vendor.ref(null);
@@ -137,18 +137,14 @@ const _sfc_main = {
     };
     const toQRScanClick = () => {
       if (isLogIn.value) {
-        common_vendor.index.showModal({
-          title: "模拟扫码过程",
-          content: "由于我们目前没办法进行二维码扫码验证，因此目前是模拟扫码过程",
-          showCancel: false
+        common_vendor.index.scanCode({
+          success(res) {
+            console.log("扫码成功：" + res.result);
+            showQRScan.value = false;
+          }
         });
-        setTimeout(() => {
-          common_vendor.index.showToast({
-            title: "扫码成功",
-            icon: "none"
-          });
-          showQRScan.value = false;
-        }, 5e3);
+      } else {
+        getUserInfo();
       }
     };
     const getUserInfo = () => {

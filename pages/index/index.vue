@@ -140,7 +140,7 @@
 	});
 	// 页面组件
 	// 是否展示初始卡片
-	const showQRScan = ref(true);
+	const showQRScan = ref(false);
 	const playing = ref(false);// 是否在游玩中
 	// const isBegin = ref(true)
 	const isEnd = ref(false) // 是否结束
@@ -286,32 +286,32 @@
 	
 	// 扫描二维码
 	const toQRScanClick = () => {
-		// if(isLogIn.value){
-		// 	uni.scanCode({
-		// 		success(res) {
-		// 			console.log('扫码成功：' + res.result)
-		// 			showQRScan.value = false;
-		// 		}
-		// 	})
-		// }else{
-		// 	getUserInfo()
-		// }
-		if (isLogIn.value) {
-		    uni.showModal({
-		      title: '模拟扫码过程',
-		      content: '由于我们目前没办法进行二维码扫码验证，因此目前是模拟扫码过程',
-		      showCancel: false, 
-		    });
+		if(isLogIn.value){
+			uni.scanCode({
+				success(res) {
+					console.log('扫码成功：' + res.result)
+					showQRScan.value = false;
+				}
+			})
+		}else{
+			getUserInfo()
+		}
+		// if (isLogIn.value) {
+		//     uni.showModal({
+		//       title: '模拟扫码过程',
+		//       content: '由于我们目前没办法进行二维码扫码验证，因此目前是模拟扫码过程',
+		//       showCancel: false, 
+		//     });
 		
-		    // 模拟5秒扫码过程
-		    setTimeout(() => {
-				uni.showToast({
-				    title: '扫码成功',
-				    icon: 'none',
-				})
-		      showQRScan.value = false;
-		    }, 5000);
-		  }
+		//     // 模拟5秒扫码过程
+		//     setTimeout(() => {
+		// 		uni.showToast({
+		// 		    title: '扫码成功',
+		// 		    icon: 'none',
+		// 		})
+		//       showQRScan.value = false;
+		//     }, 5000);
+		//   }
 	}
 	// 获取用户的授权信息，登陆
 	const getUserInfo = ()=>{
