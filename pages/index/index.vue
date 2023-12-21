@@ -437,29 +437,26 @@
 	.popup-content {
 	  background: #fff;
 	  border-radius: 10px;
-	  padding: 20px;
+	  padding: 30rpx; 
 	  text-align: center;
 	  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-	}
-	
-	.popup-title {
-	  font-size: 18px;
-	  font-weight: bold;
-	  margin-bottom: 10px;
+	  width: 80vw; 
+	  max-width: 450rpx; 
 	}
 	
 	.popup-buttons {
 	  display: flex;
 	  justify-content: space-around;
 	  flex-direction: column;
+	  margin-top: 20rpx; 
 	}
 	
 	.popup-button {
 	  background: #cc1d34;
 	  color: #fff;
-	  /* padding: 10px 20px; */
-	  margin: 5rpx;
-	  border-radius: 5px;
+	  padding: 15rpx 20rpx; 
+	  margin: 10rpx; 
+	  border-radius: 8px;
 	  cursor: pointer;
 	  display: flex;
 	  flex-direction: column;
@@ -467,14 +464,16 @@
 	}
 	
 	.button-text {
-	  font-size: 28rpx;
+	  font-size: 35rpx;
 	  line-height: 50rpx;
+	  font-weight: bold; 
 	}
 	
 	.button-description {
 	  font-size: 22rpx;
-	  line-height: 50rpx;
-	  color: #999;
+	  line-height: 40rpx; 
+	  color: #fff; 
 	}
+
 
 </style>
