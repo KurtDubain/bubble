@@ -172,6 +172,11 @@ const _sfc_main = {
     common_vendor.onMounted(() => {
       curCity.value = "北京";
       countRank();
+      const cachedUserInfo = common_vendor.index.getStorageSync("userInfo");
+      if (cachedUserInfo) {
+        userInfo.value = cachedUserInfo;
+        isLogIn.value = true;
+      }
     });
     const changeIsCount = () => {
       isCount.value = !isCount.value;
@@ -192,7 +197,7 @@ const _sfc_main = {
       }
     });
     common_vendor.watch(curCity, () => {
-      if (isCount) {
+      if (isCount.value) {
         countRank();
       } else {
         timeRank();
@@ -206,22 +211,55 @@ const _sfc_main = {
           userInfo.value = res.userInfo;
           console.log("获取用户信息成功：", res.userInfo);
           isLogIn.value = true;
+          common_vendor.index.setStorageSync("userInfo", userInfo.value);
+          common_vendor.index.setStorageSync("isLogIn", true);
         },
         fail: (err) => {
           console.error("获取用户信息失败：", err);
         }
       });
     };
+    const toHistoryClick = () => {
+      if (isLogIn.value) {
+        common_vendor.index.navigateTo({
+          url: "/pages/history/history"
+        });
+      } else {
+        common_vendor.index.showToast({
+          title: "请先登录",
+          icon: "none"
+        });
+      }
+    };
+    const toFeedbackClick = () => {
+      if (isLogIn.value) {
+        common_vendor.index.navigateTo({
+          url: "/pages/feedback/feedback"
+        });
+      } else {
+        common_vendor.index.showToast({
+          title: "请先登录",
+          icon: "none"
+        });
+      }
+    };
+    const logOut = () => {
+      userInfo.value = null;
+      isLogIn.value = false;
+      common_vendor.index.removeStorageSync("userInfo");
+      common_vendor.index.removeStorageSync("isLogIn");
+      common_vendor.index.removeStorageSync("chatMessages");
+    };
     return (_ctx, _cache) => {
       return {
         a: common_vendor.unref(isLogIn) ? `${userInfo.value.avatarUrl}` : `../../static/uni.png`,
         b: common_vendor.t(common_vendor.unref(isLogIn) ? `${userInfo.value.nickName}` : `未登录`),
-        c: common_vendor.o(getUserInfo),
-        d: common_vendor.p({
+        c: common_vendor.p({
           type: "compose",
           size: "26"
         }),
-        e: !common_vendor.unref(isLogIn),
+        d: !common_vendor.unref(isLogIn),
+        e: common_vendor.o(($event) => getUserInfo()),
         f: common_vendor.p({
           type: "email",
           size: "26",
@@ -231,43 +269,45 @@ const _sfc_main = {
           type: "forward",
           size: "24"
         }),
-        h: common_vendor.p({
+        h: common_vendor.o(($event) => toHistoryClick()),
+        i: common_vendor.p({
           type: "help",
           size: "26",
           color: "#cc4143"
         }),
-        i: common_vendor.p({
+        j: common_vendor.p({
           type: "forward",
           size: "24"
         }),
-        j: common_vendor.p({
+        k: common_vendor.o(($event) => toFeedbackClick()),
+        l: common_vendor.p({
           type: "list",
           size: "26",
           color: "#cc4143"
         }),
-        k: common_vendor.t(common_vendor.unref(isCount) ? "按时长" : "按次数"),
-        l: common_vendor.o(($event) => changeIsCount()),
-        m: common_vendor.o(($event) => common_vendor.isRef(curCity) ? curCity.value = $event : curCity = $event),
-        n: common_vendor.p({
+        m: common_vendor.t(common_vendor.unref(isCount) ? "按时长" : "按次数"),
+        n: common_vendor.o(($event) => changeIsCount()),
+        o: common_vendor.o(($event) => common_vendor.isRef(curCity) ? curCity.value = $event : curCity = $event),
+        p: common_vendor.p({
           placeholder: "城市",
           localdata: cityData,
           clear: false,
           modelValue: common_vendor.unref(curCity)
         }),
-        o: common_vendor.p({
+        q: common_vendor.p({
           width: "50",
           align: "center"
         }),
-        p: common_vendor.p({
+        r: common_vendor.p({
           width: "120",
           align: "center"
         }),
-        q: common_vendor.t(common_vendor.unref(isCount) ? "次数" : "时长"),
-        r: common_vendor.p({
+        s: common_vendor.t(common_vendor.unref(isCount) ? "次数" : "时长"),
+        t: common_vendor.p({
           width: "70",
           align: "center"
         }),
-        s: common_vendor.f(curCityArray.value, (item, index, i0) => {
+        v: common_vendor.f(curCityArray.value.slice(0, 5), (item, index, i0) => {
           return {
             a: common_vendor.t(index + 1),
             b: "367b2d30-13-" + i0 + "," + ("367b2d30-12-" + i0),
@@ -279,20 +319,22 @@ const _sfc_main = {
             h: "367b2d30-12-" + i0 + ",367b2d30-7"
           };
         }),
-        t: common_vendor.p({
-          align: "center"
-        }),
-        v: common_vendor.p({
-          align: "center"
-        }),
         w: common_vendor.p({
           align: "center"
         }),
         x: common_vendor.p({
+          align: "center"
+        }),
+        y: common_vendor.p({
+          align: "center"
+        }),
+        z: common_vendor.p({
           loading: _ctx.loading,
           border: true,
           stripe: true
-        })
+        }),
+        A: common_vendor.o(($event) => logOut()),
+        B: common_vendor.unref(isLogIn)
       };
     };
   }

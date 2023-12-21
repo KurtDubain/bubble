@@ -33,10 +33,10 @@
 					<view style="font-size: 22rpx;display: flex;color: #868686;">
 						<text>爱护设备，让更多的人享受乐趣</text>
 						<view style="flex: 1"></view>
-						<uni-icons type="info" size="16"></uni-icons>
-						<text>反馈/投诉</text>
+						<uni-icons type="info" size="16" @click="toFeedbackClick()"></uni-icons>
+						<text @click="toFeedbackClick()">反馈/投诉</text>
 					</view>
-					<view class="button" style="width: 100%;color: white;" @click="clickPlay()">{{ "开始游玩" }}</view>
+					<view class="button" style="width: 100%;color: white;" @click="clickPlay()">开始游玩</view>
 				</view>
 			</view>
 			<!-- 选项弹窗 -->
@@ -72,8 +72,8 @@
 					<view style="font-size: 22rpx;display: flex;color: #868686;">
 						<text>付款成功，设备已启动</text>
 						<view style="flex: 1"></view>
-						<uni-icons type="info" size="16"></uni-icons>
-						<text>反馈/投诉</text>
+						<uni-icons type="info" size="16" @click="toFeedbackClick()"></uni-icons>
+						<text @click="toFeedbackClick()">反馈/投诉</text>
 					</view>
 					<view class="button" style="width: 100%;color: white;" @click="stopPlayingAhead()">提前停止游玩</view>
 				</view>
@@ -93,8 +93,8 @@
 					<view style="font-size: 22rpx;display: flex;color: #868686;">
 						<text>在结束游玩后记得付款哦</text>
 						<view style="flex: 1"></view>
-						<uni-icons type="info" size="16"></uni-icons>
-						<text>反馈/投诉</text>
+						<uni-icons type="info" size="16" @click="toFeedbackClick()"></uni-icons>
+						<text @click="toFeedbackClick()">反馈/投诉</text>
 					</view>
 					<view class="button" style="width: 100%;color: white;" @click="clickStop()">{{ "结束游玩" }}</view>
 				</view>
@@ -116,8 +116,8 @@
 					<view style="font-size: 22rpx;display: flex;color: #868686;">
 						<text>游玩后记得带走个人物品哦</text>
 						<view style="flex: 1"></view>
-						<uni-icons type="info" size="16"></uni-icons>
-						<text>反馈/投诉</text>
+						<uni-icons type="info" size="16" @click="toFeedbackClick()"></uni-icons>
+						<text @click="toFeedbackClick()">反馈/投诉</text>
 					</view>
 					<view class="button button-back" style="width: 100%;color: #cc1d34;" @click="clickClose()">感谢您的游玩，欢迎下次再来</view>
 				</view>
@@ -151,6 +151,7 @@
 	const showPlayOptions = ref(false)//游玩模式选项是否展示
 	const countDown = ref(600)//单次游玩倒计时（十分钟）
 	const playType = ref(0)//游玩模式
+	const isLogIn = ref(false)// 判断是否登陆
 
 	const marks = [{
 		latitude: 34.220009,
@@ -164,6 +165,7 @@
 				console.log(data)
 			}
 		})
+		// 初始化地理位置
 		uni.getLocation({
 			type: 'wgs84',
 			success: function(res) {
@@ -172,6 +174,11 @@
 				goMoveToLocation(res.longitude, res.latitude);
 			}
 		});
+		// 初始化判断是否登陆
+		const cachedUserInfo = uni.getStorageSync('userInfo');
+		if (cachedUserInfo) {
+		    isLogIn.value = true
+		}
 		map.value.marks = marks;
 	})
 
@@ -200,13 +207,18 @@
 
 	// 游玩和停止游玩
 	const clickPlay = () => {
-		uni.showLoading({
-			title: "正在请求数据"
-		});
-		setTimeout(() => {
-			uni.hideLoading()
-			showPlayOptions.value = true
-		},500);
+		if(isLogIn.value){
+			uni.showLoading({
+				title: "正在请求数据"
+			});
+			setTimeout(() => {
+				uni.hideLoading()
+				showPlayOptions.value = true
+			},500);
+		}else{
+			getUserInfo()
+		}
+		
 	}
 	// 计费计算处理
 	const startBilling = ()=>{
@@ -274,12 +286,33 @@
 	
 	// 扫描二维码
 	const toQRScanClick = () => {
-		uni.scanCode({
-			success(res) {
-				console.log('扫码成功：' + res.result)
-				showQRScan.value = false;
-			}
-		})
+		if(isLogIn.value){
+			uni.scanCode({
+				success(res) {
+					console.log('扫码成功：' + res.result)
+					showQRScan.value = false;
+				}
+			})
+		}else{
+			getUserInfo()
+		}
+		
+	}
+	// 获取用户的授权信息，登陆
+	const getUserInfo = ()=>{
+		uni.getUserProfile({
+		    provider: 'weixin',
+		    desc: '获取用户信息',
+		    success: res => { 
+		        console.log('获取用户信息成功：', res.userInfo);
+				isLogIn.value = true
+				uni.setStorageSync('userInfo', res.userInfo)
+				uni.setStorageSync('isLogIn',true)
+		    },
+		    fail: err => {
+		        console.error('获取用户信息失败：', err);
+		    }
+		});
 	}
 
 	// 个人中心
@@ -287,6 +320,19 @@
 		uni.navigateTo({
 			url: "/pages/mine/mine"
 		})
+	}
+	// 跳转到反馈（需要登录）
+	const toFeedbackClick = () => {
+		if(isLogIn.value){
+			uni.navigateTo({
+				url: "/pages/feedback/feedback"
+			})
+		}else{
+			uni.showToast({
+			    title: '请先登录',
+			    icon: 'none',
+			})
+		}
 	}
 </script>
 

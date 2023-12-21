@@ -6816,6 +6816,20 @@ const pages = [
       navigationBarTitleText: "我的",
       enablePullDownRefresh: false
     }
+  },
+  {
+    path: "pages/history/history",
+    style: {
+      navigationBarTitleText: "历史订单",
+      enablePullDownRefresh: false
+    }
+  },
+  {
+    path: "pages/feedback/feedback",
+    style: {
+      navigationBarTitleText: "投诉或反馈",
+      enablePullDownRefresh: false
+    }
   }
 ];
 const globalStyle = {

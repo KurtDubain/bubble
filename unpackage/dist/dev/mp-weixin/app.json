@@ -2,7 +2,9 @@
   "pages": [
     "pages/index/index",
     "pages/scan_qr/scan_qr",
-    "pages/mine/mine"
+    "pages/mine/mine",
+    "pages/history/history",
+    "pages/feedback/feedback"
   ],
   "window": {
     "navigationBarTextStyle": "black",

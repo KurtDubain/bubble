@@ -4,31 +4,30 @@
 			<view class="header_view">
 				<image :src=" isLogIn?`${userInfo.avatarUrl}`:`../../static/uni.png` "></image>
 				<text>{{isLogIn?`${userInfo.nickName}`:`未登录`}}</text>
-				<view class="header-login" v-show="!isLogIn">
+				<view class="header-login" v-show="!isLogIn" @click="getUserInfo()">
 					<text>点击登录</text>
-					<uni-icons type="compose" size="26" @click="getUserInfo"></uni-icons>
+					<uni-icons type="compose" size="26" ></uni-icons>
 				</view>
-				
-				
 			</view>
 		</view>
+		
 		<!-- 菜单栏 -->
 		<view class="card_view">
-			<view class="items">
+			<view class="items" @click="toHistoryClick()">
 				<uni-icons type="email" size="26" color="#cc4143"></uni-icons>
 				<text>历史订单</text>
 				<view style="flex: 1"></view>
 				<uni-icons type="forward" size="24"></uni-icons>
 			</view>
 			<view style="height: 6rpx;"></view>
-			<view class="items">
+			<view class="items" @click="toFeedbackClick()">
 				<uni-icons type="help" size="26" color="#cc4143"></uni-icons>
 				<text>投诉或反馈</text>
 				<view style="flex: 1"></view>
 				<uni-icons type="forward" size="24"></uni-icons>
 			</view>
 		</view>
-		
+		<!-- 排行榜卡片 -->
 		<view class="card_view">
 			<view class="rank-header">
 				<view class="rank-icon">
@@ -48,16 +47,18 @@
 				</view>	
 			</view>
 			
-			
+			<!-- 排行榜表格 -->
 			<view class="rank-table">
 				<uni-table  :loading="loading" border stripe>
+					<!-- 表头 -->
 					<uni-tr>
 						<uni-th width='50' align="center">排名</uni-th>
 						<uni-th width='120' align="center">名称</uni-th>
 						<uni-th width='70' align="center">{{ isCount?'次数':'时长' }}</uni-th>
 						<!-- <uni-th width='70' align="center">时长</uni-th> -->
 					</uni-tr>
-					<uni-tr v-for="(item,index) in curCityArray" :key="index">
+					<!-- 具体数据 -->
+					<uni-tr v-for="(item,index) in curCityArray.slice(0,5)" :key="index">
 						<uni-td align="center">
 							<view class="rank-list-index">
 								<text class="rank-number">{{ index + 1 }}</text>
@@ -75,13 +76,17 @@
 			
 		</view>
 		<!-- 退出登录按钮 -->
-		<view class="button">退出登录</view>
+		<view v-show="isLogIn">
+			<view class="button" @click="logOut()">退出登录</view>
+		</view>
+		
 	</view>
 </template>
 
 <script setup>
 	import { ref,onMounted, watch } from 'vue'
 	const code= ref('')
+	// 判断用户登陆状态
 	let isLogIn = ref(false)
 	const userInfo = ref(null)
 	// 初始化全部数据
@@ -234,7 +239,14 @@
 	onMounted(()=>{
 		// 初始化为北京
 		curCity.value = '北京'
+		// 初始化排名
 		countRank()
+		// 初始化，判断登陆情况，加载用户信息
+		const cachedUserInfo = uni.getStorageSync('userInfo');
+		if (cachedUserInfo) {
+		    userInfo.value = cachedUserInfo;
+		    isLogIn.value = true;
+		}
 	})
 	// 更改排序方式
 	const changeIsCount = ()=>{
@@ -253,53 +265,88 @@
 	// 监听排序类型变化
 	watch(isCount,(newVal)=>{
 		if(!newVal){
-			// console.log(newVal)
 			timeRank()
-			// console.log(curCityArray.value)
 		}else{
 			countRank()
 		}
 	})
 	// 监听当前城市的变化
 	watch(curCity,()=>{
-		// console.log(curCity.value)
-		if(isCount){
+		if(isCount.value){
 			countRank()
 		}else{
 			timeRank()
 			
 		}
 	})
-	// 处理用户登陆
+	// 处理用户登陆（没用到，以后用于和后端接口验证）
 	const wxLogin = () => {
 		uni.login({
-		        provider: 'weixin',
-		        success: res => {
-		          if (res.code) {
+		    provider: 'weixin',
+		    success: res => {
+				if (res.code) {
 		            code.value = res.code;
 					getUserInfo()
 		            console.log('登录成功，临时登录凭证为：', res.code);
-		          } else {
+		        } else {
 		            console.error('登录失败！' + res.errMsg);
-		          }
 		        }
-		      });
+		    }
+		});
 	}
+	// 请求用户授权，并更新数据存入到缓存中
 	const getUserInfo = ()=>{
 		uni.getUserProfile({
-		        provider: 'weixin',
-		        desc: '获取用户信息',
-		        success: res => {
-		          userInfo.value = res.userInfo;
-		          console.log('获取用户信息成功：', res.userInfo);
-				  isLogIn.value = true
-		        },
-		        fail: err => {
-		          console.error('获取用户信息失败：', err);
-		        }
-		      });
+		    provider: 'weixin',
+		    desc: '获取用户信息',
+		    success: res => {
+		        userInfo.value = res.userInfo;
+		        console.log('获取用户信息成功：', res.userInfo);
+				isLogIn.value = true
+				uni.setStorageSync('userInfo', userInfo.value)
+				uni.setStorageSync('isLogIn',true)
+		    },
+		    fail: err => {
+		        console.error('获取用户信息失败：', err);
+		    }
+		});
 	}
-	
+	// 跳转到历史记录（需要登录）
+	const toHistoryClick = () => {
+		if(isLogIn.value){
+			uni.navigateTo({
+				url: "/pages/history/history"
+			})
+		}else{
+			uni.showToast({
+			    title: '请先登录',
+			    icon: 'none',
+			})
+		}
+		
+	}
+	// 跳转到反馈（需要登录）
+	const toFeedbackClick = () => {
+		if(isLogIn.value){
+			uni.navigateTo({
+				url: "/pages/feedback/feedback"
+			})
+		}else{
+			uni.showToast({
+			    title: '请先登录',
+			    icon: 'none',
+			})
+		}
+	}
+	// 退出登陆，会清空缓存
+	const logOut = () => {
+	  userInfo.value = null;
+	  isLogIn.value = false;
+	  uni.removeStorageSync('userInfo');
+	  uni.removeStorageSync('isLogIn')
+	  uni.removeStorageSync('chatMessages')
+	};
+
 </script>
 
 <style>
