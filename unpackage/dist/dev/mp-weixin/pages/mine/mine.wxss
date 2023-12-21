@@ -16,6 +16,7 @@
 		margin-left: 16rpx;
 		display: flex;
 		align-items: center;
+		/* justify-content: center; */
 }
 .header_view image {
 		width: 120rpx;
@@ -26,6 +27,11 @@
 .header_view text {
 		margin-right: 10rpx;
 		font-size: 36rpx;
+}
+.header-login{
+		display:flex;
+		align-items: center;
+		margin-left: auto;
 }
 .items {
 		display: flex;

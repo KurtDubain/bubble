@@ -21,7 +21,8 @@ if (!Math) {
 const _sfc_main = {
   __name: "mine",
   setup(__props) {
-    const code = common_vendor.ref("");
+    common_vendor.ref("");
+    let isLogIn = common_vendor.ref(false);
     const userInfo = common_vendor.ref(null);
     const totalData = common_vendor.ref([
       {
@@ -197,20 +198,6 @@ const _sfc_main = {
         timeRank();
       }
     });
-    const wxLogin = () => {
-      common_vendor.index.login({
-        provider: "weixin",
-        success: (res) => {
-          if (res.code) {
-            code.value = res.code;
-            getUserInfo();
-            console.log("登录成功，临时登录凭证为：", res.code);
-          } else {
-            console.error("登录失败！" + res.errMsg);
-          }
-        }
-      });
-    };
     const getUserInfo = () => {
       common_vendor.index.getUserProfile({
         provider: "weixin",
@@ -218,6 +205,7 @@ const _sfc_main = {
         success: (res) => {
           userInfo.value = res.userInfo;
           console.log("获取用户信息成功：", res.userInfo);
+          isLogIn.value = true;
         },
         fail: (err) => {
           console.error("获取用户信息失败：", err);
@@ -225,14 +213,15 @@ const _sfc_main = {
       });
     };
     return (_ctx, _cache) => {
-      return common_vendor.e({
-        a: common_vendor.o(wxLogin),
-        b: common_vendor.o(getUserInfo),
-        c: userInfo.value
-      }, userInfo.value ? {
-        d: userInfo.value.avatarUrl,
-        e: common_vendor.t(userInfo.value.nickName)
-      } : {}, {
+      return {
+        a: common_vendor.unref(isLogIn) ? `${userInfo.value.avatarUrl}` : `../../static/uni.png`,
+        b: common_vendor.t(common_vendor.unref(isLogIn) ? `${userInfo.value.nickName}` : `未登录`),
+        c: common_vendor.o(getUserInfo),
+        d: common_vendor.p({
+          type: "compose",
+          size: "26"
+        }),
+        e: !common_vendor.unref(isLogIn),
         f: common_vendor.p({
           type: "email",
           size: "26",
@@ -281,13 +270,13 @@ const _sfc_main = {
         s: common_vendor.f(curCityArray.value, (item, index, i0) => {
           return {
             a: common_vendor.t(index + 1),
-            b: "367b2d30-12-" + i0 + "," + ("367b2d30-11-" + i0),
+            b: "367b2d30-13-" + i0 + "," + ("367b2d30-12-" + i0),
             c: common_vendor.t(item.name),
-            d: "367b2d30-13-" + i0 + "," + ("367b2d30-11-" + i0),
+            d: "367b2d30-14-" + i0 + "," + ("367b2d30-12-" + i0),
             e: common_vendor.t(common_vendor.unref(isCount) ? `${item.count}` : `${item.time}`),
-            f: "367b2d30-14-" + i0 + "," + ("367b2d30-11-" + i0),
+            f: "367b2d30-15-" + i0 + "," + ("367b2d30-12-" + i0),
             g: index,
-            h: "367b2d30-11-" + i0 + ",367b2d30-6"
+            h: "367b2d30-12-" + i0 + ",367b2d30-7"
           };
         }),
         t: common_vendor.p({
@@ -304,7 +293,7 @@ const _sfc_main = {
           border: true,
           stripe: true
         })
-      });
+      };
     };
   }
 };

@@ -2,17 +2,14 @@
 	<view class="container">
 		<view class="card_view">
 			<view class="header_view">
-				<!-- <image src="../../static/uni.png"></image>
-				<text>微信用户</text>
-				<uni-icons type="compose" size="26" @click="loginWithWechat"></uni-icons>
-				<button @click="loginWithWechat" plain>wewe</button> -->
-				<button @click="wxLogin">微信登录</button>
-				    <button @click="getUserInfo">获取用户信息</button>
+				<image :src=" isLogIn?`${userInfo.avatarUrl}`:`../../static/uni.png` "></image>
+				<text>{{isLogIn?`${userInfo.nickName}`:`未登录`}}</text>
+				<view class="header-login" v-show="!isLogIn">
+					<text>点击登录</text>
+					<uni-icons type="compose" size="26" @click="getUserInfo"></uni-icons>
+				</view>
 				
-				    <view v-if="userInfo">
-				      <image :src="userInfo.avatarUrl" style="width: 100px; height: 100px;"></image>
-				      <text>{{ userInfo.nickName }}</text>
-				    </view>
+				
 			</view>
 		</view>
 		<!-- 菜单栏 -->
@@ -85,6 +82,7 @@
 <script setup>
 	import { ref,onMounted, watch } from 'vue'
 	const code= ref('')
+	let isLogIn = ref(false)
 	const userInfo = ref(null)
 	// 初始化全部数据
 	const totalData = ref([
@@ -294,6 +292,7 @@
 		        success: res => {
 		          userInfo.value = res.userInfo;
 		          console.log('获取用户信息成功：', res.userInfo);
+				  isLogIn.value = true
 		        },
 		        fail: err => {
 		          console.error('获取用户信息失败：', err);
@@ -323,6 +322,7 @@
 		margin-left: 16rpx;
 		display: flex;
 		align-items: center;
+		/* justify-content: center; */
 	}
 
 	.header_view image {
@@ -336,7 +336,11 @@
 		margin-right: 10rpx;
 		font-size: 36rpx;
 	}
-
+	.header-login{
+		display:flex;
+		align-items: center;
+		margin-left: auto;
+	}
 	.items {
 		display: flex;
 		padding: 10rpx;

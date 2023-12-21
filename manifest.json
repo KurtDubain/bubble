@@ -70,10 +70,7 @@
 			}
         },
 		"plugins":{
-			"WechatMiniprogram.Wx":{
-				"version":"1.0.0",
-				"provider":"wx"
-			}
+			
 		}
 		
     },

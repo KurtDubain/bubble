@@ -16,7 +16,14 @@
     },
     "scope.camera": {
       "desc": "摄像头"
+    },
+    "scope.userProfile": {
+      "desc": "获取用户授权"
+    },
+    "scope.userInfo": {
+      "desc": "获取用户信息"
     }
   },
+  "plugins": {},
   "usingComponents": {}
 }
