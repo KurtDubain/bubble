@@ -15,7 +15,7 @@ const _sfc_main = {
     const map = common_vendor.ref({
       marks: []
     });
-    const showQRScan = common_vendor.ref(false);
+    const showQRScan = common_vendor.ref(true);
     const playing = common_vendor.ref(false);
     const isEnd = common_vendor.ref(false);
     const startTime = common_vendor.ref(null);

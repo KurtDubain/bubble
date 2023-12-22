@@ -71,7 +71,7 @@ const sendMessage = () => {
   // 客服回复
   const serviceReply = {
     isCurrentUser: false,
-    content: '你说得对，但是原神...我忘了，您继续发',
+    content: '我是在线客服，您可以说您遇到的问题',
   };
 
   setTimeout(() => {

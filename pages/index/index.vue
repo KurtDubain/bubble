@@ -140,7 +140,7 @@
 	});
 	// 页面组件
 	// 是否展示初始卡片
-	const showQRScan = ref(false);
+	const showQRScan = ref(true);
 	const playing = ref(false);// 是否在游玩中
 	// const isBegin = ref(true)
 	const isEnd = ref(false) // 是否结束
