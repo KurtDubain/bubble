@@ -282,7 +282,7 @@
 			
 		}
 	})
-	
+	// 用户手机号快速验证
 	const getUserPhoneNumber = async(e) => {
 		console.log(e)
 		  try {
@@ -302,34 +302,7 @@
 		  }
 	}
 
-	// 请求用户授权，并更新数据存入到缓存中
-	// const getUserInfo = async ()=>{
-	// 	try{
-	// 		const loginRes = await uni.login({
-	// 			provider:'weixin'
-	// 		})
-			
-	// 		if(loginRes.code){
-	// 			const backendRes = await uni.request({
-	// 				url:'https://allmetaahome.com/wxApp/login',
-	// 				method:'POST',
-	// 				data:{
-	// 					code:loginRes.code
-	// 				}
-	// 			})
-	// 			const userOpenId = backendRes.data.openId
-	// 			uni.setStorageSync('userOpenId',userOpenId)
-				
-				
-	// 		}else{
-	// 			console.error('微信登陆失败',loginRes.errMsg)
-	// 		}
-	// 	}catch(error){
-	// 		console.error('微信登陆异常',error)
-	// 	}
-		
-	// }
-		
+		// 处理用户的的登陆情况
 	const handleUserInfo = (userInfo)=>{
 		uni.setStorageSync('userInfo', userInfo.value)
 		uni.setStorageSync('isLogIn',true)

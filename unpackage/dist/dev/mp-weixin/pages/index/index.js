@@ -11,10 +11,6 @@ if (!Math) {
 const _sfc_main = {
   __name: "index",
   setup(__props) {
-    common_vendor.index.createMapContext("map");
-    const map = common_vendor.ref({
-      marks: []
-    });
     const showQRScan = common_vendor.ref(true);
     const playing = common_vendor.ref(false);
     const isEnd = common_vendor.ref(false);
@@ -26,9 +22,10 @@ const _sfc_main = {
     const countDown = common_vendor.ref(600);
     const playType = common_vendor.ref(0);
     const isLogIn = common_vendor.ref(false);
+    const _mapContext = common_vendor.index.createMapContext("myMap");
     const latitude = common_vendor.ref(0);
     const longitude = common_vendor.ref(0);
-    common_vendor.ref([]);
+    const markers = common_vendor.ref(0);
     common_vendor.onMounted(() => {
       common_vendor.index.login({
         success(data) {
@@ -41,24 +38,26 @@ const _sfc_main = {
       if (cachedUserInfo) {
         isLogIn.value = true;
       }
-      map.value.marks = marks;
     });
     const getUserLocation = () => {
       common_vendor.index.getLocation({
+        // type:'wgs84',
         success: (res) => {
           latitude.value = res.latitude;
           longitude.value = res.longitude;
+          goMoveToLocation(longitude.value, latitude.value);
         },
-        fail: () => {
+        fail: (error) => {
           latitude.value = 34.220009;
           longitude.value = 108.875175;
+          console.log("出错了", error);
         }
       });
     };
     const getClawMachineLocations = () => {
       const clawMachineLocations = [
-        { latitude: 23.123456, longitude: 113.234567, title: "抓娃娃机1" },
-        { latitude: 23.234567, longitude: 113.345678, title: "抓娃娃机2" }
+        { latitude: 34.220009, longitude: 108.875175, title: "抓娃娃机1" },
+        { latitude: 34.3, longitude: 108.875175, title: "抓娃娃机2" }
         // ... 其他抓娃娃机的位置信息
       ];
       markers.value = clawMachineLocations.map((location) => ({
@@ -72,6 +71,15 @@ const _sfc_main = {
         height: 30
       }));
     };
+    function goMoveToLocation(longitude2, latitude2) {
+      _mapContext.moveToLocation({
+        longitude: longitude2,
+        latitude: latitude2,
+        success() {
+          console.log("wohuill");
+        }
+      });
+    }
     const clickClose = () => {
       if (!playing.value) {
         showQRScan.value = true;
@@ -175,7 +183,7 @@ const _sfc_main = {
       return {
         a: latitude.value,
         b: longitude.value,
-        c: _ctx.markeds,
+        c: markers.value,
         d: common_vendor.p({
           type: "person",
           size: "26",

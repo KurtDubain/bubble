@@ -1,7 +1,7 @@
 <template>
 	<!-- <map id="map" style="width: 100vw; height: 100vh;z-index: 0;" show-location="true" :markers="map.marks">
 	</map> -->
-	<map id="myMap" style="width: 100vw; height: 100vh;z-index: 0;" :latitude="latitude" show-location="true" :longitude="longitude" :markers="markeds"></map>
+	<map id="myMap" style="width: 100vw; height: 100vh;z-index: 0;" :latitude="latitude" show-location="true" :longitude="longitude" :markers="markers"></map>
 	<!-- logo -->
 	<view class="top_items">
 		<view style="flex:1"></view>
@@ -136,10 +136,10 @@ import {
 		reactive,
 		ref,
 	} from 'vue';
-	const _mapContext = uni.createMapContext("map");
-	const map = ref({
-		marks: []
-	});
+	// const _mapContext = uni.createMapContext("myMap");
+	// const map = ref({
+	// 	marks: []
+	// });
 	// 页面组件
 	// 是否展示初始卡片
 	const showQRScan = ref(true);
@@ -154,7 +154,7 @@ import {
 	const countDown = ref(600)//单次游玩倒计时（十分钟）
 	const playType = ref(0)//游玩模式
 	const isLogIn = ref(false)// 判断是否登陆
-
+	const _mapContext = uni.createMapContext('myMap');
 	// const marks = [{
 	// 	latitude: 34.220009,
 	// 	longitude: 108.875175,
@@ -162,7 +162,7 @@ import {
 	// }];
 	const latitude = ref(0)
 	const longitude = ref(0)
-	const markders = ref([])
+	const markers = ref(0)
 	// 初始化
 	onMounted(() => {
 		uni.login({
@@ -186,29 +186,33 @@ import {
 		if (cachedUserInfo) {
 		    isLogIn.value = true
 		}
-		map.value.marks = marks;
+		// map.value.marks = marks;
 	})
 	
 	
 	
 	const getUserLocation = ()=>{
 		uni.getLocation({
+			// type:'wgs84',
 			success:(res)=>{
 				latitude.value = res.latitude
 				longitude.value = res.longitude
+				goMoveToLocation(longitude.value, latitude.value)
 			},
-			fail: () => {
+			fail: (error) => {
 				latitude.value = 34.220009
 				longitude.value = 108.875175
-			}
+				console.log('出错了',error)
+			},
+			
 		})
 	}
 	
 	const getClawMachineLocations = () => {
 	  // 模拟获取娃娃机分布地点，替换为实际的后端接口调用
 	  const clawMachineLocations = [
-	    { latitude: 23.123456, longitude: 113.234567, title: '抓娃娃机1' },
-	    { latitude: 23.234567, longitude: 113.345678, title: '抓娃娃机2' },
+	    { latitude: 34.220009, longitude: 108.875175, title: '抓娃娃机1' },
+	    { latitude: 34.3, longitude: 108.875175, title: '抓娃娃机2' },
 	    // ... 其他抓娃娃机的位置信息
 	  ];
 	
@@ -230,7 +234,7 @@ import {
 			longitude: longitude,
 			latitude: latitude,
 			success() {
-
+				console.log('wohuill')
 			}
 		});
 	}

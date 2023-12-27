@@ -26,6 +26,9 @@
       "desc": "获取用户信息"
     }
   },
+  "requiredPrivateInfos": [
+    "getLocation"
+  ],
   "plugins": {},
   "usingComponents": {}
 }
