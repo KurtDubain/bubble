@@ -154,21 +154,6 @@ const _sfc_main = {
         getUserInfo();
       }
     };
-    const getUserInfo = () => {
-      common_vendor.index.getUserProfile({
-        provider: "weixin",
-        desc: "获取用户信息",
-        success: (res) => {
-          console.log("获取用户信息成功：", res.userInfo);
-          isLogIn.value = true;
-          common_vendor.index.setStorageSync("userInfo", res.userInfo);
-          common_vendor.index.setStorageSync("isLogIn", true);
-        },
-        fail: (err) => {
-          console.error("获取用户信息失败：", err);
-        }
-      });
-    };
     const toMineClick = () => {
       common_vendor.index.navigateTo({
         url: "/pages/mine/mine"

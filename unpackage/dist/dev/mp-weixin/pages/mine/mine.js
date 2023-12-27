@@ -168,11 +168,6 @@ const _sfc_main = {
         text: "上海"
       }
     ];
-    const showUserInfoForm = common_vendor.ref(false);
-    const userInfoForm = common_vendor.ref({
-      avatarUrl: "",
-      nickName: ""
-    });
     const curCityArray = common_vendor.ref([]);
     common_vendor.onMounted(() => {
       curCity.value = "北京";
@@ -208,15 +203,23 @@ const _sfc_main = {
         timeRank();
       }
     });
-    const openUserInfoForm = () => {
-      showUserInfoForm.value = true;
-    };
-    const closeUserInfoForm = () => {
-      showUserInfoForm.value = false;
-    };
-    const submitUserInfo = () => {
-      console.log(userInfoForm.value);
-      closeUserInfoForm();
+    const getUserPhoneNumber = async (e) => {
+      console.log(e);
+      try {
+        const res = await common_vendor.index.request({
+          url: `https://allmetaahome.com/wxApp/login`,
+          method: "POST",
+          data: {
+            code: e.detail.code
+          }
+        });
+        userInfo.value.phoneNumber = res.data.phone_info.phoneNumber;
+        isLogIn.value = true;
+        common_vendor.index.setStorageSync("userInfo", userInfo.value);
+        common_vendor.index.setStorageSync("isLogin", true);
+      } catch (error) {
+        console.error("WeChat login error:", error);
+      }
     };
     const toHistoryClick = () => {
       if (isLogIn.value) {
@@ -242,15 +245,6 @@ const _sfc_main = {
         });
       }
     };
-    const chooseAvatar = (e) => {
-      userInfoForm.value.avatarUrl = e.detail.avatarUrl;
-    };
-    const bindinput = (e) => {
-      userInfoForm.value.nickName = e.detail.value;
-    };
-    const bindblur = (e) => {
-      userInfoForm.value.nickName = e.detail.value;
-    };
     const logOut = () => {
       userInfo.value = null;
       isLogIn.value = false;
@@ -260,16 +254,20 @@ const _sfc_main = {
     };
     return (_ctx, _cache) => {
       return {
-        a: common_vendor.unref(isLogIn) ? `${userInfo.value.avatarUrl}` : `../../static/uni.png`,
-        b: common_vendor.t(common_vendor.unref(isLogIn) ? `${userInfo.value.nickName}` : `未登录`),
+        a: common_vendor.unref(isLogIn) ? `../../static/uni.png` : `../../static/uni.png`,
+        b: common_vendor.t(common_vendor.unref(isLogIn) ? `${userInfo.value.phoneNumber}已登录` : `未登录`),
         c: common_vendor.p({
-          type: "compose",
-          size: "26"
-        }),
-        d: !common_vendor.unref(isLogIn),
-        e: common_vendor.o(($event) => openUserInfoForm()),
-        f: common_vendor.p({
           type: "email",
+          size: "26",
+          color: "#cc4143"
+        }),
+        d: common_vendor.p({
+          type: "forward",
+          size: "24"
+        }),
+        e: common_vendor.o(($event) => toHistoryClick()),
+        f: common_vendor.p({
+          type: "help",
           size: "26",
           color: "#cc4143"
         }),
@@ -277,80 +275,67 @@ const _sfc_main = {
           type: "forward",
           size: "24"
         }),
-        h: common_vendor.o(($event) => toHistoryClick()),
+        h: common_vendor.o(($event) => toFeedbackClick()),
         i: common_vendor.p({
-          type: "help",
-          size: "26",
-          color: "#cc4143"
-        }),
-        j: common_vendor.p({
-          type: "forward",
-          size: "24"
-        }),
-        k: common_vendor.o(($event) => toFeedbackClick()),
-        l: common_vendor.p({
           type: "list",
           size: "26",
           color: "#cc4143"
         }),
-        m: common_vendor.t(common_vendor.unref(isCount) ? "按时长" : "按次数"),
-        n: common_vendor.o(($event) => changeIsCount()),
-        o: common_vendor.o(($event) => common_vendor.isRef(curCity) ? curCity.value = $event : curCity = $event),
-        p: common_vendor.p({
+        j: common_vendor.t(common_vendor.unref(isCount) ? "按时长" : "按次数"),
+        k: common_vendor.o(($event) => changeIsCount()),
+        l: common_vendor.o(($event) => common_vendor.isRef(curCity) ? curCity.value = $event : curCity = $event),
+        m: common_vendor.p({
           placeholder: "城市",
           localdata: cityData,
           clear: false,
           modelValue: common_vendor.unref(curCity)
         }),
-        q: common_vendor.p({
+        n: common_vendor.p({
           width: "50",
           align: "center"
         }),
-        r: common_vendor.p({
+        o: common_vendor.p({
           width: "120",
           align: "center"
         }),
-        s: common_vendor.t(common_vendor.unref(isCount) ? "次数" : "时长"),
-        t: common_vendor.p({
+        p: common_vendor.t(common_vendor.unref(isCount) ? "次数" : "时长"),
+        q: common_vendor.p({
           width: "70",
           align: "center"
         }),
-        v: common_vendor.f(curCityArray.value.slice(0, 5), (item, index, i0) => {
+        r: common_vendor.f(curCityArray.value.slice(0, 5), (item, index, i0) => {
           return {
             a: common_vendor.t(index + 1),
-            b: "367b2d30-13-" + i0 + "," + ("367b2d30-12-" + i0),
+            b: "367b2d30-12-" + i0 + "," + ("367b2d30-11-" + i0),
             c: common_vendor.t(item.name),
-            d: "367b2d30-14-" + i0 + "," + ("367b2d30-12-" + i0),
+            d: "367b2d30-13-" + i0 + "," + ("367b2d30-11-" + i0),
             e: common_vendor.t(common_vendor.unref(isCount) ? `${item.count}` : `${item.time}`),
-            f: "367b2d30-15-" + i0 + "," + ("367b2d30-12-" + i0),
+            f: "367b2d30-14-" + i0 + "," + ("367b2d30-11-" + i0),
             g: index,
-            h: "367b2d30-12-" + i0 + ",367b2d30-7"
+            h: "367b2d30-11-" + i0 + ",367b2d30-6"
           };
         }),
+        s: common_vendor.p({
+          align: "center"
+        }),
+        t: common_vendor.p({
+          align: "center"
+        }),
+        v: common_vendor.p({
+          align: "center"
+        }),
         w: common_vendor.p({
-          align: "center"
-        }),
-        x: common_vendor.p({
-          align: "center"
-        }),
-        y: common_vendor.p({
-          align: "center"
-        }),
-        z: common_vendor.p({
           loading: _ctx.loading,
           border: true,
           stripe: true
         }),
-        A: common_vendor.o(($event) => logOut()),
-        B: common_vendor.unref(isLogIn),
-        C: userInfoForm.value.avatarUrl ? `${userInfoForm.value.avatarUrl}` : `../../static/uni.png`,
-        D: common_vendor.o(chooseAvatar),
-        E: common_vendor.o(bindblur),
-        F: common_vendor.o([($event) => userInfoForm.value.nickName = $event.detail.value, bindinput]),
-        G: userInfoForm.value.nickName,
-        H: common_vendor.o(($event) => submitUserInfo()),
-        I: common_vendor.o(($event) => closeUserInfoForm()),
-        J: showUserInfoForm.value
+        x: common_vendor.o(($event) => logOut()),
+        y: common_vendor.unref(isLogIn),
+        z: common_vendor.p({
+          type: "compose",
+          size: "26"
+        }),
+        A: common_vendor.o(getUserPhoneNumber)
       };
     };
   }

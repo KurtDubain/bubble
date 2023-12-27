@@ -359,20 +359,38 @@ import {
 		//   }
 	}
 	// 获取用户的授权信息，登陆
-	const getUserInfo = ()=>{
-		uni.getUserProfile({
-		    provider: 'weixin',
-		    desc: '获取用户信息',
-		    success: res => { 
-		        console.log('获取用户信息成功：', res.userInfo);
-				isLogIn.value = true
-				uni.setStorageSync('userInfo', res.userInfo)
-				uni.setStorageSync('isLogIn',true)
-		    },
-		    fail: err => {
-		        console.error('获取用户信息失败：', err);
-		    }
-		});
+	// const getUserInfo = ()=>{
+	// 	uni.getUserProfile({
+	// 	    provider: 'weixin',
+	// 	    desc: '获取用户信息',
+	// 	    success: res => { 
+	// 	        console.log('获取用户信息成功：', res.userInfo);
+	// 			isLogIn.value = true
+	// 			uni.setStorageSync('userInfo', res.userInfo)
+	// 			uni.setStorageSync('isLogIn',true)
+	// 	    },
+	// 	    fail: err => {
+	// 	        console.error('获取用户信息失败：', err);
+	// 	    }
+	// 	});
+	// }
+	const getUserPhoneNumber = async(e) => {
+		console.log(e)
+		  try {
+			const res = await uni.request({
+				url:`https://allmetaahome.com/wxApp/login`,
+				method:'POST',
+				data:{
+					code:e.detail.code
+				}
+			})
+			userInfo.value.phoneNumber = res.data.phone_info.phoneNumber
+			isLogIn.value = true
+			uni.setStorageSync('userInfo',userInfo.value)
+			uni.setStorageSync('isLogin',true)
+		  } catch (error) {
+			console.error('WeChat login error:', error);
+		  }
 	}
 
 	// 个人中心
