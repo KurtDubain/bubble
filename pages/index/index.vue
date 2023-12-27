@@ -1,6 +1,7 @@
 <template>
-	<map id="map" style="width: 100vw; height: 100vh;z-index: 0;" show-location="true" :markers="map.marks">
-	</map>
+	<!-- <map id="map" style="width: 100vw; height: 100vh;z-index: 0;" show-location="true" :markers="map.marks">
+	</map> -->
+	<map id="myMap" style="width: 100vw; height: 100vh;z-index: 0;" :latitude="latitude" show-location="true" :longitude="longitude" :markers="markeds"></map>
 	<!-- logo -->
 	<view class="top_items">
 		<view style="flex:1"></view>
@@ -75,7 +76,7 @@
 						<uni-icons type="info" size="16" @click="toFeedbackClick()"></uni-icons>
 						<text @click="toFeedbackClick()">反馈/投诉</text>
 					</view>
-					<view class="button" style="width: 100%;color: white;" @click="stopPlayingAhead()">提前停止游玩</view>
+					<view class="button button-back" style="width: 100%;color: #cc1d34;">{{ "设备运行中，开始游玩吧" }}</view>
 				</view>
 			</view>
 			<!-- 第二种游玩模式 -->
@@ -96,7 +97,7 @@
 						<uni-icons type="info" size="16" @click="toFeedbackClick()"></uni-icons>
 						<text @click="toFeedbackClick()">反馈/投诉</text>
 					</view>
-					<view class="button" style="width: 100%;color: white;" @click="clickStop()">{{ "结束游玩" }}</view>
+					<view class="button button-back" style="width: 100%;color: #cc1d34;" @click="clickStop()">{{ "结束游玩" }}</view>
 				</view>
 			</view>
 			
@@ -129,10 +130,11 @@
 </template>
 
 <script setup>
-	import {
+	// import { func } from 'prop-types';
+import {
 		onMounted,
 		reactive,
-		ref
+		ref,
 	} from 'vue';
 	const _mapContext = uni.createMapContext("map");
 	const map = ref({
@@ -153,11 +155,14 @@
 	const playType = ref(0)//游玩模式
 	const isLogIn = ref(false)// 判断是否登陆
 
-	const marks = [{
-		latitude: 34.220009,
-		longitude: 108.875175,
-		//iconPath: "../../static/location/on_arrow.png"
-	}];
+	// const marks = [{
+	// 	latitude: 34.220009,
+	// 	longitude: 108.875175,
+	// 	//iconPath: "../../static/location/on_arrow.png"
+	// }];
+	const latitude = ref(0)
+	const longitude = ref(0)
+	const markders = ref([])
 	// 初始化
 	onMounted(() => {
 		uni.login({
@@ -166,14 +171,16 @@
 			}
 		})
 		// 初始化地理位置
-		uni.getLocation({
-			type: 'wgs84',
-			success: function(res) {
-				console.log(res.latitude);
-				console.log(res.longitude);
-				goMoveToLocation(res.longitude, res.latitude);
-			}
-		});
+		// uni.getLocation({
+		// 	type: 'wgs84',
+		// 	success: function(res) {
+		// 		console.log(res.latitude);
+		// 		console.log(res.longitude);
+		// 		goMoveToLocation(res.longitude, res.latitude);
+		// 	}
+		// });
+		getUserLocation()
+		getClawMachineLocations()
 		// 初始化判断是否登陆
 		const cachedUserInfo = uni.getStorageSync('userInfo');
 		if (cachedUserInfo) {
@@ -181,6 +188,41 @@
 		}
 		map.value.marks = marks;
 	})
+	
+	
+	
+	const getUserLocation = ()=>{
+		uni.getLocation({
+			success:(res)=>{
+				latitude.value = res.latitude
+				longitude.value = res.longitude
+			},
+			fail: () => {
+				latitude.value = 34.220009
+				longitude.value = 108.875175
+			}
+		})
+	}
+	
+	const getClawMachineLocations = () => {
+	  // 模拟获取娃娃机分布地点，替换为实际的后端接口调用
+	  const clawMachineLocations = [
+	    { latitude: 23.123456, longitude: 113.234567, title: '抓娃娃机1' },
+	    { latitude: 23.234567, longitude: 113.345678, title: '抓娃娃机2' },
+	    // ... 其他抓娃娃机的位置信息
+	  ];
+	
+	  // 根据娃娃机位置信息设置标记点
+	  markers.value = clawMachineLocations.map(location => ({
+	    id: location.title,
+	    latitude: location.latitude,
+	    longitude: location.longitude,
+	    title: location.title,
+	    iconPath: '/path/to/marker-icon.png', // 标记点图标路径
+	    width: 30,
+	    height: 30,
+	  }));
+	};
 
 	// 回到定位点
 	function goMoveToLocation(longitude, latitude) {
@@ -197,6 +239,7 @@
 	const clickClose = () => {
 		if (!playing.value) {
 			showQRScan.value = true;
+			isEnd.value = false
 			return;
 		}
 		uni.showToast({
@@ -264,20 +307,22 @@
 				clearInterval(timer)
 				playing.value = false
 				isEnd.value = true
-				countDown.value = 600
+				countDown.value = 60
 				totalCost.value = 5
 				totalMin.value = 10
 			}
 		},1000)
 	}
 	// 提前结束当前游玩
-	const stopPlayingAhead = ()=>{
-		playing.value = false
-		isEnd.value = true
-		totalCost.value = 5
-		totalMin.value = Math.ceil((600-countDown.value)/60)
-		countDown.value = 600
-	}
+	// const stopPlayingAhead = ()=>{
+		
+	// 	playing.value = false
+	// 	isEnd.value = true
+	// 	totalCost.value = 5
+	// 	totalMin.value = Math.ceil((600-countDown.value)/60)
+	// 	clearInterval(timer)
+	// 	countDown.value = 600
+	// }
 	// 第二种模式的主动结束
 	const clickStop = ()=>{
 		isEnd.value = true
@@ -488,6 +533,9 @@
 	  font-size: 22rpx;
 	  line-height: 40rpx; 
 	  color: #fff; 
+	}
+	.button-back:hover{
+		background-color: white;
 	}
 
 

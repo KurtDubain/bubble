@@ -4,12 +4,14 @@
 			<view class="header_view">
 				<image :src=" isLogIn?`${userInfo.avatarUrl}`:`../../static/uni.png` "></image>
 				<text>{{isLogIn?`${userInfo.nickName}`:`未登录`}}</text>
-				<view class="header-login" v-show="!isLogIn" @click="getUserInfo()">
+				<view class="header-login" v-show="!isLogIn" @click="openUserInfoForm()">
 					<text>点击登录</text>
 					<uni-icons type="compose" size="26" ></uni-icons>
 				</view>
 			</view>
 		</view>
+		
+		
 		
 		<!-- 菜单栏 -->
 		<view class="card_view">
@@ -79,7 +81,21 @@
 		<view v-show="isLogIn">
 			<view class="button" @click="logOut()">退出登录</view>
 		</view>
+		 <view v-show="showUserInfoForm" class="custom-popup">
+		      <view class="popup-content">
+				<view class="submit-image">
+					<image :src=" userInfoForm.avatarUrl?`${userInfoForm.avatarUrl}`:`../../static/uni.png` "></image>
+				</view>
+		        <button type="balanced" open-type="chooseAvatar" @chooseavatar="chooseAvatar">获取头像</button>
+				<input type="nickname"  v-model="userInfoForm.nickName" @blur="bindblur" placeholder="点击获取昵称"
+						@input="bindinput" />
+		        <!-- Submit button -->
+		        <button @click="submitUserInfo()" class="submit-button">提交</button>
 		
+		        <!-- Close button -->
+		        <button @click="closeUserInfoForm()" class="close-button">关闭</button>
+		      </view>			
+		</view>
 	</view>
 </template>
 
@@ -234,6 +250,11 @@
 		
 	]
 	
+	const showUserInfoForm = ref(false)
+	const userInfoForm = ref({
+		avatarUrl:'',
+		nickName:''
+	})
 	// 筛选过后的数据
 	const curCityArray = ref([])
 	onMounted(()=>{
@@ -279,37 +300,65 @@
 			
 		}
 	})
-	// 处理用户登陆（没用到，以后用于和后端接口验证）
-	const wxLogin = () => {
-		uni.login({
-		    provider: 'weixin',
-		    success: res => {
-				if (res.code) {
-		            code.value = res.code;
-					getUserInfo()
-		            console.log('登录成功，临时登录凭证为：', res.code);
-		        } else {
-		            console.error('登录失败！' + res.errMsg);
-		        }
-		    }
-		});
+	
+	const openUserInfoForm = ()=>{
+		showUserInfoForm.value = true
 	}
+	const closeUserInfoForm = ()=>{
+		showUserInfoForm.value = false
+	}
+	
+	const submitUserInfo = ()=>{
+		console.log(userInfoForm.value)
+		closeUserInfoForm()
+	}
+
 	// 请求用户授权，并更新数据存入到缓存中
-	const getUserInfo = ()=>{
-		uni.getUserProfile({
-		    provider: 'weixin',
-		    desc: '获取用户信息',
-		    success: res => {
-		        userInfo.value = res.userInfo;
-		        console.log('获取用户信息成功：', res.userInfo);
-				isLogIn.value = true
-				uni.setStorageSync('userInfo', userInfo.value)
-				uni.setStorageSync('isLogIn',true)
-		    },
-		    fail: err => {
-		        console.error('获取用户信息失败：', err);
-		    }
-		});
+	const getUserInfo = async ()=>{
+		// uni.getUserProfile({
+		//     provider: 'weixin',
+		//     desc: '获取用户信息',
+		//     success: res => {
+		//         userInfo.value = res.userInfo;
+		//         console.log('获取用户信息成功：', res.userInfo);
+		// 		isLogIn.value = true
+		// 		uni.setStorageSync('userInfo', userInfo.value)
+		// 		uni.setStorageSync('isLogIn',true)
+		//     },
+		//     fail: err => {
+		//         console.error('获取用户信息失败：', err);
+		//     }
+		// });
+		try{
+			const loginRes = await uni.login({
+				provider:'weixin'
+			})
+			
+			if(loginRes.code){
+				const backendRes = await uni.request({
+					url:'https://allmetaahome.com/wxApp/login',
+					method:'POST',
+					data:{
+						code:loginRes.code
+					}
+				})
+				const userOpenId = backendRes.data.openId
+				uni.setStorageSync('userOpenId',userOpenId)
+				
+				
+			}else{
+				console.error('微信登陆失败',loginRes.errMsg)
+			}
+		}catch(error){
+			console.error('微信登陆异常',error)
+		}
+		
+	}
+		
+	const handleUserInfo = (userInfo)=>{
+		uni.setStorageSync('userInfo', userInfo.value)
+		uni.setStorageSync('isLogIn',true)
+		isLogIn.value = true
 	}
 	// 跳转到历史记录（需要登录）
 	const toHistoryClick = () => {
@@ -337,6 +386,17 @@
 			    icon: 'none',
 			})
 		}
+	}
+	const chooseAvatar = (e)=>{
+		userInfoForm.value.avatarUrl = e.detail.avatarUrl
+	}
+	
+	const bindinput = (e)=>{
+		userInfoForm.value.nickName = e.detail.value
+	}
+	
+	const bindblur = (e)=>{
+		userInfoForm.value.nickName = e.detail.value
 	}
 	// 退出登陆，会清空缓存
 	const logOut = () => {
@@ -507,5 +567,65 @@
 	.uni-select{
 		height: 60rpx !important;
 	}
+	.custom-popup {
+	  position: fixed;
+	  top: 0;
+	  left: 0;
+	  width: 100vw;
+	  height: 100vh;
+	  background: rgba(0, 0, 0, 0.5);
+	  display: flex;
+	  justify-content: center;
+	  align-items: center;
+	  z-index: 999;
+	}
 	
+	.popup-content {
+	  background: #fff;
+	  border-radius: 10px;
+	  padding: 20px;
+	  text-align: center;
+	  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	}
+	
+	.popup-title {
+	  font-size: 18px;
+	  font-weight: bold;
+	  margin-bottom: 20px;
+	}
+	
+	.avatar-input {
+	  margin-bottom: 20rpx;
+	}
+	
+	.popup-content input {
+	  margin: 20rpx;
+	  padding: 20rpx;
+	  border: 1px solid #bfbfbf;
+	  border-radius: 5px;
+	  /* width: 100%; */
+	}
+	
+	 .submit-button {
+	  background: #cc1d34;
+	  color: #fff;
+	  /* padding: 10px 20px; */
+	  border-radius: 5px;
+	  cursor: pointer;
+	  margin: 20rpx;
+	}
+	
+	.close-button {
+	  background: #ccc;
+	  color: #fff;
+	  border-radius: 5px;
+	  cursor: pointer;
+	  margin: 20rpx;
+	}
+	.submit-image image{
+		width: 120rpx;
+		height: 120rpx;
+		margin-right: 20rpx;
+		border-radius: 100rpx;
+	}
 </style>

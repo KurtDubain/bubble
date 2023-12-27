@@ -11,7 +11,7 @@ if (!Math) {
 const _sfc_main = {
   __name: "index",
   setup(__props) {
-    const _mapContext = common_vendor.index.createMapContext("map");
+    common_vendor.index.createMapContext("map");
     const map = common_vendor.ref({
       marks: []
     });
@@ -26,42 +26,56 @@ const _sfc_main = {
     const countDown = common_vendor.ref(600);
     const playType = common_vendor.ref(0);
     const isLogIn = common_vendor.ref(false);
-    const marks = [{
-      latitude: 34.220009,
-      longitude: 108.875175
-      //iconPath: "../../static/location/on_arrow.png"
-    }];
+    const latitude = common_vendor.ref(0);
+    const longitude = common_vendor.ref(0);
+    common_vendor.ref([]);
     common_vendor.onMounted(() => {
       common_vendor.index.login({
         success(data) {
           console.log(data);
         }
       });
-      common_vendor.index.getLocation({
-        type: "wgs84",
-        success: function(res) {
-          console.log(res.latitude);
-          console.log(res.longitude);
-          goMoveToLocation(res.longitude, res.latitude);
-        }
-      });
+      getUserLocation();
+      getClawMachineLocations();
       const cachedUserInfo = common_vendor.index.getStorageSync("userInfo");
       if (cachedUserInfo) {
         isLogIn.value = true;
       }
       map.value.marks = marks;
     });
-    function goMoveToLocation(longitude, latitude) {
-      _mapContext.moveToLocation({
-        longitude,
-        latitude,
-        success() {
+    const getUserLocation = () => {
+      common_vendor.index.getLocation({
+        success: (res) => {
+          latitude.value = res.latitude;
+          longitude.value = res.longitude;
+        },
+        fail: () => {
+          latitude.value = 34.220009;
+          longitude.value = 108.875175;
         }
       });
-    }
+    };
+    const getClawMachineLocations = () => {
+      const clawMachineLocations = [
+        { latitude: 23.123456, longitude: 113.234567, title: "抓娃娃机1" },
+        { latitude: 23.234567, longitude: 113.345678, title: "抓娃娃机2" }
+        // ... 其他抓娃娃机的位置信息
+      ];
+      markers.value = clawMachineLocations.map((location) => ({
+        id: location.title,
+        latitude: location.latitude,
+        longitude: location.longitude,
+        title: location.title,
+        iconPath: "/path/to/marker-icon.png",
+        // 标记点图标路径
+        width: 30,
+        height: 30
+      }));
+    };
     const clickClose = () => {
       if (!playing.value) {
         showQRScan.value = true;
+        isEnd.value = false;
         return;
       }
       common_vendor.index.showToast({
@@ -118,18 +132,11 @@ const _sfc_main = {
           clearInterval(timer);
           playing.value = false;
           isEnd.value = true;
-          countDown.value = 600;
+          countDown.value = 60;
           totalCost.value = 5;
           totalMin.value = 10;
         }
       }, 1e3);
-    };
-    const stopPlayingAhead = () => {
-      playing.value = false;
-      isEnd.value = true;
-      totalCost.value = 5;
-      totalMin.value = Math.ceil((600 - countDown.value) / 60);
-      countDown.value = 600;
     };
     const clickStop = () => {
       isEnd.value = true;
@@ -181,91 +188,93 @@ const _sfc_main = {
     };
     return (_ctx, _cache) => {
       return {
-        a: map.value.marks,
-        b: common_vendor.p({
+        a: latitude.value,
+        b: longitude.value,
+        c: _ctx.markeds,
+        d: common_vendor.p({
           type: "person",
           size: "26",
           color: "#000000"
         }),
-        c: common_vendor.o(($event) => toMineClick()),
-        d: common_vendor.o(($event) => toQRScanClick()),
-        e: showQRScan.value,
-        f: common_vendor.p({
+        e: common_vendor.o(($event) => toMineClick()),
+        f: common_vendor.o(($event) => toQRScanClick()),
+        g: showQRScan.value,
+        h: common_vendor.p({
           type: "paperplane-filled",
           size: "14"
         }),
-        g: common_vendor.o(($event) => clickClose()),
-        h: common_vendor.p({
+        i: common_vendor.o(($event) => clickClose()),
+        j: common_vendor.p({
           type: "closeempty",
           size: "18"
-        }),
-        i: common_vendor.o(($event) => toFeedbackClick()),
-        j: common_vendor.p({
-          type: "info",
-          size: "16"
         }),
         k: common_vendor.o(($event) => toFeedbackClick()),
-        l: common_vendor.o(($event) => clickPlay()),
-        m: !isEnd.value && !playing.value,
-        n: common_vendor.o(($event) => startPlaying(0)),
-        o: common_vendor.o(($event) => startPlaying(1)),
-        p: showPlayOptions.value,
-        q: common_vendor.p({
-          type: "paperplane-filled",
-          size: "14"
+        l: common_vendor.p({
+          type: "info",
+          size: "16"
         }),
-        r: common_vendor.o(($event) => clickClose()),
+        m: common_vendor.o(($event) => toFeedbackClick()),
+        n: common_vendor.o(($event) => clickPlay()),
+        o: !isEnd.value && !playing.value,
+        p: common_vendor.o(($event) => startPlaying(0)),
+        q: common_vendor.o(($event) => startPlaying(1)),
+        r: showPlayOptions.value,
         s: common_vendor.p({
+          type: "paperplane-filled",
+          size: "14"
+        }),
+        t: common_vendor.o(($event) => clickClose()),
+        v: common_vendor.p({
           type: "closeempty",
           size: "18"
         }),
-        t: common_vendor.t(`${Math.floor(countDown.value / 60)}:${countDown.value % 60}`),
-        v: common_vendor.o(($event) => toFeedbackClick()),
-        w: common_vendor.p({
-          type: "info",
-          size: "16"
-        }),
+        w: common_vendor.t(`${Math.floor(countDown.value / 60)}:${countDown.value % 60}`),
         x: common_vendor.o(($event) => toFeedbackClick()),
-        y: common_vendor.o(($event) => stopPlayingAhead()),
-        z: !isEnd.value && playing.value && playType.value === 0,
-        A: common_vendor.p({
-          type: "paperplane-filled",
-          size: "14"
+        y: common_vendor.p({
+          type: "info",
+          size: "16"
         }),
-        B: common_vendor.o(($event) => clickClose()),
+        z: common_vendor.o(($event) => toFeedbackClick()),
+        A: common_vendor.t("设备运行中，开始游玩吧"),
+        B: !isEnd.value && playing.value && playType.value === 0,
         C: common_vendor.p({
-          type: "closeempty",
-          size: "18"
-        }),
-        D: common_vendor.t(`已使用${totalMin.value}分钟，花费${totalCost.value}元`),
-        E: common_vendor.o(($event) => toFeedbackClick()),
-        F: common_vendor.p({
-          type: "info",
-          size: "16"
-        }),
-        G: common_vendor.o(($event) => toFeedbackClick()),
-        H: common_vendor.t("结束游玩"),
-        I: common_vendor.o(($event) => clickStop()),
-        J: !isEnd.value && playing.value && playType.value === 1,
-        K: common_vendor.p({
           type: "paperplane-filled",
           size: "14"
         }),
-        L: common_vendor.o(($event) => clickClose()),
-        M: common_vendor.p({
+        D: common_vendor.o(($event) => clickClose()),
+        E: common_vendor.p({
           type: "closeempty",
           size: "18"
         }),
-        N: common_vendor.t(`共使用${totalMin.value}分钟，花费${totalCost.value}元`),
-        O: common_vendor.o(($event) => toFeedbackClick()),
-        P: common_vendor.p({
+        F: common_vendor.t(`已使用${totalMin.value}分钟，花费${totalCost.value}元`),
+        G: common_vendor.o(($event) => toFeedbackClick()),
+        H: common_vendor.p({
           type: "info",
           size: "16"
         }),
+        I: common_vendor.o(($event) => toFeedbackClick()),
+        J: common_vendor.t("结束游玩"),
+        K: common_vendor.o(($event) => clickStop()),
+        L: !isEnd.value && playing.value && playType.value === 1,
+        M: common_vendor.p({
+          type: "paperplane-filled",
+          size: "14"
+        }),
+        N: common_vendor.o(($event) => clickClose()),
+        O: common_vendor.p({
+          type: "closeempty",
+          size: "18"
+        }),
+        P: common_vendor.t(`共使用${totalMin.value}分钟，花费${totalCost.value}元`),
         Q: common_vendor.o(($event) => toFeedbackClick()),
-        R: common_vendor.o(($event) => clickClose()),
-        S: isEnd.value,
-        T: !showQRScan.value
+        R: common_vendor.p({
+          type: "info",
+          size: "16"
+        }),
+        S: common_vendor.o(($event) => toFeedbackClick()),
+        T: common_vendor.o(($event) => clickClose()),
+        U: isEnd.value,
+        V: !showQRScan.value
       };
     };
   }

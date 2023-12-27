@@ -168,6 +168,11 @@ const _sfc_main = {
         text: "上海"
       }
     ];
+    const showUserInfoForm = common_vendor.ref(false);
+    const userInfoForm = common_vendor.ref({
+      avatarUrl: "",
+      nickName: ""
+    });
     const curCityArray = common_vendor.ref([]);
     common_vendor.onMounted(() => {
       curCity.value = "北京";
@@ -203,21 +208,15 @@ const _sfc_main = {
         timeRank();
       }
     });
-    const getUserInfo = () => {
-      common_vendor.index.getUserProfile({
-        provider: "weixin",
-        desc: "获取用户信息",
-        success: (res) => {
-          userInfo.value = res.userInfo;
-          console.log("获取用户信息成功：", res.userInfo);
-          isLogIn.value = true;
-          common_vendor.index.setStorageSync("userInfo", userInfo.value);
-          common_vendor.index.setStorageSync("isLogIn", true);
-        },
-        fail: (err) => {
-          console.error("获取用户信息失败：", err);
-        }
-      });
+    const openUserInfoForm = () => {
+      showUserInfoForm.value = true;
+    };
+    const closeUserInfoForm = () => {
+      showUserInfoForm.value = false;
+    };
+    const submitUserInfo = () => {
+      console.log(userInfoForm.value);
+      closeUserInfoForm();
     };
     const toHistoryClick = () => {
       if (isLogIn.value) {
@@ -243,6 +242,15 @@ const _sfc_main = {
         });
       }
     };
+    const chooseAvatar = (e) => {
+      userInfoForm.value.avatarUrl = e.detail.avatarUrl;
+    };
+    const bindinput = (e) => {
+      userInfoForm.value.nickName = e.detail.value;
+    };
+    const bindblur = (e) => {
+      userInfoForm.value.nickName = e.detail.value;
+    };
     const logOut = () => {
       userInfo.value = null;
       isLogIn.value = false;
@@ -259,7 +267,7 @@ const _sfc_main = {
           size: "26"
         }),
         d: !common_vendor.unref(isLogIn),
-        e: common_vendor.o(($event) => getUserInfo()),
+        e: common_vendor.o(($event) => openUserInfoForm()),
         f: common_vendor.p({
           type: "email",
           size: "26",
@@ -334,7 +342,15 @@ const _sfc_main = {
           stripe: true
         }),
         A: common_vendor.o(($event) => logOut()),
-        B: common_vendor.unref(isLogIn)
+        B: common_vendor.unref(isLogIn),
+        C: userInfoForm.value.avatarUrl ? `${userInfoForm.value.avatarUrl}` : `../../static/uni.png`,
+        D: common_vendor.o(chooseAvatar),
+        E: common_vendor.o(bindblur),
+        F: common_vendor.o([($event) => userInfoForm.value.nickName = $event.detail.value, bindinput]),
+        G: userInfoForm.value.nickName,
+        H: common_vendor.o(($event) => submitUserInfo()),
+        I: common_vendor.o(($event) => closeUserInfoForm()),
+        J: showUserInfoForm.value
       };
     };
   }

@@ -124,5 +124,8 @@
 	  line-height: 40rpx; 
 	  color: #fff;
 }
+.button-back.data-v-1cf27b2a:hover{
+		background-color: white;
+}
 
 
