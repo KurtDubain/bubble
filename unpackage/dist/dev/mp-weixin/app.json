@@ -16,6 +16,9 @@
     "scope.userLocation": {
       "desc": "地图定位"
     },
+    "scope.userFuzzyLocation": {
+      "desc": "地图定位"
+    },
     "scope.camera": {
       "desc": "摄像头"
     },
@@ -28,7 +31,7 @@
   },
   "requiredPrivateInfos": [
     "getLocation"
-  ],
+    ],
   "plugins": {},
   "usingComponents": {}
 }

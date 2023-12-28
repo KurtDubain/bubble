@@ -33,7 +33,6 @@ const _sfc_main = {
         }
       });
       getUserLocation();
-      getClawMachineLocations();
       const cachedUserInfo = common_vendor.index.getStorageSync("userInfo");
       if (cachedUserInfo) {
         isLogIn.value = true;
@@ -46,30 +45,36 @@ const _sfc_main = {
           latitude.value = res.latitude;
           longitude.value = res.longitude;
           goMoveToLocation(longitude.value, latitude.value);
+          getClawMachineLocations(latitude.value, longitude.value);
         },
         fail: (error) => {
-          latitude.value = 34.220009;
-          longitude.value = 108.875175;
+          latitude.value = 39.916527;
+          longitude.value = 116.397128;
           console.log("出错了", error);
+          getClawMachineLocations(latitude.value, longitude.value);
         }
       });
     };
-    const getClawMachineLocations = () => {
-      const clawMachineLocations = [
-        { latitude: 34.220009, longitude: 108.875175, title: "抓娃娃机1" },
-        { latitude: 34.3, longitude: 108.875175, title: "抓娃娃机2" }
-        // ... 其他抓娃娃机的位置信息
-      ];
-      markers.value = clawMachineLocations.map((location) => ({
-        id: location.title,
-        latitude: location.latitude,
-        longitude: location.longitude,
-        title: location.title,
-        iconPath: "/path/to/marker-icon.png",
-        // 标记点图标路径
-        width: 30,
-        height: 30
-      }));
+    const getClawMachineLocations = async (latitude2, longitude2) => {
+      try {
+        const res = await common_vendor.index.request({
+          url: `https://allmetaahome.com:2333/wxApp/getMachineAround?latitude=${latitude2.value}&longitude=${longitude2.value}`,
+          method: "GET"
+        });
+        const clawMachineLocations = res.data.locations;
+        markers.value = clawMachineLocations.map((location) => ({
+          id: location.title,
+          latitude: location.latitude,
+          longitude: location.longitude,
+          title: location.title,
+          iconPath: "/path/to/marker-icon.png",
+          // 标记点图标路径
+          width: 30,
+          height: 30
+        }));
+      } catch (error) {
+        console.error("获取娃娃机位置失败了", error);
+      }
     };
     function goMoveToLocation(longitude2, latitude2) {
       _mapContext.moveToLocation({

@@ -136,10 +136,6 @@ import {
 		reactive,
 		ref,
 	} from 'vue';
-	// const _mapContext = uni.createMapContext("myMap");
-	// const map = ref({
-	// 	marks: []
-	// });
 	// 页面组件
 	// 是否展示初始卡片
 	const showQRScan = ref(true);
@@ -154,12 +150,8 @@ import {
 	const countDown = ref(600)//单次游玩倒计时（十分钟）
 	const playType = ref(0)//游玩模式
 	const isLogIn = ref(false)// 判断是否登陆
-	const _mapContext = uni.createMapContext('myMap');
-	// const marks = [{
-	// 	latitude: 34.220009,
-	// 	longitude: 108.875175,
-	// 	//iconPath: "../../static/location/on_arrow.png"
-	// }];
+	const _mapContext = uni.createMapContext('myMap');//初始化地图数据
+	// 初始化地理位置（用户）
 	const latitude = ref(0)
 	const longitude = ref(0)
 	const markers = ref(0)
@@ -170,62 +162,59 @@ import {
 				console.log(data)
 			}
 		})
-		// 初始化地理位置
-		// uni.getLocation({
-		// 	type: 'wgs84',
-		// 	success: function(res) {
-		// 		console.log(res.latitude);
-		// 		console.log(res.longitude);
-		// 		goMoveToLocation(res.longitude, res.latitude);
-		// 	}
-		// });
+		// 获取用户地理位置以及其他数据信息
 		getUserLocation()
-		getClawMachineLocations()
+		
 		// 初始化判断是否登陆
 		const cachedUserInfo = uni.getStorageSync('userInfo');
 		if (cachedUserInfo) {
 		    isLogIn.value = true
 		}
-		// map.value.marks = marks;
 	})
 	
-	
-	
+	// 获取用户地理位置的方法
 	const getUserLocation = ()=>{
 		uni.getLocation({
 			// type:'wgs84',
 			success:(res)=>{
+				// 存储用户位置信息
 				latitude.value = res.latitude
 				longitude.value = res.longitude
+				// 跳转到用户的当前位置
 				goMoveToLocation(longitude.value, latitude.value)
+				// 获取用户周边的泡泡机信息
+				getClawMachineLocations(latitude.value,longitude.value)
 			},
 			fail: (error) => {
-				latitude.value = 34.220009
-				longitude.value = 108.875175
+				// 失败之后跳转到一个默认位置，并获取默认位置周边的泡泡机情况
+				latitude.value = 39.916527
+				longitude.value = 116.397128
 				console.log('出错了',error)
+				getClawMachineLocations(latitude.value,longitude.value)
 			},
-			
 		})
 	}
-	
-	const getClawMachineLocations = () => {
-	  // 模拟获取娃娃机分布地点，替换为实际的后端接口调用
-	  const clawMachineLocations = [
-	    { latitude: 34.220009, longitude: 108.875175, title: '抓娃娃机1' },
-	    { latitude: 34.3, longitude: 108.875175, title: '抓娃娃机2' },
-	    // ... 其他抓娃娃机的位置信息
-	  ];
-	
-	  // 根据娃娃机位置信息设置标记点
-	  markers.value = clawMachineLocations.map(location => ({
-	    id: location.title,
-	    latitude: location.latitude,
-	    longitude: location.longitude,
-	    title: location.title,
-	    iconPath: '/path/to/marker-icon.png', // 标记点图标路径
-	    width: 30,
-	    height: 30,
-	  }));
+	// 获取某一位置周边的泡泡机的数据信息
+	const getClawMachineLocations = async(latitude,longitude) => {
+	 try{
+		const res = await uni.request({
+			url:`https://allmetaahome.com:2333/wxApp/getMachineAround?latitude=${latitude.value}&longitude=${longitude.value}`,
+			method:'GET'
+		})
+		const clawMachineLocations = res.data.locations
+		 // 根据娃娃机位置信息设置标记点
+		markers.value = clawMachineLocations.map(location => ({
+			id: location.title,
+			latitude: location.latitude,
+			longitude: location.longitude,
+			title: location.title,
+			iconPath: '/path/to/marker-icon.png', // 标记点图标路径
+			width: 30,
+			height: 30,
+		  }));
+		}catch(error){
+			console.error('获取娃娃机位置失败了',error)
+		}
 	};
 
 	// 回到定位点
@@ -362,22 +351,7 @@ import {
 		//     }, 5000);
 		//   }
 	}
-	// 获取用户的授权信息，登陆
-	// const getUserInfo = ()=>{
-	// 	uni.getUserProfile({
-	// 	    provider: 'weixin',
-	// 	    desc: '获取用户信息',
-	// 	    success: res => { 
-	// 	        console.log('获取用户信息成功：', res.userInfo);
-	// 			isLogIn.value = true
-	// 			uni.setStorageSync('userInfo', res.userInfo)
-	// 			uni.setStorageSync('isLogIn',true)
-	// 	    },
-	// 	    fail: err => {
-	// 	        console.error('获取用户信息失败：', err);
-	// 	    }
-	// 	});
-	// }
+	// 获取用户的授权信息（手机号快速验证），登陆
 	const getUserPhoneNumber = async(e) => {
 		console.log(e)
 		  try {
