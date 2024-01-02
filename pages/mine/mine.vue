@@ -2,8 +2,8 @@
 	<view class="container">
 		<view class="card_view">
 			<view class="header_view">
-				<image :src=" isLogIn?`../../static/uni.png`:`../../static/uni.png` "></image>
-				<text>{{isLogIn?`${userInfo.phoneNumber}已登录`:`未登录`}}</text>
+				<image :src=" isLogIn?`${userInfo.avatar}`:`../../static/uni.png` "></image>
+				<text>{{isLogIn?`${userInfo.userName}已登录`:`未登录`}}</text>
 				<!-- <view class="header-login" v-show="!isLogIn" @click="getUserPhone()">
 					<text>手机号登录</text>
 				</view> -->
@@ -80,8 +80,12 @@
 		<view v-show="isLogIn">
 			<view class="button" @click="logOut()">退出登录</view>
 		</view>
-		<button class="login-button" open-type="getPhoneNumber" @getphonenumber="getUserPhoneNumber">用户登陆<uni-icons type="compose" size="26" ></uni-icons></button>
-
+		<view v-show="!userInfo.bindingPhone&&isLogIn">
+			<button class="button" open-type="getPhoneNumber" @getphonenumber="getUserPhoneNumber">绑定手机号<uni-icons type="compose" size="26" ></uni-icons></button>
+		</view>
+		<view v-show="!isLogIn">
+			<button class="button" @click="userLogin">用户登陆</button>
+		</view>
 		
 	</view>
 </template>
@@ -91,7 +95,7 @@
 	const code= ref('')
 	// 判断用户登陆状态
 	let isLogIn = ref(false)
-	const userInfo = ref(null)
+	const userInfo = ref({})
 	// 初始化全部数据
 	const totalData = ref([
 		{
@@ -282,21 +286,66 @@
 			
 		}
 	})
+	const userLogin = async()=>{
+		try{
+			const loginRes = await uni.login({
+				provider:"weixin",
+				success:(res)=>{
+					if(res.code){
+						sendLoginCode(res.code)
+					}else{
+						console.error('获取用户凭证失败',res.errMsg)
+					}
+				},
+				fail:(err)=>{
+					console.error('登陆验证失败',err)
+				}
+			})
+		}catch(error){
+			console.log('userLogin执行失败',error)
+		}
+	}
+	const sendLoginCode = async(code)=>{
+		try{
+			const res = await uni.request({
+				url:'https://allmetaahome.com:2333/wxApp/login',
+				method:'POST',
+				data:{
+					code:code
+				}
+			})
+			console.log('后端返回的数据',res.data)
+			
+			userInfo.value.userName = res.data.data.nickName
+			userInfo.value.avatar = res.data.data.avatar
+			userInfo.value.id = res.data.data.id
+			userInfo.value.bindingPhone = res.data.data.bindingPhone
+			console.log(userInfo.value)
+			isLogIn.value = true
+			uni.setStorageSync('userInfo',userInfo.value)
+			uni.setStorageSync('isLogIn',true)
+			
+		}catch(error){
+			console.error('发送code到后端失败',error)
+		}
+	}
 	// 用户手机号快速验证
 	const getUserPhoneNumber = async(e) => {
 		console.log(e)
 		  try {
 			const res = await uni.request({
-				url:`https://allmetaahome.com/wxApp/login`,
+				url:`https://allmetaahome.com:2333/wxApp/bindPhone`,
 				method:'POST',
 				data:{
-					code:e.detail.code
+					code:e.detail.code,
+					id:userInfo.value.id
 				}
 			})
-			userInfo.value.phoneNumber = res.data.phone_info.phoneNumber
+			console.log(res)
+			userInfo.value.phoneNumber = res.data.data.phone
 			isLogIn.value = true
 			uni.setStorageSync('userInfo',userInfo.value)
-			uni.setStorageSync('isLogin',true)
+			uni.setStorageSync('isLogIn',true)
 		  } catch (error) {
 			console.error('WeChat login error:', error);
 		  }
@@ -338,7 +387,7 @@
 	
 	// 退出登陆，会清空缓存
 	const logOut = () => {
-	  userInfo.value = null;
+	  userInfo.value = {};
 	  isLogIn.value = false;
 	  uni.removeStorageSync('userInfo');
 	  uni.removeStorageSync('isLogIn')

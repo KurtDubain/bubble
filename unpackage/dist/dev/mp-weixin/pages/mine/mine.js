@@ -23,7 +23,7 @@ const _sfc_main = {
   setup(__props) {
     common_vendor.ref("");
     let isLogIn = common_vendor.ref(false);
-    const userInfo = common_vendor.ref(null);
+    const userInfo = common_vendor.ref({});
     const totalData = common_vendor.ref([
       {
         id: 0,
@@ -203,20 +203,63 @@ const _sfc_main = {
         timeRank();
       }
     });
+    const userLogin = async () => {
+      try {
+        const loginRes = await common_vendor.index.login({
+          provider: "weixin",
+          success: (res) => {
+            if (res.code) {
+              sendLoginCode(res.code);
+            } else {
+              console.error("获取用户凭证失败", res.errMsg);
+            }
+          },
+          fail: (err) => {
+            console.error("登陆验证失败", err);
+          }
+        });
+      } catch (error) {
+        console.log("userLogin执行失败", error);
+      }
+    };
+    const sendLoginCode = async (code) => {
+      try {
+        const res = await common_vendor.index.request({
+          url: "https://allmetaahome.com:2333/wxApp/login",
+          method: "POST",
+          data: {
+            code
+          }
+        });
+        console.log("后端返回的数据", res.data);
+        userInfo.value.userName = res.data.data.nickName;
+        userInfo.value.avatar = res.data.data.avatar;
+        userInfo.value.id = res.data.data.id;
+        userInfo.value.bindingPhone = res.data.data.bindingPhone;
+        console.log(userInfo.value);
+        isLogIn.value = true;
+        common_vendor.index.setStorageSync("userInfo", userInfo.value);
+        common_vendor.index.setStorageSync("isLogIn", true);
+      } catch (error) {
+        console.error("发送code到后端失败", error);
+      }
+    };
     const getUserPhoneNumber = async (e) => {
       console.log(e);
       try {
         const res = await common_vendor.index.request({
-          url: `https://allmetaahome.com/wxApp/login`,
+          url: `https://allmetaahome.com:2333/wxApp/bindPhone`,
           method: "POST",
           data: {
-            code: e.detail.code
+            code: e.detail.code,
+            id: userInfo.value.id
           }
         });
-        userInfo.value.phoneNumber = res.data.phone_info.phoneNumber;
+        console.log(res);
+        userInfo.value.phoneNumber = res.data.data.phone;
         isLogIn.value = true;
         common_vendor.index.setStorageSync("userInfo", userInfo.value);
-        common_vendor.index.setStorageSync("isLogin", true);
+        common_vendor.index.setStorageSync("isLogIn", true);
       } catch (error) {
         console.error("WeChat login error:", error);
       }
@@ -246,7 +289,7 @@ const _sfc_main = {
       }
     };
     const logOut = () => {
-      userInfo.value = null;
+      userInfo.value = {};
       isLogIn.value = false;
       common_vendor.index.removeStorageSync("userInfo");
       common_vendor.index.removeStorageSync("isLogIn");
@@ -254,8 +297,8 @@ const _sfc_main = {
     };
     return (_ctx, _cache) => {
       return {
-        a: common_vendor.unref(isLogIn) ? `../../static/uni.png` : `../../static/uni.png`,
-        b: common_vendor.t(common_vendor.unref(isLogIn) ? `${userInfo.value.phoneNumber}已登录` : `未登录`),
+        a: common_vendor.unref(isLogIn) ? `${userInfo.value.avatar}` : `../../static/uni.png`,
+        b: common_vendor.t(common_vendor.unref(isLogIn) ? `${userInfo.value.userName}已登录` : `未登录`),
         c: common_vendor.p({
           type: "email",
           size: "26",
@@ -335,7 +378,10 @@ const _sfc_main = {
           type: "compose",
           size: "26"
         }),
-        A: common_vendor.o(getUserPhoneNumber)
+        A: common_vendor.o(getUserPhoneNumber),
+        B: !userInfo.value.bindingPhone && common_vendor.unref(isLogIn),
+        C: common_vendor.o(userLogin),
+        D: !common_vendor.unref(isLogIn)
       };
     };
   }

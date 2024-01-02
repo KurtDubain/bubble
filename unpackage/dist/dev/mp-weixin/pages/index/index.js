@@ -36,6 +36,11 @@ const _sfc_main = {
       const cachedUserInfo = common_vendor.index.getStorageSync("userInfo");
       if (cachedUserInfo) {
         isLogIn.value = true;
+      } else {
+        common_vendor.index.showToast({
+          title: "请先登录",
+          icon: "none"
+        });
       }
     });
     const getUserLocation = () => {
@@ -164,7 +169,13 @@ const _sfc_main = {
           }
         });
       } else {
-        getUserInfo();
+        common_vendor.index.navigateTo({
+          url: "/pages/mine/mine"
+        });
+        common_vendor.index.showToast({
+          title: "请先登录",
+          icon: "none"
+        });
       }
     };
     const toMineClick = () => {

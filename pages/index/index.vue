@@ -169,6 +169,11 @@ import {
 		const cachedUserInfo = uni.getStorageSync('userInfo');
 		if (cachedUserInfo) {
 		    isLogIn.value = true
+		}else{
+			uni.showToast({
+			    title: '请先登录',
+			    icon: 'none',
+			})
 		}
 	})
 	
@@ -332,7 +337,13 @@ import {
 				}
 			})
 		}else{
-			getUserInfo()
+			uni.navigateTo({
+				url: "/pages/mine/mine"
+			})
+			uni.showToast({
+			    title: '请先登录',
+			    icon: 'none',
+			})
 		}
 		// if (isLogIn.value) {
 		//     uni.showModal({
