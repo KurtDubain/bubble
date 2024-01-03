@@ -31,7 +31,7 @@
   },
   "requiredPrivateInfos": [
     "getLocation"
-    ],
+  ],
   "plugins": {},
   "usingComponents": {}
 }
