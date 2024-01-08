@@ -43,8 +43,11 @@
 			<!-- 选项弹窗 -->
 			<view  v-show="showPlayOptions">
 				<view class="popup">
+					
 					<view class="popup-content">
+						
 						<text class="popup-title">选择游玩方式</text>
+						<uni-icons class="closeEmpty" type="closeempty" size="18" @click="clickCloseOptions()"></uni-icons>
 						<view class="popup-buttons">
 							<button @click="startPlaying(0)" class="popup-button">
 								<text class="button-text">按次付费</text>
@@ -131,6 +134,8 @@
 
 <script setup>
 	// import { func } from 'prop-types';
+	// import { onLaunch } from '@dcloudio/uni-app'
+	
 import {
 		onMounted,
 		reactive,
@@ -166,15 +171,12 @@ import {
 		getUserLocation()
 		
 		// 初始化判断是否登陆
-		const cachedUserInfo = uni.getStorageSync('userInfo');
-		if (cachedUserInfo) {
-		    isLogIn.value = true
-		}else{
-			uni.showToast({
-			    title: '请先登录',
-			    icon: 'none',
-			})
-		}
+		makeSureLog()
+		const launchOptions = uni.getLaunchOptionsSync()
+		const deviceId = launchOptions.query.deviceId
+		const location = launchOptions.query.location
+		const status = launchOptions.query.status
+		console.log(`扫描到了登录参数，他们分别是deviceId:${deviceId},location:${location},status:${status}`)
 	})
 	
 	// 获取用户地理位置的方法
@@ -248,6 +250,7 @@ import {
 
 	// 游玩和停止游玩
 	const clickPlay = () => {
+		makeSureLog()
 		if(isLogIn.value){
 			uni.showLoading({
 				title: "正在请求数据"
@@ -276,26 +279,35 @@ import {
 	}
 	// 开始游玩
 	const startPlaying = (option)=>{
-		showPlayOptions.value = false
-		startTime.value = new Date()
-		playing.value = true
-		// 处理两种不同的游玩模式
-		if(option === 0){
-			playType.value = 0
-			uni.showLoading({
-				title:'正在请求支付'
-			})
-			setTimeout(()=>{
-				uni.hideLoading()
-				// isEnd.value = true
-				startCountDown()
-			},2000)
-			
-			
+		makeSureLog()
+		if(isLogIn.value){
+			showPlayOptions.value = false
+			startTime.value = new Date()
+			playing.value = true
+			// 处理两种不同的游玩模式
+			if(option === 0){
+				playType.value = 0
+				uni.showLoading({
+					title:'正在请求支付'
+				})
+				setTimeout(()=>{
+					uni.hideLoading()
+					// isEnd.value = true
+					startCountDown()
+				},2000)
+				
+				
+			}else{
+				playType.value = 1
+				startBilling()
+			}
 		}else{
-			playType.value = 1
-			startBilling()
+			uni.showToast({
+			    title: '请先登录',
+			    icon: 'none',
+			})
 		}
+		
 	}
 	// 开始倒计时
 	const startCountDown = ()=>{
@@ -329,6 +341,7 @@ import {
 	
 	// 扫描二维码
 	const toQRScanClick = () => {
+		makeSureLog()
 		if(isLogIn.value){
 			uni.scanCode({
 				success(res) {
@@ -337,30 +350,14 @@ import {
 				}
 			})
 		}else{
-			uni.navigateTo({
-				url: "/pages/mine/mine"
-			})
 			uni.showToast({
 			    title: '请先登录',
 			    icon: 'none',
 			})
+			// uni.navigateTo({
+			// 	url: "/pages/mine/mine"
+			// })
 		}
-		// if (isLogIn.value) {
-		//     uni.showModal({
-		//       title: '模拟扫码过程',
-		//       content: '由于我们目前没办法进行二维码扫码验证，因此目前是模拟扫码过程',
-		//       showCancel: false, 
-		//     });
-		
-		//     // 模拟5秒扫码过程
-		//     setTimeout(() => {
-		// 		uni.showToast({
-		// 		    title: '扫码成功',
-		// 		    icon: 'none',
-		// 		})
-		//       showQRScan.value = false;
-		//     }, 5000);
-		//   }
 	}
 	// 获取用户的授权信息（手机号快速验证），登陆
 	const getUserPhoneNumber = async(e) => {
@@ -382,6 +379,18 @@ import {
 		  }
 	}
 
+	const makeSureLog = ()=>{
+		const cachedUserInfo = uni.getStorageSync('userInfo');
+		if (cachedUserInfo) {
+		    isLogIn.value = true
+		}else{
+			isLogIn.value = false
+			uni.showToast({
+			    title: '请先登录',
+			    icon: 'none',
+			})
+		}
+	}
 	// 个人中心
 	const toMineClick = () => {
 		uni.navigateTo({
@@ -400,6 +409,9 @@ import {
 			    icon: 'none',
 			})
 		}
+	} 
+	const clickCloseOptions = ()=>{
+		showPlayOptions.value=false
 	}
 </script>
 
@@ -544,6 +556,8 @@ import {
 	.button-back:hover{
 		background-color: white;
 	}
-
+	.closeEmpty{
+		margin-left: auto;
+	}
 
 </style>

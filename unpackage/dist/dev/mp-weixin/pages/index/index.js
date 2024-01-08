@@ -33,15 +33,12 @@ const _sfc_main = {
         }
       });
       getUserLocation();
-      const cachedUserInfo = common_vendor.index.getStorageSync("userInfo");
-      if (cachedUserInfo) {
-        isLogIn.value = true;
-      } else {
-        common_vendor.index.showToast({
-          title: "请先登录",
-          icon: "none"
-        });
-      }
+      makeSureLog();
+      const launchOptions = common_vendor.index.getLaunchOptionsSync();
+      const deviceId = launchOptions.query.deviceId;
+      const location = launchOptions.query.location;
+      const status = launchOptions.query.status;
+      console.log(`扫描到了登录参数，他们分别是deviceId:${deviceId},location:${location},status:${status}`);
     });
     const getUserLocation = () => {
       common_vendor.index.getLocation({
@@ -101,6 +98,7 @@ const _sfc_main = {
       });
     };
     const clickPlay = () => {
+      makeSureLog();
       if (isLogIn.value) {
         common_vendor.index.showLoading({
           title: "正在请求数据"
@@ -126,21 +124,29 @@ const _sfc_main = {
       });
     };
     const startPlaying = (option) => {
-      showPlayOptions.value = false;
-      startTime.value = /* @__PURE__ */ new Date();
-      playing.value = true;
-      if (option === 0) {
-        playType.value = 0;
-        common_vendor.index.showLoading({
-          title: "正在请求支付"
-        });
-        setTimeout(() => {
-          common_vendor.index.hideLoading();
-          startCountDown();
-        }, 2e3);
+      makeSureLog();
+      if (isLogIn.value) {
+        showPlayOptions.value = false;
+        startTime.value = /* @__PURE__ */ new Date();
+        playing.value = true;
+        if (option === 0) {
+          playType.value = 0;
+          common_vendor.index.showLoading({
+            title: "正在请求支付"
+          });
+          setTimeout(() => {
+            common_vendor.index.hideLoading();
+            startCountDown();
+          }, 2e3);
+        } else {
+          playType.value = 1;
+          startBilling();
+        }
       } else {
-        playType.value = 1;
-        startBilling();
+        common_vendor.index.showToast({
+          title: "请先登录",
+          icon: "none"
+        });
       }
     };
     const startCountDown = () => {
@@ -161,6 +167,7 @@ const _sfc_main = {
       playing.value = false;
     };
     const toQRScanClick = () => {
+      makeSureLog();
       if (isLogIn.value) {
         common_vendor.index.scanCode({
           success(res) {
@@ -169,9 +176,18 @@ const _sfc_main = {
           }
         });
       } else {
-        common_vendor.index.navigateTo({
-          url: "/pages/mine/mine"
+        common_vendor.index.showToast({
+          title: "请先登录",
+          icon: "none"
         });
+      }
+    };
+    const makeSureLog = () => {
+      const cachedUserInfo = common_vendor.index.getStorageSync("userInfo");
+      if (cachedUserInfo) {
+        isLogIn.value = true;
+      } else {
+        isLogIn.value = false;
         common_vendor.index.showToast({
           title: "请先登录",
           icon: "none"
@@ -194,6 +210,9 @@ const _sfc_main = {
           icon: "none"
         });
       }
+    };
+    const clickCloseOptions = () => {
+      showPlayOptions.value = false;
     };
     return (_ctx, _cache) => {
       return {
@@ -225,65 +244,70 @@ const _sfc_main = {
         m: common_vendor.o(($event) => toFeedbackClick()),
         n: common_vendor.o(($event) => clickPlay()),
         o: !isEnd.value && !playing.value,
-        p: common_vendor.o(($event) => startPlaying(0)),
-        q: common_vendor.o(($event) => startPlaying(1)),
-        r: showPlayOptions.value,
-        s: common_vendor.p({
-          type: "paperplane-filled",
-          size: "14"
+        p: common_vendor.o(($event) => clickCloseOptions()),
+        q: common_vendor.p({
+          type: "closeempty",
+          size: "18"
         }),
-        t: common_vendor.o(($event) => clickClose()),
+        r: common_vendor.o(($event) => startPlaying(0)),
+        s: common_vendor.o(($event) => startPlaying(1)),
+        t: showPlayOptions.value,
         v: common_vendor.p({
+          type: "paperplane-filled",
+          size: "14"
+        }),
+        w: common_vendor.o(($event) => clickClose()),
+        x: common_vendor.p({
           type: "closeempty",
           size: "18"
         }),
-        w: common_vendor.t(`${Math.floor(countDown.value / 60)}:${countDown.value % 60}`),
-        x: common_vendor.o(($event) => toFeedbackClick()),
-        y: common_vendor.p({
-          type: "info",
-          size: "16"
-        }),
+        y: common_vendor.t(`${Math.floor(countDown.value / 60)}:${countDown.value % 60}`),
         z: common_vendor.o(($event) => toFeedbackClick()),
-        A: common_vendor.t("设备运行中，开始游玩吧"),
-        B: !isEnd.value && playing.value && playType.value === 0,
-        C: common_vendor.p({
-          type: "paperplane-filled",
-          size: "14"
+        A: common_vendor.p({
+          type: "info",
+          size: "16"
         }),
-        D: common_vendor.o(($event) => clickClose()),
+        B: common_vendor.o(($event) => toFeedbackClick()),
+        C: common_vendor.t("设备运行中，开始游玩吧"),
+        D: !isEnd.value && playing.value && playType.value === 0,
         E: common_vendor.p({
-          type: "closeempty",
-          size: "18"
-        }),
-        F: common_vendor.t(`已使用${totalMin.value}分钟，花费${totalCost.value}元`),
-        G: common_vendor.o(($event) => toFeedbackClick()),
-        H: common_vendor.p({
-          type: "info",
-          size: "16"
-        }),
-        I: common_vendor.o(($event) => toFeedbackClick()),
-        J: common_vendor.t("结束游玩"),
-        K: common_vendor.o(($event) => clickStop()),
-        L: !isEnd.value && playing.value && playType.value === 1,
-        M: common_vendor.p({
           type: "paperplane-filled",
           size: "14"
         }),
-        N: common_vendor.o(($event) => clickClose()),
-        O: common_vendor.p({
+        F: common_vendor.o(($event) => clickClose()),
+        G: common_vendor.p({
           type: "closeempty",
           size: "18"
         }),
-        P: common_vendor.t(`共使用${totalMin.value}分钟，花费${totalCost.value}元`),
-        Q: common_vendor.o(($event) => toFeedbackClick()),
-        R: common_vendor.p({
+        H: common_vendor.t(`已使用${totalMin.value}分钟，花费${totalCost.value}元`),
+        I: common_vendor.o(($event) => toFeedbackClick()),
+        J: common_vendor.p({
           type: "info",
           size: "16"
         }),
+        K: common_vendor.o(($event) => toFeedbackClick()),
+        L: common_vendor.t("结束游玩"),
+        M: common_vendor.o(($event) => clickStop()),
+        N: !isEnd.value && playing.value && playType.value === 1,
+        O: common_vendor.p({
+          type: "paperplane-filled",
+          size: "14"
+        }),
+        P: common_vendor.o(($event) => clickClose()),
+        Q: common_vendor.p({
+          type: "closeempty",
+          size: "18"
+        }),
+        R: common_vendor.t(`共使用${totalMin.value}分钟，花费${totalCost.value}元`),
         S: common_vendor.o(($event) => toFeedbackClick()),
-        T: common_vendor.o(($event) => clickClose()),
-        U: isEnd.value,
-        V: !showQRScan.value
+        T: common_vendor.p({
+          type: "info",
+          size: "16"
+        }),
+        U: common_vendor.o(($event) => toFeedbackClick()),
+        V: common_vendor.o(($event) => clickClose()),
+        W: isEnd.value,
+        X: !showQRScan.value
       };
     };
   }

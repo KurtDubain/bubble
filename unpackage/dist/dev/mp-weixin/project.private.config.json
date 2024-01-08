@@ -4,5 +4,18 @@
   "setting": {
     "compileHotReLoad": true
   },
-  "libVersion": "3.2.5"
+  "libVersion": "3.2.5",
+  "condition": {
+    "miniprogram": {
+      "list": [
+        {
+          "name": "机器码",
+          "pathName": "pages/index/index",
+          "query": "deviceId=123&location=Room&status=online",
+          "launchMode": "default",
+          "scene": 1011
+        }
+      ]
+    }
+  }
 }

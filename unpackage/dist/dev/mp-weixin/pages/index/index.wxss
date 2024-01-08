@@ -127,5 +127,7 @@
 .button-back.data-v-1cf27b2a:hover{
 		background-color: white;
 }
-
+.closeEmpty.data-v-1cf27b2a{
+		margin-left: auto;
+}
 

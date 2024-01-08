@@ -81,8 +81,9 @@
 			<view class="button" @click="logOut()">退出登录</view>
 		</view>
 		<view v-show="!userInfo.bindingPhone&&isLogIn">
-			<button class="button" open-type="getPhoneNumber" @getphonenumber="getUserPhoneNumber">绑定手机号<uni-icons type="compose" size="26" ></uni-icons></button>
+			<button class="phone-button" open-type="getPhoneNumber" @getphonenumber="getUserPhoneNumber">绑定手机号<uni-icons type="compose" size="26" ></uni-icons></button>
 		</view>
+		
 		<view v-show="!isLogIn">
 			<button class="button" @click="userLogin">用户登陆</button>
 		</view>
@@ -286,6 +287,7 @@
 			
 		}
 	})
+	// 用户登陆操作
 	const userLogin = async()=>{
 		try{
 			const loginRes = await uni.login({
@@ -305,6 +307,7 @@
 			console.log('userLogin执行失败',error)
 		}
 	}
+	// 向后端发送code，进行小程序唯一登陆
 	const sendLoginCode = async(code)=>{
 		try{
 			const res = await uni.request({
@@ -560,5 +563,19 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
+	}
+	.phone-button{
+		width: 100%;
+		height: 78rpx;
+		/* background-color: #58565e; */
+		border-radius: 20rpx black;
+		margin: auto;
+		color: #464646;
+		font-size: 30rpx;
+		margin-bottom: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		margin-top: 20rpx;
 	}
 </style>
