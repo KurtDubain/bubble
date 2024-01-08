@@ -23,8 +23,8 @@ const _sfc_main = {
     const playType = common_vendor.ref(0);
     const isLogIn = common_vendor.ref(false);
     const _mapContext = common_vendor.index.createMapContext("myMap");
-    const latitude = common_vendor.ref(0);
-    const longitude = common_vendor.ref(0);
+    const latitude = common_vendor.ref(null);
+    const longitude = common_vendor.ref(null);
     const markers = common_vendor.ref(0);
     common_vendor.onMounted(() => {
       common_vendor.index.login({
@@ -60,19 +60,29 @@ const _sfc_main = {
     const getClawMachineLocations = async (latitude2, longitude2) => {
       try {
         const res = await common_vendor.index.request({
-          url: `https://allmetaahome.com:2333/wxApp/getMachineAround?latitude=${latitude2.value}&longitude=${longitude2.value}`,
+          url: `https://allmetaahome.com:2333/dropoff/around?latitude=${latitude2}&longitude=${longitude2}`,
           method: "GET"
         });
-        const clawMachineLocations = res.data.locations;
-        markers.value = clawMachineLocations.map((location) => ({
-          id: location.title,
+        const clawMachineLocations = res.data;
+        console.log(clawMachineLocations);
+        markers.value = clawMachineLocations.data.map((location) => ({
+          id: location.id,
           latitude: location.latitude,
           longitude: location.longitude,
-          title: location.title,
+          title: location.address,
           iconPath: "/path/to/marker-icon.png",
           // 标记点图标路径
           width: 30,
-          height: 30
+          height: 30,
+          callout: {
+            content: location.address,
+            color: "#000000",
+            fontSize: 14,
+            borderRadius: 4,
+            bgColor: "rgba(255, 255, 255, 0.5)",
+            padding: 8,
+            display: "ALWAYS"
+          }
         }));
       } catch (error) {
         console.error("获取娃娃机位置失败了", error);
@@ -83,7 +93,7 @@ const _sfc_main = {
         longitude: longitude2,
         latitude: latitude2,
         success() {
-          console.log("wohuill");
+          console.log("我回来了");
         }
       });
     }

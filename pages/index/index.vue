@@ -157,8 +157,8 @@ import {
 	const isLogIn = ref(false)// 判断是否登陆
 	const _mapContext = uni.createMapContext('myMap');//初始化地图数据
 	// 初始化地理位置（用户）
-	const latitude = ref(0)
-	const longitude = ref(0)
+	const latitude = ref(null)
+	const longitude = ref(null)
 	const markers = ref(0)
 	// 初始化
 	onMounted(() => {
@@ -204,20 +204,30 @@ import {
 	// 获取某一位置周边的泡泡机的数据信息
 	const getClawMachineLocations = async(latitude,longitude) => {
 	 try{
-		const res = await uni.request({
-			url:`https://allmetaahome.com:2333/wxApp/getMachineAround?latitude=${latitude.value}&longitude=${longitude.value}`,
+		 const res = await uni.request({
+			url:`https://allmetaahome.com:2333/dropoff/around?latitude=${latitude}&longitude=${longitude}`,
 			method:'GET'
 		})
-		const clawMachineLocations = res.data.locations
+		const clawMachineLocations = res.data
+		console.log(clawMachineLocations)
 		 // 根据娃娃机位置信息设置标记点
-		markers.value = clawMachineLocations.map(location => ({
-			id: location.title,
+		markers.value = clawMachineLocations.data.map(location => ({
+			id: location.id,
 			latitude: location.latitude,
 			longitude: location.longitude,
-			title: location.title,
+			title: location.address,
 			iconPath: '/path/to/marker-icon.png', // 标记点图标路径
 			width: 30,
 			height: 30,
+			callout: {
+			    content: location.address,
+			    color: '#000000',
+			    fontSize: 14,
+			    borderRadius: 4,
+			    bgColor: 'rgba(255, 255, 255, 0.5)',
+			    padding: 8,
+			    display: 'ALWAYS',
+			  },
 		  }));
 		}catch(error){
 			console.error('获取娃娃机位置失败了',error)
@@ -230,7 +240,7 @@ import {
 			longitude: longitude,
 			latitude: latitude,
 			success() {
-				console.log('wohuill')
+				console.log('我回来了')
 			}
 		});
 	}
@@ -378,7 +388,7 @@ import {
 			console.error('WeChat login error:', error);
 		  }
 	}
-
+	// 验证当前用户是否登陆
 	const makeSureLog = ()=>{
 		const cachedUserInfo = uni.getStorageSync('userInfo');
 		if (cachedUserInfo) {
