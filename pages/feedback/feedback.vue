@@ -25,7 +25,7 @@
 
     <!-- 文本输入框和发送按钮 -->
     <view class="input-container">
-      <textarea v-model="inputText" placeholder="输入你想反馈或投诉的内容"></textarea>
+      <textarea v-model="inputText" auto-focus="true" placeholder="输入你想反馈或投诉的内容"></textarea>
       <view class="send-button" @click="sendMessage">发送</view>
     </view>
   </view>

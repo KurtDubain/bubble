@@ -160,6 +160,9 @@ import {
 	const latitude = ref(null)
 	const longitude = ref(null)
 	const markers = ref(0)
+	const deviceNum = ref('')
+	const location = ref('')
+	const status = ref('')
 	// 初始化
 	onMounted(() => {
 		uni.login({
@@ -169,14 +172,12 @@ import {
 		})
 		// 获取用户地理位置以及其他数据信息
 		getUserLocation()
+		// 初始化获取二维码参数
+		scanQRQuery()
 		
 		// 初始化判断是否登陆
 		makeSureLog()
-		const launchOptions = uni.getLaunchOptionsSync()
-		const deviceId = launchOptions.query.deviceId
-		const location = launchOptions.query.location
-		const status = launchOptions.query.status
-		console.log(`扫描到了登录参数，他们分别是deviceId:${deviceId},location:${location},status:${status}`)
+		
 	})
 	
 	// 获取用户地理位置的方法
@@ -348,13 +349,21 @@ import {
 		isEnd.value = true
 		playing.value = false
 	}
-	
+	// 获取二维码中的参数的操作
+	const scanQRQuery = ()=>{
+		const launchOptions = uni.getLaunchOptionsSync()
+		deviceNum.value = launchOptions.query.deviceNum
+		location.value = launchOptions.query.location
+		status.value = launchOptions.query.status
+		console.log(`扫描到了登录参数，他们分别是deviceId:${deviceId.value},location:${location.value},status:${status.value}`)
+	}
 	// 扫描二维码
 	const toQRScanClick = () => {
 		makeSureLog()
 		if(isLogIn.value){
 			uni.scanCode({
 				success(res) {
+					scanQRQuery()
 					console.log('扫码成功：' + res.result)
 					showQRScan.value = false;
 				}

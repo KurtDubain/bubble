@@ -26,6 +26,9 @@ const _sfc_main = {
     const latitude = common_vendor.ref(null);
     const longitude = common_vendor.ref(null);
     const markers = common_vendor.ref(0);
+    const deviceNum = common_vendor.ref("");
+    const location = common_vendor.ref("");
+    const status = common_vendor.ref("");
     common_vendor.onMounted(() => {
       common_vendor.index.login({
         success(data) {
@@ -33,12 +36,8 @@ const _sfc_main = {
         }
       });
       getUserLocation();
+      scanQRQuery();
       makeSureLog();
-      const launchOptions = common_vendor.index.getLaunchOptionsSync();
-      const deviceId = launchOptions.query.deviceId;
-      const location = launchOptions.query.location;
-      const status = launchOptions.query.status;
-      console.log(`扫描到了登录参数，他们分别是deviceId:${deviceId},location:${location},status:${status}`);
     });
     const getUserLocation = () => {
       common_vendor.index.getLocation({
@@ -65,17 +64,17 @@ const _sfc_main = {
         });
         const clawMachineLocations = res.data;
         console.log(clawMachineLocations);
-        markers.value = clawMachineLocations.data.map((location) => ({
-          id: location.id,
-          latitude: location.latitude,
-          longitude: location.longitude,
-          title: location.address,
+        markers.value = clawMachineLocations.data.map((location2) => ({
+          id: location2.id,
+          latitude: location2.latitude,
+          longitude: location2.longitude,
+          title: location2.address,
           iconPath: "/path/to/marker-icon.png",
           // 标记点图标路径
           width: 30,
           height: 30,
           callout: {
-            content: location.address,
+            content: location2.address,
             color: "#000000",
             fontSize: 14,
             borderRadius: 4,
@@ -176,11 +175,19 @@ const _sfc_main = {
       isEnd.value = true;
       playing.value = false;
     };
+    const scanQRQuery = () => {
+      const launchOptions = common_vendor.index.getLaunchOptionsSync();
+      deviceNum.value = launchOptions.query.deviceNum;
+      location.value = launchOptions.query.location;
+      status.value = launchOptions.query.status;
+      console.log(`扫描到了登录参数，他们分别是deviceId:${deviceId.value},location:${location.value},status:${status.value}`);
+    };
     const toQRScanClick = () => {
       makeSureLog();
       if (isLogIn.value) {
         common_vendor.index.scanCode({
           success(res) {
+            scanQRQuery();
             console.log("扫码成功：" + res.result);
             showQRScan.value = false;
           }
