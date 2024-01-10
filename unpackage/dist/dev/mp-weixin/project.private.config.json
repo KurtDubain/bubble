@@ -11,7 +11,7 @@
         {
           "name": "机器码",
           "pathName": "pages/index/index",
-          "query": "deviceId=123&location=Room&status=online",
+          "query": "deviceNum=123",
           "launchMode": "default",
           "scene": 1011
         }

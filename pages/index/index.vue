@@ -32,7 +32,7 @@
 						<text style="font-size: 46rpx;font-weight: 600;">欢迎使用泡泡机</text>
 					</view>
 					<view style="font-size: 22rpx;display: flex;color: #868686;">
-						<text>爱护设备，让更多的人享受乐趣</text>
+						<text>设备编号:{{curDeviceNum}}</text>
 						<view style="flex: 1"></view>
 						<uni-icons type="info" size="16" @click="toFeedbackClick()"></uni-icons>
 						<text @click="toFeedbackClick()">反馈/投诉</text>
@@ -45,9 +45,16 @@
 				<view class="popup">
 					
 					<view class="popup-content">
+						<view class="popup-header">
+							<view>
+								<text class="popup-title">选择游玩方式 :</text>
+							</view>
+							<view>
+								<uni-icons class="closeEmpty" type="closeempty" size="18" @click="clickCloseOptions()"></uni-icons>
+							</view>
+							
+						</view>
 						
-						<text class="popup-title">选择游玩方式</text>
-						<uni-icons class="closeEmpty" type="closeempty" size="18" @click="clickCloseOptions()"></uni-icons>
 						<view class="popup-buttons">
 							<button @click="startPlaying(0)" class="popup-button">
 								<text class="button-text">按次付费</text>
@@ -74,12 +81,12 @@
 						<text style="font-size: 46rpx;font-weight: 600;">距离结束:{{`${Math.floor(countDown/60)}:${countDown%60}`}}</text>
 					</view>
 					<view style="font-size: 22rpx;display: flex;color: #868686;">
-						<text>付款成功，设备已启动</text>
+						<text>设备编号:{{curDeviceNum}}</text>
 						<view style="flex: 1"></view>
 						<uni-icons type="info" size="16" @click="toFeedbackClick()"></uni-icons>
 						<text @click="toFeedbackClick()">反馈/投诉</text>
 					</view>
-					<view class="button button-back" style="width: 100%;color: #cc1d34;">{{ "设备运行中，开始游玩吧" }}</view>
+					<view class="button button-back" style="width: 100%;color: #cc1d34;">{{ "付款成功，设备已启动" }}</view>
 				</view>
 			</view>
 			<!-- 第二种游玩模式 -->
@@ -126,8 +133,6 @@
 					<view class="button button-back" style="width: 100%;color: #cc1d34;" @click="clickClose()">感谢您的游玩，欢迎下次再来</view>
 				</view>
 			</view>
-			
-			
 		</view>
 	</view>
 </template>
@@ -139,7 +144,7 @@
 import {
 		onMounted,
 		reactive,
-		ref,
+		ref
 	} from 'vue';
 	// 页面组件
 	// 是否展示初始卡片
@@ -160,9 +165,12 @@ import {
 	const latitude = ref(null)
 	const longitude = ref(null)
 	const markers = ref(0)
-	const deviceNum = ref('')
-	const location = ref('')
-	const status = ref('')
+	const curDeviceNum = ref('')
+	const deviceDetail = ref({
+		dropName:"",
+		deviceStatus:1,
+		
+	})
 	// 初始化
 	onMounted(() => {
 		uni.login({
@@ -172,14 +180,18 @@ import {
 		})
 		// 获取用户地理位置以及其他数据信息
 		getUserLocation()
-		// 初始化获取二维码参数
-		scanQRQuery()
+		// // 初始化获取二维码参数
+		
+		const launchOptions = uni.getLaunchOptionsSync()
+		// console.log(launchOptions)
+		// curDeviceNum.value = launchOptions.query.scene
+		scanQRQuery(launchOptions.query.scene)
 		
 		// 初始化判断是否登陆
 		makeSureLog()
 		
 	})
-	
+
 	// 获取用户地理位置的方法
 	const getUserLocation = ()=>{
 		uni.getLocation({
@@ -350,12 +362,31 @@ import {
 		playing.value = false
 	}
 	// 获取二维码中的参数的操作
-	const scanQRQuery = ()=>{
-		const launchOptions = uni.getLaunchOptionsSync()
-		deviceNum.value = launchOptions.query.deviceNum
-		location.value = launchOptions.query.location
-		status.value = launchOptions.query.status
-		console.log(`扫描到了登录参数，他们分别是deviceId:${deviceId.value},location:${location.value},status:${status.value}`)
+	const scanQRQuery = (param)=>{
+		// const launchOptions = uni.getLaunchOptionsSync()
+		// // console.log(launchOptions)
+		// curDeviceNum.value = launchOptions.query.scene
+		if(param){
+			curDeviceNum.value=param
+			getDeviceMsgByDeviceNum()
+			if(deviceDetail.value.deviceStatus===1){
+				showQRScan.value = false
+			}else{
+				uni.showToast({
+					title:"当前设备已经在启动了",
+					icon:"error"
+				})
+			}
+		}else{
+			uni.showToast({
+				title:'扫描设备码开始游玩',
+				icon:"none"
+			})
+		}
+		
+		// location.value = launchOptions.query.location
+		// status.value = launchOptions.query.status
+		console.log(`扫描到了登录参数，他们分别是deviceNum:${curDeviceNum.value}`)
 	}
 	// 扫描二维码
 	const toQRScanClick = () => {
@@ -363,9 +394,18 @@ import {
 		if(isLogIn.value){
 			uni.scanCode({
 				success(res) {
-					scanQRQuery()
-					console.log('扫码成功：' + res.result)
-					showQRScan.value = false;
+					// console.log(JSON.stringify(res))
+					// scanQRQuery()
+					// uni.reLaunch({
+					//     url: '/pages/index/index'  // 替换为你的页面路径
+		   //          });
+					const url = decodeURIComponent(res.path)
+					const params = url.split('?')[1].split('=')[1]
+					// console.log(params.split('=')[1])
+					// curDeviceNum.value = params
+					scanQRQuery(params)
+					// console.log(`二维码的数据有${JSON.stringify(res)}`)
+					console.log('扫码成功：')
 				}
 			})
 		}else{
@@ -378,6 +418,18 @@ import {
 			// })
 		}
 	}
+	// 在获取设备编号之后，进行数据的初始化
+	const getDeviceMsgByDeviceNum = async()=>{
+		try{
+			const res = await uni.request({
+				url:`https://allmetaahome:2333/equipment/detail?equipment=${curDeviceNum.value}`,
+				method:"GET"
+			})
+			
+		}catch(error){
+			console.error('设备详情获取失败',error)
+		}
+	}	
 	// 获取用户的授权信息（手机号快速验证），登陆
 	const getUserPhoneNumber = async(e) => {
 		console.log(e)
@@ -576,7 +628,14 @@ import {
 		background-color: white;
 	}
 	.closeEmpty{
-		margin-left: auto;
+		margin: 10rpx;
+	}
+	.popup-header{
+		display: flex;
+		justify-content: space-between;
+	}
+	.popup-title{
+		margin:10rpx;
 	}
 
 </style>

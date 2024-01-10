@@ -26,9 +26,11 @@ const _sfc_main = {
     const latitude = common_vendor.ref(null);
     const longitude = common_vendor.ref(null);
     const markers = common_vendor.ref(0);
-    const deviceNum = common_vendor.ref("");
-    const location = common_vendor.ref("");
-    const status = common_vendor.ref("");
+    const curDeviceNum = common_vendor.ref("");
+    const deviceDetail = common_vendor.ref({
+      dropName: "",
+      deviceStatus: 1
+    });
     common_vendor.onMounted(() => {
       common_vendor.index.login({
         success(data) {
@@ -36,7 +38,8 @@ const _sfc_main = {
         }
       });
       getUserLocation();
-      scanQRQuery();
+      const launchOptions = common_vendor.index.getLaunchOptionsSync();
+      scanQRQuery(launchOptions.query.scene);
       makeSureLog();
     });
     const getUserLocation = () => {
@@ -64,17 +67,17 @@ const _sfc_main = {
         });
         const clawMachineLocations = res.data;
         console.log(clawMachineLocations);
-        markers.value = clawMachineLocations.data.map((location2) => ({
-          id: location2.id,
-          latitude: location2.latitude,
-          longitude: location2.longitude,
-          title: location2.address,
+        markers.value = clawMachineLocations.data.map((location) => ({
+          id: location.id,
+          latitude: location.latitude,
+          longitude: location.longitude,
+          title: location.address,
           iconPath: "/path/to/marker-icon.png",
           // 标记点图标路径
           width: 30,
           height: 30,
           callout: {
-            content: location2.address,
+            content: location.address,
             color: "#000000",
             fontSize: 14,
             borderRadius: 4,
@@ -175,21 +178,35 @@ const _sfc_main = {
       isEnd.value = true;
       playing.value = false;
     };
-    const scanQRQuery = () => {
-      const launchOptions = common_vendor.index.getLaunchOptionsSync();
-      deviceNum.value = launchOptions.query.deviceNum;
-      location.value = launchOptions.query.location;
-      status.value = launchOptions.query.status;
-      console.log(`扫描到了登录参数，他们分别是deviceId:${deviceId.value},location:${location.value},status:${status.value}`);
+    const scanQRQuery = (param) => {
+      if (param) {
+        curDeviceNum.value = param;
+        getDeviceMsgByDeviceNum();
+        if (deviceDetail.value.deviceStatus === 1) {
+          showQRScan.value = false;
+        } else {
+          common_vendor.index.showToast({
+            title: "当前设备已经在启动了",
+            icon: "error"
+          });
+        }
+      } else {
+        common_vendor.index.showToast({
+          title: "扫描设备码开始游玩",
+          icon: "none"
+        });
+      }
+      console.log(`扫描到了登录参数，他们分别是deviceNum:${curDeviceNum.value}`);
     };
     const toQRScanClick = () => {
       makeSureLog();
       if (isLogIn.value) {
         common_vendor.index.scanCode({
           success(res) {
-            scanQRQuery();
-            console.log("扫码成功：" + res.result);
-            showQRScan.value = false;
+            const url = decodeURIComponent(res.path);
+            const params = url.split("?")[1].split("=")[1];
+            scanQRQuery(params);
+            console.log("扫码成功：");
           }
         });
       } else {
@@ -197,6 +214,16 @@ const _sfc_main = {
           title: "请先登录",
           icon: "none"
         });
+      }
+    };
+    const getDeviceMsgByDeviceNum = async () => {
+      try {
+        const res = await common_vendor.index.request({
+          url: `https://allmetaahome:2333/equipment/detail?equipment=${curDeviceNum.value}`,
+          method: "GET"
+        });
+      } catch (error) {
+        console.error("设备详情获取失败", error);
       }
     };
     const makeSureLog = () => {
@@ -253,78 +280,80 @@ const _sfc_main = {
           type: "closeempty",
           size: "18"
         }),
-        k: common_vendor.o(($event) => toFeedbackClick()),
-        l: common_vendor.p({
+        k: common_vendor.t(curDeviceNum.value),
+        l: common_vendor.o(($event) => toFeedbackClick()),
+        m: common_vendor.p({
           type: "info",
           size: "16"
         }),
-        m: common_vendor.o(($event) => toFeedbackClick()),
-        n: common_vendor.o(($event) => clickPlay()),
-        o: !isEnd.value && !playing.value,
-        p: common_vendor.o(($event) => clickCloseOptions()),
-        q: common_vendor.p({
+        n: common_vendor.o(($event) => toFeedbackClick()),
+        o: common_vendor.o(($event) => clickPlay()),
+        p: !isEnd.value && !playing.value,
+        q: common_vendor.o(($event) => clickCloseOptions()),
+        r: common_vendor.p({
           type: "closeempty",
           size: "18"
         }),
-        r: common_vendor.o(($event) => startPlaying(0)),
-        s: common_vendor.o(($event) => startPlaying(1)),
-        t: showPlayOptions.value,
-        v: common_vendor.p({
+        s: common_vendor.o(($event) => startPlaying(0)),
+        t: common_vendor.o(($event) => startPlaying(1)),
+        v: showPlayOptions.value,
+        w: common_vendor.p({
           type: "paperplane-filled",
           size: "14"
         }),
-        w: common_vendor.o(($event) => clickClose()),
-        x: common_vendor.p({
+        x: common_vendor.o(($event) => clickClose()),
+        y: common_vendor.p({
           type: "closeempty",
           size: "18"
         }),
-        y: common_vendor.t(`${Math.floor(countDown.value / 60)}:${countDown.value % 60}`),
-        z: common_vendor.o(($event) => toFeedbackClick()),
-        A: common_vendor.p({
-          type: "info",
-          size: "16"
-        }),
+        z: common_vendor.t(`${Math.floor(countDown.value / 60)}:${countDown.value % 60}`),
+        A: common_vendor.t(curDeviceNum.value),
         B: common_vendor.o(($event) => toFeedbackClick()),
-        C: common_vendor.t("设备运行中，开始游玩吧"),
-        D: !isEnd.value && playing.value && playType.value === 0,
-        E: common_vendor.p({
-          type: "paperplane-filled",
-          size: "14"
+        C: common_vendor.p({
+          type: "info",
+          size: "16"
         }),
-        F: common_vendor.o(($event) => clickClose()),
+        D: common_vendor.o(($event) => toFeedbackClick()),
+        E: common_vendor.t("付款成功，设备已启动"),
+        F: !isEnd.value && playing.value && playType.value === 0,
         G: common_vendor.p({
-          type: "closeempty",
-          size: "18"
-        }),
-        H: common_vendor.t(`已使用${totalMin.value}分钟，花费${totalCost.value}元`),
-        I: common_vendor.o(($event) => toFeedbackClick()),
-        J: common_vendor.p({
-          type: "info",
-          size: "16"
-        }),
-        K: common_vendor.o(($event) => toFeedbackClick()),
-        L: common_vendor.t("结束游玩"),
-        M: common_vendor.o(($event) => clickStop()),
-        N: !isEnd.value && playing.value && playType.value === 1,
-        O: common_vendor.p({
           type: "paperplane-filled",
           size: "14"
         }),
-        P: common_vendor.o(($event) => clickClose()),
-        Q: common_vendor.p({
+        H: common_vendor.o(($event) => clickClose()),
+        I: common_vendor.p({
           type: "closeempty",
           size: "18"
         }),
-        R: common_vendor.t(`共使用${totalMin.value}分钟，花费${totalCost.value}元`),
-        S: common_vendor.o(($event) => toFeedbackClick()),
-        T: common_vendor.p({
+        J: common_vendor.t(`已使用${totalMin.value}分钟，花费${totalCost.value}元`),
+        K: common_vendor.o(($event) => toFeedbackClick()),
+        L: common_vendor.p({
           type: "info",
           size: "16"
         }),
+        M: common_vendor.o(($event) => toFeedbackClick()),
+        N: common_vendor.t("结束游玩"),
+        O: common_vendor.o(($event) => clickStop()),
+        P: !isEnd.value && playing.value && playType.value === 1,
+        Q: common_vendor.p({
+          type: "paperplane-filled",
+          size: "14"
+        }),
+        R: common_vendor.o(($event) => clickClose()),
+        S: common_vendor.p({
+          type: "closeempty",
+          size: "18"
+        }),
+        T: common_vendor.t(`共使用${totalMin.value}分钟，花费${totalCost.value}元`),
         U: common_vendor.o(($event) => toFeedbackClick()),
-        V: common_vendor.o(($event) => clickClose()),
-        W: isEnd.value,
-        X: !showQRScan.value
+        V: common_vendor.p({
+          type: "info",
+          size: "16"
+        }),
+        W: common_vendor.o(($event) => toFeedbackClick()),
+        X: common_vendor.o(($event) => clickClose()),
+        Y: isEnd.value,
+        Z: !showQRScan.value
       };
     };
   }
