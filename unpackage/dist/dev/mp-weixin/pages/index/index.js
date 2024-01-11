@@ -205,7 +205,17 @@ const _sfc_main = {
           success(res) {
             const url = decodeURIComponent(res.path);
             const params = url.split("?")[1].split("=")[1];
-            scanQRQuery(params);
+            common_vendor.index.reLaunch({
+              url: `/${url}`,
+              success(res2) {
+                scanQRQuery(params);
+              },
+              fail() {
+                common_vendor.index.showToast({
+                  title: "二维码异常"
+                });
+              }
+            });
             console.log("扫码成功：");
           }
         });

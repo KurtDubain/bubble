@@ -403,7 +403,19 @@ import {
 					const params = url.split('?')[1].split('=')[1]
 					// console.log(params.split('=')[1])
 					// curDeviceNum.value = params
-					scanQRQuery(params)
+					// scanQRQuery(params)
+					// console.log(url)
+					uni.reLaunch({
+						url:`/${url}`,
+						success(res){
+							scanQRQuery(params)
+						},
+						fail() {
+							uni.showToast({
+								title:'二维码异常'
+							})
+						}
+					})
 					// console.log(`二维码的数据有${JSON.stringify(res)}`)
 					console.log('扫码成功：')
 				}
