@@ -3,7 +3,7 @@
 	  <!-- 分为了上下两部分 -->
     <view class="card" v-for="(order, index) in orderList" :key="index">
       <view class="top-container">
-        <text class="play-date">{{ order.playDate }}</text>
+        <text class="play-date">订单编号：{{order.orderNum}} {{ order.playDate }}</text>
         <view >
         	<uni-icons type="paperplane-filled" size="14"></uni-icons>
 			<text class="play-location">{{ order.playLocation }}</text>
@@ -19,20 +19,43 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-
+import { onMounted, ref } from 'vue';
+const token = ref()
 const orderList = ref([
   {
-    playDate: '08.29 16:00-16:12',
+	orderNum:'dasho',
+    playDate: '08.29 16:00',
     playLocation: 'xx省xx市xx县xx村A',
     playCost: '50',
   },
   {
-    playDate: '08.30 14:30-15:00',
+	orderNum:'idsad',
+    playDate: '08.30 14:30',
     playLocation: 'xx省xx市xx县xx村B',
     playCost: '60',
   },
 ]);
+onMounted(()=>{
+	const Token = uni.getStorageSync('Token');
+	if (Token) {
+	    token.value = Token;
+	}
+})
+// 获取历史订单
+const getUserHistroyList = async()=>{
+	try{
+		const res = await uni.request({
+			url:`https://allmetaahome:2333/order/historyListByUser`,
+			method:"GET",
+			header:{
+				satoken:token.value
+			}
+		})
+		
+	}catch(error){
+		console.error('用户历史订单获取失败',error)
+	}
+}
 // 跳转到异常反馈界面
 const handleException = () => {
 	uni.navigateTo({

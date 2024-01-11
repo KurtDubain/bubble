@@ -80,10 +80,11 @@
 		<view v-show="isLogIn">
 			<view class="button" @click="logOut()">退出登录</view>
 		</view>
+		<!-- 绑定手机号功能 -->
 		<view v-show="!userInfo.bindingPhone&&isLogIn">
 			<button class="phone-button" open-type="getPhoneNumber" @getphonenumber="getUserPhoneNumber">绑定手机号<uni-icons type="compose" size="26" ></uni-icons></button>
 		</view>
-		
+		<!-- 登陆按钮 -->
 		<view v-show="!isLogIn">
 			<button class="button" @click="userLogin">用户登陆</button>
 		</view>
@@ -228,6 +229,7 @@
 	])
 	let curCity = ref(null) //当前城市
 	let isCount = ref(true) //是否是按照时间排序
+	const token = ref('')
 	// 选择器数据
 	const cityData = [
 		{
@@ -241,20 +243,48 @@
 		},
 		
 	]
-	
+	// 获取城市名称数据
+	const getAllCity = async()=>{
+		try{
+			const cityDataRes = await uni.request({
+				url:`https://allmetaahome:2333/dropoff/cityList`,
+				method:"GET"
+			})
+			
+		}catch(error){
+			console.error('获取排名数据成功',error)
+		}
+	}
+	// 获取城市排名数据数组
+	const getTotalListByCity = async()=>{
+		try{
+			
+			const cityTotalRes = await uni.request({
+				url:`https://allmetaahome:2333/order/rankListByCity?city=${curCity}`,
+				method:"GET"
+			})
+			
+		}catch(error){
+			console.error('获取排名数据成功',error)
+		}
+	}
 	// 筛选过后的数据
 	const curCityArray = ref([])
-	onMounted(()=>{
+	onMounted(async()=>{
 		// 初始化为北京
 		curCity.value = '北京'
+		await getAllCity()
+		await getTotalListByCity()
 		// 初始化排名
 		countRank()
 		// 初始化，判断登陆情况，加载用户信息
-		const cachedUserInfo = uni.getStorageSync('userInfo');
+		const cachedUserInfo = uni.getStorageSync('isLogIn');
 		if (cachedUserInfo) {
-		    userInfo.value = cachedUserInfo;
+		    // userInfo.value = cachedUserInfo;
+			await getUserInfo()
 		    isLogIn.value = true;
 		}
+		
 	})
 	// 更改排序方式
 	const changeIsCount = ()=>{
@@ -323,10 +353,12 @@
 			userInfo.value.avatar = res.data.data.avatar
 			userInfo.value.id = res.data.data.id
 			userInfo.value.bindingPhone = res.data.data.bindingPhone
+			token.value = res.data.data.token
 			console.log(userInfo.value)
 			isLogIn.value = true
-			uni.setStorageSync('userInfo',userInfo.value)
+			uni.setStorageSync('Token',res.data.data.token)
 			uni.setStorageSync('isLogIn',true)
+			uni.setStorageSync('isBinding',userInfo.value.bindingPhone)
 			
 		}catch(error){
 			console.error('发送code到后端失败',error)
@@ -347,19 +379,29 @@
 			console.log(res)
 			userInfo.value.phoneNumber = res.data.data.phone
 			isLogIn.value = true
-			uni.setStorageSync('userInfo',userInfo.value)
+			uni.setStorageSync('isBinding',userInfo.value.bindingPhone)
 			uni.setStorageSync('isLogIn',true)
 		  } catch (error) {
 			console.error('WeChat login error:', error);
 		  }
 	}
-
-		// 处理用户的的登陆情况
-	const handleUserInfo = (userInfo)=>{
-		uni.setStorageSync('userInfo', userInfo.value)
-		uni.setStorageSync('isLogIn',true)
-		isLogIn.value = true
+	// 获取用户信息数据
+	const getUserInfo = async()=>{
+		try{
+			const res = await uni.request({
+				url:`https://allmetaahome:2333/wxApp/detail`,
+				method:"GET",
+				header:{
+					satoken:token.value
+				}
+			})
+			userInfo.value.userName = res.data.data.nickName
+			userInfo.value.avatar = res.data.data.avatar
+		}catch(error){
+			console.error('用户信息获取失败',error)
+		}
 	}
+	
 	// 跳转到历史记录（需要登录）
 	const toHistoryClick = () => {
 		if(isLogIn.value){
@@ -392,7 +434,8 @@
 	const logOut = () => {
 	  userInfo.value = {};
 	  isLogIn.value = false;
-	  uni.removeStorageSync('userInfo');
+	  uni.removeStorageSync('isBinding');
+	  uni.removeStorageSync('Token')
 	  uni.removeStorageSync('isLogIn')
 	  uni.removeStorageSync('chatMessages')
 	};

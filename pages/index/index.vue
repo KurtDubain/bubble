@@ -172,7 +172,7 @@ import {
 		deviceStatus:1,
 		
 	})
-	const paramsGlobal = ref('') //登陆参数
+	const token = ref('') //登陆参数
 	
 	// 初始化
 	onMounted(() => {
@@ -183,7 +183,7 @@ import {
 		})
 		// 获取用户地理位置以及其他数据信息
 		getUserLocation()
-		// // 初始化获取二维码参数
+		// 初始化获取二维码参数
 		// 初始化判断是否登陆
 		makeSureLog()	
 	})
@@ -413,7 +413,7 @@ import {
 			})
 		}else{
 			uni.showToast({
-			    title: '请先登录',
+			    title: '请先登录并且绑定手机号',
 			    icon: 'none',
 			})
 			// uni.navigateTo({
@@ -426,25 +426,17 @@ import {
 		try{
 			const res = await uni.request({
 				url:`https://allmetaahome:2333/equipment/detail?equipment=${curDeviceNum.value}`,
-				method:"GET"
+				method:"GET",
 			})
+			deviceDetail.value.deviceStatus = res.data.data.deviceDetail.status
+			deviceDetail.value.dropName = res.data.data.deviceDetail.dropName
+			playType.value = res.data.data.deviceDetail.mode
 			
 		}catch(error){
 			console.error('设备详情获取失败',error)
 		}
 	}	
-	// 启动设备
-	const startEquipment = async()=>{
-		try{
-			const res = await uni.request({
-				url:`https://allmetaahome:2333/equipment/startEquipment?equipmentNum=${curDeviceNum.value}`,
-				method:"GET"
-			})
-		}catch(error){
-			console.error('设备启动失败',error)
-		}
-	}
-	// 获取用户的授权信息（手机号快速验证），登陆
+	
 	const getUserPhoneNumber = async(e) => {
 		console.log(e)
 		  try {
@@ -465,15 +457,73 @@ import {
 	}
 	// 验证当前用户是否登陆
 	const makeSureLog = ()=>{
-		const cachedUserInfo = uni.getStorageSync('userInfo');
-		if (cachedUserInfo) {
+		const logIn = uni.getStorageSync('isLogIn');
+		const binding = uni.getStorageSync('isBinding')
+		if (binding&&logIn) {
+			token.value = uni.getStorageSync('Token')
 		    isLogIn.value = true
 		}else{
 			isLogIn.value = false
 			uni.showToast({
-			    title: '请先登录',
+			    title: '请先登录并且绑定手机号',
 			    icon: 'none',
 			})
+		}
+	}
+	// 启动设备
+	const startEquipment = async()=>{
+		try{
+			const res = await uni.request({
+				url:`https://allmetaahome:2333/equipment/startEquipment?equipmentNum=${curDeviceNum.value}`,
+				method:"GET",
+				header:{
+					satoken:token.value
+				},
+				success(res) {
+					if(res.data.code===200&&res.data.message==='success'){
+						uni.showToast({
+							title:'设备启动成功',
+							icon:'success'
+						})
+					}else{
+						uni.showToast({
+							title:"设备启动失败",
+							icon:"fail"
+						})
+					}
+					
+				},
+				fail(error){
+					console.error('设备启动失败',error)
+					uni.showToast({
+						title:"设备启动失败",
+						icon:"fail"
+					})
+				}
+			})
+		}catch(error){
+			console.error('设备启动失败',error)
+		}
+	}
+	// 用户主动关闭设备
+	const closeEquipment = async()=>{
+		try{
+			const res = await uni.request({
+				url:'https://allmetaahome:2333/equipment/closeEquipmentByUser',
+				method:"GET",
+				header:{
+					satoken:token.value
+				}
+			})
+			if(res.data.status===200&&res.data.message==="success"){
+				uni.showToast({
+					title:"已结束游玩",
+					icon:"success"
+				})
+			}
+			
+		}catch(error){
+			console.error('结束设备失败',error)
 		}
 	}
 	// 个人中心
@@ -495,6 +545,7 @@ import {
 			})
 		}
 	} 
+	// 选项卡的选择
 	const clickCloseOptions = ()=>{
 		showPlayOptions.value=false
 	}

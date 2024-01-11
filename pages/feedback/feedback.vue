@@ -13,7 +13,7 @@
 		
         <view v-for="(message, index) in chatMessages" :key="index" :class="{ 'user-message': message.isCurrentUser, 'service-message': !message.isCurrentUser }">
           <image v-if="!message.isCurrentUser" class="avatar" src="../../static/uni.png"></image>
-          <view class="message-content">{{ message.content }}</view>
+          <view class="message-content" v-html="message.content"></view>
           <image v-if="message.isCurrentUser" class="avatar" :src="currentUserAvatar"></image>
         </view>
 		
@@ -43,9 +43,8 @@ const systemMessage = '欢迎您，有什么可以帮助您的吗？';
 // 快捷消息
 const faqList = [
   '我想询问一下我的历史订单',
-  '我想知道泡泡机的收费规则',
-  '我希望切换人工客服',
-  '泡泡机的操作技巧和注意事项'
+  '我希望切换成人工客服',
+  '我想要申请某一订单退款'
 ];
 
 onMounted(() => {
@@ -64,20 +63,59 @@ const sendMessage = () => {
     isCurrentUser: true,
     content: inputText.value,
   };
-
   chatMessages.value.push(newMessage);
   saveChatHistory();
+  if(newMessage.isCurrentUser&&newMessage.content.includes('历史订单')){
+	  const historyOrderReply = {
+		  isCurrentUser:false,
+		  content:`您可以点击下面的链接跳转到历史订单进行查看<br/><a href="/pages/index/index">点击跳转到历史订单页面</a>`
+	  }
+	  setTimeout(()=>{
+	  		chatMessages.value.push(historyOrderReply)
+	  		saveChatHistory()  
+	  },1000)
+	  
+  }else if(newMessage.isCurrentUser&&newMessage.content.includes('人工')){
+	  const serviceReply = {
+		isCurrentUser:false,
+		content:'正在为您转接人工客服....'
+	  }
+	  setTimeout(()=>{
+	  	chatMessages.value.push(serviceReply)
+	  	saveChatHistory()	  
+	  },1000)
+	  
+  }else if(newMessage.isCurrentUser&&newMessage.content.includes('退款')){
+	  const refundReply = {
+		  isCurrentUser:false,
+		  content:'如果您想对某一订单执行退款操作的话，您可以前往“历史订单”，根据日期选择您想退款的订单来进行退款，点击退款，并进行确认，即可等待反馈。如果有其他问题可以联系人工客服。'
+	  }
+	  setTimeout(()=>{
+		chatMessages.value.push(refundReply)
+		saveChatHistory()
+	  },1000)
+	  
+  }else{
+	  const genericReply = {
+	        isCurrentUser: false,
+	        content: '不好意思，暂时无法理解您的问题，您可以转人工客服进行询问。',
+	      };
+		  setTimeout(()=>{
+			  chatMessages.value.push(genericReply);
+			  saveChatHistory();
+		  },1000)  
+  }
 
   // 客服回复
-  const serviceReply = {
-    isCurrentUser: false,
-    content: '我是在线客服，您可以说您遇到的问题',
-  };
+  // const serviceReply = {
+  //   isCurrentUser: false,
+  //   content: '我是在线客服，您可以说您遇到的问题',
+  // };
 
-  setTimeout(() => {
-    chatMessages.value.push(serviceReply);
-    saveChatHistory();
-  }, 500);
+  // setTimeout(() => {
+  //   chatMessages.value.push(serviceReply);
+  //   saveChatHistory();
+  // }, 500);
 
   inputText.value = '';
 };

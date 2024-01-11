@@ -154,6 +154,7 @@ const _sfc_main = {
     ]);
     let curCity = common_vendor.ref(null);
     let isCount = common_vendor.ref(true);
+    const token = common_vendor.ref("");
     const cityData = [
       {
         value: "北京",
@@ -168,13 +169,35 @@ const _sfc_main = {
         text: "上海"
       }
     ];
+    const getAllCity = async () => {
+      try {
+        const cityDataRes = await common_vendor.index.request({
+          url: `https://allmetaahome:2333/dropoff/cityList`,
+          method: "GET"
+        });
+      } catch (error) {
+        console.error("获取排名数据成功", error);
+      }
+    };
+    const getTotalListByCity = async () => {
+      try {
+        const cityTotalRes = await common_vendor.index.request({
+          url: `https://allmetaahome:2333/order/rankListByCity?city=${curCity}`,
+          method: "GET"
+        });
+      } catch (error) {
+        console.error("获取排名数据成功", error);
+      }
+    };
     const curCityArray = common_vendor.ref([]);
-    common_vendor.onMounted(() => {
+    common_vendor.onMounted(async () => {
       curCity.value = "北京";
+      await getAllCity();
+      await getTotalListByCity();
       countRank();
-      const cachedUserInfo = common_vendor.index.getStorageSync("userInfo");
+      const cachedUserInfo = common_vendor.index.getStorageSync("isLogIn");
       if (cachedUserInfo) {
-        userInfo.value = cachedUserInfo;
+        await getUserInfo();
         isLogIn.value = true;
       }
     });
@@ -236,10 +259,12 @@ const _sfc_main = {
         userInfo.value.avatar = res.data.data.avatar;
         userInfo.value.id = res.data.data.id;
         userInfo.value.bindingPhone = res.data.data.bindingPhone;
+        token.value = res.data.data.token;
         console.log(userInfo.value);
         isLogIn.value = true;
-        common_vendor.index.setStorageSync("userInfo", userInfo.value);
+        common_vendor.index.setStorageSync("Token", res.data.data.token);
         common_vendor.index.setStorageSync("isLogIn", true);
+        common_vendor.index.setStorageSync("isBinding", userInfo.value.bindingPhone);
       } catch (error) {
         console.error("发送code到后端失败", error);
       }
@@ -258,10 +283,25 @@ const _sfc_main = {
         console.log(res);
         userInfo.value.phoneNumber = res.data.data.phone;
         isLogIn.value = true;
-        common_vendor.index.setStorageSync("userInfo", userInfo.value);
+        common_vendor.index.setStorageSync("isBinding", userInfo.value.bindingPhone);
         common_vendor.index.setStorageSync("isLogIn", true);
       } catch (error) {
         console.error("WeChat login error:", error);
+      }
+    };
+    const getUserInfo = async () => {
+      try {
+        const res = await common_vendor.index.request({
+          url: `https://allmetaahome:2333/wxApp/detail`,
+          method: "GET",
+          header: {
+            satoken: token.value
+          }
+        });
+        userInfo.value.userName = res.data.data.nickName;
+        userInfo.value.avatar = res.data.data.avatar;
+      } catch (error) {
+        console.error("用户信息获取失败", error);
       }
     };
     const toHistoryClick = () => {
@@ -291,7 +331,8 @@ const _sfc_main = {
     const logOut = () => {
       userInfo.value = {};
       isLogIn.value = false;
-      common_vendor.index.removeStorageSync("userInfo");
+      common_vendor.index.removeStorageSync("isBinding");
+      common_vendor.index.removeStorageSync("Token");
       common_vendor.index.removeStorageSync("isLogIn");
       common_vendor.index.removeStorageSync("chatMessages");
     };

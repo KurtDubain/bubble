@@ -31,7 +31,7 @@ const _sfc_main = {
       dropName: "",
       deviceStatus: 1
     });
-    common_vendor.ref("");
+    const token = common_vendor.ref("");
     common_vendor.onMounted(() => {
       common_vendor.index.login({
         success(data) {
@@ -221,7 +221,7 @@ const _sfc_main = {
         });
       } else {
         common_vendor.index.showToast({
-          title: "请先登录",
+          title: "请先登录并且绑定手机号",
           icon: "none"
         });
       }
@@ -232,18 +232,23 @@ const _sfc_main = {
           url: `https://allmetaahome:2333/equipment/detail?equipment=${curDeviceNum.value}`,
           method: "GET"
         });
+        deviceDetail.value.deviceStatus = res.data.data.deviceDetail.status;
+        deviceDetail.value.dropName = res.data.data.deviceDetail.dropName;
+        playType.value = res.data.data.deviceDetail.mode;
       } catch (error) {
         console.error("设备详情获取失败", error);
       }
     };
     const makeSureLog = () => {
-      const cachedUserInfo = common_vendor.index.getStorageSync("userInfo");
-      if (cachedUserInfo) {
+      const logIn = common_vendor.index.getStorageSync("isLogIn");
+      const binding = common_vendor.index.getStorageSync("isBinding");
+      if (binding && logIn) {
+        token.value = common_vendor.index.getStorageSync("Token");
         isLogIn.value = true;
       } else {
         isLogIn.value = false;
         common_vendor.index.showToast({
-          title: "请先登录",
+          title: "请先登录并且绑定手机号",
           icon: "none"
         });
       }

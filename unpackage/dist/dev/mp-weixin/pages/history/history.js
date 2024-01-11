@@ -11,18 +11,27 @@ if (!Math) {
 const _sfc_main = {
   __name: "history",
   setup(__props) {
+    const token = common_vendor.ref();
     const orderList = common_vendor.ref([
       {
-        playDate: "08.29 16:00-16:12",
+        orderNum: "dasho",
+        playDate: "08.29 16:00",
         playLocation: "xx省xx市xx县xx村A",
         playCost: "50"
       },
       {
-        playDate: "08.30 14:30-15:00",
+        orderNum: "idsad",
+        playDate: "08.30 14:30",
         playLocation: "xx省xx市xx县xx村B",
         playCost: "60"
       }
     ]);
+    common_vendor.onMounted(() => {
+      const Token = common_vendor.index.getStorageSync("Token");
+      if (Token) {
+        token.value = Token;
+      }
+    });
     const handleException = () => {
       common_vendor.index.navigateTo({
         url: "/pages/feedback/feedback"
@@ -33,13 +42,14 @@ const _sfc_main = {
       return {
         a: common_vendor.f(orderList.value, (order, index, i0) => {
           return {
-            a: common_vendor.t(order.playDate),
-            b: "b2d018fa-0-" + i0,
-            c: common_vendor.t(order.playLocation),
-            d: common_vendor.t(order.playCost),
-            e: "b2d018fa-1-" + i0,
-            f: common_vendor.o(handleException, index),
-            g: index
+            a: common_vendor.t(order.orderNum),
+            b: common_vendor.t(order.playDate),
+            c: "b2d018fa-0-" + i0,
+            d: common_vendor.t(order.playLocation),
+            e: common_vendor.t(order.playCost),
+            f: "b2d018fa-1-" + i0,
+            g: common_vendor.o(handleException, index),
+            h: index
           };
         }),
         b: common_vendor.p({
