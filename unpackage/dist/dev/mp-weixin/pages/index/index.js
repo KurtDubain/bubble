@@ -31,6 +31,7 @@ const _sfc_main = {
       dropName: "",
       deviceStatus: 1
     });
+    const paramsGlobal = common_vendor.ref("");
     common_vendor.onMounted(() => {
       common_vendor.index.login({
         success(data) {
@@ -38,7 +39,8 @@ const _sfc_main = {
         }
       });
       getUserLocation();
-      const launchOptions = common_vendor.index.getLaunchOptionsSync();
+      const launchOptions = paramsGlobal.value ? paramsGlobal.value : common_vendor.index.getLaunchOptionsSync();
+      console.log(paramsGlobal.value);
       scanQRQuery(launchOptions.query.scene);
       makeSureLog();
     });
@@ -196,7 +198,8 @@ const _sfc_main = {
           icon: "none"
         });
       }
-      console.log(`扫描到了登录参数，他们分别是deviceNum:${curDeviceNum.value}`);
+      const launchOptions = common_vendor.index.getLaunchOptionsSync();
+      console.log(`扫描到了登录参数，他们分别是deviceNum:${curDeviceNum.value}`, launchOptions);
     };
     const toQRScanClick = () => {
       makeSureLog();
@@ -208,7 +211,7 @@ const _sfc_main = {
             common_vendor.index.reLaunch({
               url: `/${url}`,
               success(res2) {
-                scanQRQuery(params);
+                paramsGlobal.value = params;
               },
               fail() {
                 common_vendor.index.showToast({

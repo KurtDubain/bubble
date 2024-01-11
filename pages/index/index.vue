@@ -171,6 +171,7 @@ import {
 		deviceStatus:1,
 		
 	})
+	const paramsGlobal = ref('') //登陆参数
 	// 初始化
 	onMounted(() => {
 		uni.login({
@@ -182,8 +183,9 @@ import {
 		getUserLocation()
 		// // 初始化获取二维码参数
 		
-		const launchOptions = uni.getLaunchOptionsSync()
+		const launchOptions =paramsGlobal.value? paramsGlobal.value: uni.getLaunchOptionsSync()
 		// console.log(launchOptions)
+		console.log(paramsGlobal.value);
 		// curDeviceNum.value = launchOptions.query.scene
 		scanQRQuery(launchOptions.query.scene)
 		
@@ -383,10 +385,11 @@ import {
 				icon:"none"
 			})
 		}
+		const launchOptions = uni.getLaunchOptionsSync()
 		
 		// location.value = launchOptions.query.location
 		// status.value = launchOptions.query.status
-		console.log(`扫描到了登录参数，他们分别是deviceNum:${curDeviceNum.value}`)
+		console.log(`扫描到了登录参数，他们分别是deviceNum:${curDeviceNum.value}`,launchOptions)
 	}
 	// 扫描二维码
 	const toQRScanClick = () => {
@@ -397,10 +400,11 @@ import {
 					// console.log(JSON.stringify(res))
 					// scanQRQuery()
 					// uni.reLaunch({
-					//     url: '/pages/index/index'  // 替换为你的页面路径
+					//     url: '/pages/index/index?scene=555'  // 替换为你的页面路径
 		   //          });
 					const url = decodeURIComponent(res.path)
 					const params = url.split('?')[1].split('=')[1]
+					
 					// console.log(params.split('=')[1])
 					// curDeviceNum.value = params
 					// scanQRQuery(params)
@@ -408,7 +412,8 @@ import {
 					uni.reLaunch({
 						url:`/${url}`,
 						success(res){
-							scanQRQuery(params)
+							paramsGlobal.value = params;
+							// scanQRQuery(params)
 						},
 						fail() {
 							uni.showToast({
@@ -442,6 +447,17 @@ import {
 			console.error('设备详情获取失败',error)
 		}
 	}	
+	// 启动设备
+	const startEquipment = async()=>{
+		try{
+			const res = await uni.request({
+				url:`https://allmetaahome:2333/equipment/startEquipment?equipmentNum=${curDeviceNum.value}`,
+				method:"GET"
+			})
+		}catch(error){
+			console.error('设备启动失败',error)
+		}
+	}
 	// 获取用户的授权信息（手机号快速验证），登陆
 	const getUserPhoneNumber = async(e) => {
 		console.log(e)
