@@ -146,6 +146,7 @@ import {
 		reactive,
 		ref
 	} from 'vue';
+	import { onLoad } from '@dcloudio/uni-app'
 	// 页面组件
 	// 是否展示初始卡片
 	const showQRScan = ref(true);
@@ -172,6 +173,7 @@ import {
 		
 	})
 	const paramsGlobal = ref('') //登陆参数
+	
 	// 初始化
 	onMounted(() => {
 		uni.login({
@@ -182,16 +184,13 @@ import {
 		// 获取用户地理位置以及其他数据信息
 		getUserLocation()
 		// // 初始化获取二维码参数
-		
-		const launchOptions =paramsGlobal.value? paramsGlobal.value: uni.getLaunchOptionsSync()
-		// console.log(launchOptions)
-		console.log(paramsGlobal.value);
-		// curDeviceNum.value = launchOptions.query.scene
-		scanQRQuery(launchOptions.query.scene)
-		
 		// 初始化判断是否登陆
-		makeSureLog()
-		
+		makeSureLog()	
+	})
+
+	onLoad((opstions)=>{
+		// console.log(111,opstions);
+		scanQRQuery(opstions.scene)
 	})
 
 	// 获取用户地理位置的方法
@@ -385,7 +384,7 @@ import {
 				icon:"none"
 			})
 		}
-		const launchOptions = uni.getLaunchOptionsSync()
+		const launchOptions = uni.getEnterOptionsSync()
 		
 		// location.value = launchOptions.query.location
 		// status.value = launchOptions.query.status
@@ -397,24 +396,11 @@ import {
 		if(isLogIn.value){
 			uni.scanCode({
 				success(res) {
-					// console.log(JSON.stringify(res))
-					// scanQRQuery()
-					// uni.reLaunch({
-					//     url: '/pages/index/index?scene=555'  // 替换为你的页面路径
-		   //          });
 					const url = decodeURIComponent(res.path)
 					const params = url.split('?')[1].split('=')[1]
 					
-					// console.log(params.split('=')[1])
-					// curDeviceNum.value = params
-					// scanQRQuery(params)
-					// console.log(url)
 					uni.reLaunch({
 						url:`/${url}`,
-						success(res){
-							paramsGlobal.value = params;
-							// scanQRQuery(params)
-						},
 						fail() {
 							uni.showToast({
 								title:'二维码异常'

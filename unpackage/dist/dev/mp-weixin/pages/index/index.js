@@ -31,7 +31,7 @@ const _sfc_main = {
       dropName: "",
       deviceStatus: 1
     });
-    const paramsGlobal = common_vendor.ref("");
+    common_vendor.ref("");
     common_vendor.onMounted(() => {
       common_vendor.index.login({
         success(data) {
@@ -39,10 +39,10 @@ const _sfc_main = {
         }
       });
       getUserLocation();
-      const launchOptions = paramsGlobal.value ? paramsGlobal.value : common_vendor.index.getLaunchOptionsSync();
-      console.log(paramsGlobal.value);
-      scanQRQuery(launchOptions.query.scene);
       makeSureLog();
+    });
+    common_vendor.onLoad((opstions) => {
+      scanQRQuery(opstions.scene);
     });
     const getUserLocation = () => {
       common_vendor.index.getLocation({
@@ -198,7 +198,7 @@ const _sfc_main = {
           icon: "none"
         });
       }
-      const launchOptions = common_vendor.index.getLaunchOptionsSync();
+      const launchOptions = common_vendor.index.getEnterOptionsSync();
       console.log(`扫描到了登录参数，他们分别是deviceNum:${curDeviceNum.value}`, launchOptions);
     };
     const toQRScanClick = () => {
@@ -207,12 +207,9 @@ const _sfc_main = {
         common_vendor.index.scanCode({
           success(res) {
             const url = decodeURIComponent(res.path);
-            const params = url.split("?")[1].split("=")[1];
+            url.split("?")[1].split("=")[1];
             common_vendor.index.reLaunch({
               url: `/${url}`,
-              success(res2) {
-                paramsGlobal.value = params;
-              },
               fail() {
                 common_vendor.index.showToast({
                   title: "二维码异常"
