@@ -81,3 +81,16 @@ textarea.data-v-a24b82f2 {
   border-radius: 8px;
   cursor: pointer;
 }
+.custom-button.data-v-a24b82f2 {
+  background-color: #82af81; /* Green background */
+  color: white;
+  padding: 10rpx 20rpx; /* Padding for better appearance */
+  border: none;
+  border-radius: 8rpx;
+  cursor: pointer;
+  margin: 5rpx; /* Adjust margin as needed */
+}
+.custom-button.data-v-a24b82f2:hover {
+  background-color: #98a099; /* Darker green on hover */
+}
+

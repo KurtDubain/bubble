@@ -13,8 +13,15 @@
 		
         <view v-for="(message, index) in chatMessages" :key="index" :class="{ 'user-message': message.isCurrentUser, 'service-message': !message.isCurrentUser }">
           <image v-if="!message.isCurrentUser" class="avatar" src="../../static/uni.png"></image>
-          <view class="message-content" v-html="message.content"></view>
-          <image v-if="message.isCurrentUser" class="avatar" :src="currentUserAvatar"></image>
+          <!-- <view class="message-content" v-html="message.content" v-if="!message.isCurrentUser"></view> -->
+		  <view v-if="message.type===0" class="message-content">{{message.content}}</view>
+		  <view v-if="message.type===1" ><button size="mini"  open-type="contact">人工客服</button></view>
+		  <view v-if="message.type===2" ><button  size="mini" @click="methodClick(message.type)">前往历史订单</button></view>
+		  <view v-if="message.type===3" ><button  size="mini" @click="methodClick(message.type)">继续退款</button></view>
+		  <!-- <view class="method-content" v-if="message.method!==''" @click="methodClick(message.method)">
+		  	{{message.method}}
+		  </view> -->
+          <image v-if="message.isCurrentUser" class="avatar"></image>
         </view>
 		
       </scroll-view>
@@ -62,43 +69,84 @@ const sendMessage = () => {
   const newMessage = {
     isCurrentUser: true,
     content: inputText.value,
+	// method:''
+	type:0
   };
   chatMessages.value.push(newMessage);
   saveChatHistory();
   if(newMessage.isCurrentUser&&newMessage.content.includes('历史订单')){
 	  const historyOrderReply = {
-		  isCurrentUser:false,
-		  content:`您可以点击下面的链接跳转到历史订单进行查看<br/><a href="/pages/index/index">点击跳转到历史订单页面</a>`
+		isCurrentUser:false,
+		content:`您可以点击下面的链接跳转到历史订单进行查看`,
+		// method:'点我跳转到历史页面'	
+		type:0
 	  }
 	  setTimeout(()=>{
 	  		chatMessages.value.push(historyOrderReply)
 	  		saveChatHistory()  
+			const nextReply = {
+				isCurrentUser:false,
+				content:'',
+				type:2
+			}
+			setTimeout(()=>{
+				chatMessages.value.push(nextReply)
+				saveChatHistory()
+			},500)
+			
 	  },1000)
 	  
   }else if(newMessage.isCurrentUser&&newMessage.content.includes('人工')){
 	  const serviceReply = {
 		isCurrentUser:false,
-		content:'正在为您转接人工客服....'
+		content:'正在为您转接人工客服....',
+		// method:'人工客服'
+		type:0
 	  }
 	  setTimeout(()=>{
 	  	chatMessages.value.push(serviceReply)
-	  	saveChatHistory()	  
+	  	saveChatHistory()
+		const nextReply = {
+			isCurrentUser:false,
+			content:'',
+			type:1
+		}
+		setTimeout(()=>{
+			chatMessages.value.push(nextReply)
+			saveChatHistory()
+		},500)
+		
 	  },1000)
 	  
   }else if(newMessage.isCurrentUser&&newMessage.content.includes('退款')){
 	  const refundReply = {
 		  isCurrentUser:false,
-		  content:'如果您想对某一订单执行退款操作的话，您可以前往“历史订单”，根据日期选择您想退款的订单来进行退款，点击退款，并进行确认，即可等待反馈。如果有其他问题可以联系人工客服。'
+		  content:'如果您想对某一订单执行退款操作的话，您可以前往“历史订单”，根据日期选择您想退款的订单来进行退款，点击退款，并进行确认，即可等待反馈。如果有其他问题可以联系人工客服。',
+		  // method:'继续退款'
+		  type:0,
+		  
 	  }
 	  setTimeout(()=>{
 		chatMessages.value.push(refundReply)
 		saveChatHistory()
+		const nextReply = {
+			isCurrentUser:false,
+			content:'',
+			type:2
+		}
+		setTimeout(()=>{
+			chatMessages.value.push(nextReply)
+			saveChatHistory()
+		},500)
+		
 	  },1000)
 	  
   }else{
 	  const genericReply = {
 	        isCurrentUser: false,
 	        content: '不好意思，暂时无法理解您的问题，您可以转人工客服进行询问。',
+			// method:'人工客服'
+			type:0
 	      };
 		  setTimeout(()=>{
 			  chatMessages.value.push(genericReply);
@@ -106,19 +154,17 @@ const sendMessage = () => {
 		  },1000)  
   }
 
-  // 客服回复
-  // const serviceReply = {
-  //   isCurrentUser: false,
-  //   content: '我是在线客服，您可以说您遇到的问题',
-  // };
-
-  // setTimeout(() => {
-  //   chatMessages.value.push(serviceReply);
-  //   saveChatHistory();
-  // }, 500);
-
   inputText.value = '';
 };
+const methodClick = (type)=>{
+	if(type===2){
+		uni.navigateTo({
+			url:'/pages/history/history'
+		})
+	}else if(type===3){
+		console.log('开发ing')
+	}
+}
 // 将快捷消息搞到输入框
 const copyToInput = (question) => {
   inputText.value = question;
@@ -228,4 +274,18 @@ textarea {
   border-radius: 8px;
   cursor: pointer;
 }
+.custom-button {
+  background-color: #82af81; /* Green background */
+  color: white;
+  padding: 10rpx 20rpx; /* Padding for better appearance */
+  border: none;
+  border-radius: 8rpx;
+  cursor: pointer;
+  margin: 5rpx; /* Adjust margin as needed */
+}
+
+.custom-button:hover {
+  background-color: #98a099; /* Darker green on hover */
+}
+
 </style>

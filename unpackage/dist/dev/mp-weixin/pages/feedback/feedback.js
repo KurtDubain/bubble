@@ -24,41 +24,78 @@ const _sfc_main = {
       }
       const newMessage = {
         isCurrentUser: true,
-        content: inputText.value
+        content: inputText.value,
+        // method:''
+        type: 0
       };
       chatMessages.value.push(newMessage);
       saveChatHistory();
       if (newMessage.isCurrentUser && newMessage.content.includes("历史订单")) {
         const historyOrderReply = {
           isCurrentUser: false,
-          content: `您可以点击下面的链接跳转到历史订单进行查看<br/><a href="/pages/index/index">点击跳转到历史订单页面</a>`
+          content: `您可以点击下面的链接跳转到历史订单进行查看`,
+          // method:'点我跳转到历史页面'	
+          type: 0
         };
         setTimeout(() => {
           chatMessages.value.push(historyOrderReply);
           saveChatHistory();
+          const nextReply = {
+            isCurrentUser: false,
+            content: "",
+            type: 2
+          };
+          setTimeout(() => {
+            chatMessages.value.push(nextReply);
+            saveChatHistory();
+          }, 500);
         }, 1e3);
       } else if (newMessage.isCurrentUser && newMessage.content.includes("人工")) {
         const serviceReply = {
           isCurrentUser: false,
-          content: "正在为您转接人工客服...."
+          content: "正在为您转接人工客服....",
+          // method:'人工客服'
+          type: 0
         };
         setTimeout(() => {
           chatMessages.value.push(serviceReply);
           saveChatHistory();
+          const nextReply = {
+            isCurrentUser: false,
+            content: "",
+            type: 1
+          };
+          setTimeout(() => {
+            chatMessages.value.push(nextReply);
+            saveChatHistory();
+          }, 500);
         }, 1e3);
       } else if (newMessage.isCurrentUser && newMessage.content.includes("退款")) {
         const refundReply = {
           isCurrentUser: false,
-          content: "如果您想对某一订单执行退款操作的话，您可以前往“历史订单”，根据日期选择您想退款的订单来进行退款，点击退款，并进行确认，即可等待反馈。如果有其他问题可以联系人工客服。"
+          content: "如果您想对某一订单执行退款操作的话，您可以前往“历史订单”，根据日期选择您想退款的订单来进行退款，点击退款，并进行确认，即可等待反馈。如果有其他问题可以联系人工客服。",
+          // method:'继续退款'
+          type: 0
         };
         setTimeout(() => {
           chatMessages.value.push(refundReply);
           saveChatHistory();
+          const nextReply = {
+            isCurrentUser: false,
+            content: "",
+            type: 2
+          };
+          setTimeout(() => {
+            chatMessages.value.push(nextReply);
+            saveChatHistory();
+          }, 500);
         }, 1e3);
       } else {
         const genericReply = {
           isCurrentUser: false,
-          content: "不好意思，暂时无法理解您的问题，您可以转人工客服进行询问。"
+          content: "不好意思，暂时无法理解您的问题，您可以转人工客服进行询问。",
+          // method:'人工客服'
+          type: 0
         };
         setTimeout(() => {
           chatMessages.value.push(genericReply);
@@ -66,6 +103,15 @@ const _sfc_main = {
         }, 1e3);
       }
       inputText.value = "";
+    };
+    const methodClick = (type) => {
+      if (type === 2) {
+        common_vendor.index.navigateTo({
+          url: "/pages/history/history"
+        });
+      } else if (type === 3) {
+        console.log("开发ing");
+      }
     };
     const copyToInput = (question) => {
       inputText.value = question;
@@ -88,14 +134,25 @@ const _sfc_main = {
           return common_vendor.e({
             a: !message.isCurrentUser
           }, !message.isCurrentUser ? {} : {}, {
-            b: message.content,
-            c: message.isCurrentUser
-          }, message.isCurrentUser ? {
-            d: common_vendor.unref(currentUserAvatar)
+            b: message.type === 0
+          }, message.type === 0 ? {
+            c: common_vendor.t(message.content)
           } : {}, {
-            e: index,
-            f: message.isCurrentUser ? 1 : "",
-            g: !message.isCurrentUser ? 1 : ""
+            d: message.type === 1
+          }, message.type === 1 ? {} : {}, {
+            e: message.type === 2
+          }, message.type === 2 ? {
+            f: common_vendor.o(($event) => methodClick(message.type), index)
+          } : {}, {
+            g: message.type === 3
+          }, message.type === 3 ? {
+            h: common_vendor.o(($event) => methodClick(message.type), index)
+          } : {}, {
+            i: message.isCurrentUser
+          }, message.isCurrentUser ? {} : {}, {
+            j: index,
+            k: message.isCurrentUser ? 1 : "",
+            l: !message.isCurrentUser ? 1 : ""
           });
         }),
         d: inputText.value,
