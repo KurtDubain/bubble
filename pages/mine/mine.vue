@@ -233,7 +233,7 @@
 			uni.setStorageSync('Token',res.data.data.token)
 			uni.setStorageSync('isLogIn',true)
 			uni.setStorageSync('isBinding',userInfo.value.bindingPhone)
-			
+			isBinding.value = userInfo.value.bindingPhone
 		}catch(error){
 			console.error('发送code到后端失败',error)
 		}

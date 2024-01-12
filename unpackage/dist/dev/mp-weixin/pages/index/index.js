@@ -25,13 +25,14 @@ const _sfc_main = {
     const latitude = common_vendor.ref(null);
     const longitude = common_vendor.ref(null);
     const markers = common_vendor.ref(0);
+    const timer = null;
     const curDeviceNum = common_vendor.ref("");
     const deviceDetail = common_vendor.ref({
       dropName: "",
       deviceStatus: 1
     });
     const token = common_vendor.ref("");
-    common_vendor.onMounted(() => {
+    common_vendor.onMounted(async () => {
       common_vendor.index.login({
         success(data) {
           console.log(data);
@@ -39,8 +40,13 @@ const _sfc_main = {
       });
       getUserLocation();
       makeSureLog();
+      console.log(222);
+      if (curDeviceNum.value !== "") {
+        await getDeviceMsgByDeviceNum();
+      }
     });
     common_vendor.onLoad((opstions) => {
+      console.log(111, opstions);
       scanQRQuery(opstions.scene);
     });
     const getUserLocation = () => {
@@ -116,25 +122,27 @@ const _sfc_main = {
         common_vendor.index.showLoading({
           title: "正在请求数据"
         });
-        setTimeout(() => {
-          common_vendor.index.hideLoading();
-        }, 500);
+        startEquipment();
       } else {
-        getUserInfo();
+        common_vendor.index.showToast({
+          title: "请先登录"
+        });
       }
     };
     const startBilling = () => {
-      const timer = setInterval(() => {
+      timer = setInterval(() => {
         totalSecond.value = Math.floor((/* @__PURE__ */ new Date() - startTime.value) / 1e3);
         totalMin.value = Math.ceil(totalSecond.value / 60);
         totalCost.value = totalMin.value * 2;
       }, 1e3);
-      watch(playing, (newVal) => {
-        if (!newVal) {
-          clearInterval(timer);
-        }
-      });
     };
+    common_vendor.watch(playing, (newVal) => {
+      if (!newVal) {
+        console.log(newVal);
+        clearTimeout(timer);
+        console.log(timer);
+      }
+    });
     const startPlaying = (option) => {
       makeSureLog();
       if (isLogIn.value) {
@@ -161,10 +169,10 @@ const _sfc_main = {
       }
     };
     const startCountDown = () => {
-      const timer = setInterval(() => {
+      const timer2 = setInterval(() => {
         countDown.value--;
         if (countDown.value <= 0) {
-          clearInterval(timer);
+          clearInterval(timer2);
           playing.value = false;
           isEnd.value = true;
           countDown.value = 60;
@@ -173,9 +181,8 @@ const _sfc_main = {
         }
       }, 1e3);
     };
-    const clickStop = () => {
-      isEnd.value = true;
-      playing.value = false;
+    const clickStop = async () => {
+      await closeEquipment();
     };
     const scanQRQuery = (param) => {
       if (param) {
@@ -232,10 +239,11 @@ const _sfc_main = {
         deviceDetail.value.deviceStatus = res.data.data.deviceDetail.status;
         deviceDetail.value.dropName = res.data.data.deviceDetail.dropName;
         playType.value = res.data.data.deviceDetail.mode;
-        playType.value = 0;
-        startPlaying(playType.value);
       } catch (error) {
         console.error("设备详情获取失败", error);
+      } finally {
+        playType.value = 1;
+        console.log("初始化", playType.value);
       }
     };
     const makeSureLog = () => {
@@ -250,6 +258,61 @@ const _sfc_main = {
           title: "请先登录并且绑定手机号",
           icon: "none"
         });
+      }
+    };
+    const startEquipment = async () => {
+      try {
+        const res = await common_vendor.index.request({
+          url: `https://allmetaahome.com:2333/equipment/startEquipment?equipmentNum=${curDeviceNum.value}`,
+          method: "GET",
+          header: {
+            satoken: token.value
+          },
+          success(res2) {
+            if (res2.data.code === 200 && res2.data.message === "ok") {
+              common_vendor.index.showToast({
+                title: "设备启动成功",
+                icon: "success"
+              });
+            } else {
+              common_vendor.index.showToast({
+                title: "设备启动失败"
+                // icon:"exception"
+              });
+            }
+          },
+          fail(error) {
+            console.error("设备启动失败", error);
+            common_vendor.index.showToast({
+              title: "设备启动失败",
+              icon: "fail"
+            });
+          }
+        });
+        startPlaying(playType.value);
+      } catch (error) {
+        console.error("设备启动失败", error);
+      }
+    };
+    const closeEquipment = async () => {
+      try {
+        const res = await common_vendor.index.request({
+          url: "https://allmetaahome.com:2333/equipment/closeEquipmentByUser",
+          method: "GET",
+          header: {
+            satoken: token.value
+          }
+        });
+        if (res.data.status === 200 && res.data.message === "ok") {
+          common_vendor.index.showToast({
+            title: "已结束游玩",
+            icon: "success"
+          });
+        }
+        isEnd.value = true;
+        playing.value = false;
+      } catch (error) {
+        console.error("结束设备失败", error);
       }
     };
     const toMineClick = () => {

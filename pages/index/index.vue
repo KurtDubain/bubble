@@ -144,7 +144,8 @@
 import {
 		onMounted,
 		reactive,
-		ref
+		ref,
+		watch
 	} from 'vue';
 	import { onLoad } from '@dcloudio/uni-app'
 	// 页面组件
@@ -166,6 +167,7 @@ import {
 	const latitude = ref(null)
 	const longitude = ref(null)
 	const markers = ref(0)
+	const timer = null
 	const curDeviceNum = ref('')
 	const deviceDetail = ref({
 		dropName:"",
@@ -175,7 +177,7 @@ import {
 	const token = ref('') //登陆参数
 	
 	// 初始化
-	onMounted(() => {
+	onMounted(async() => {
 		uni.login({
 			success(data) {
 				console.log(data)
@@ -185,11 +187,16 @@ import {
 		getUserLocation()
 		// 初始化获取二维码参数
 		// 初始化判断是否登陆
-		makeSureLog()	
+		makeSureLog()
+		console.log(222)
+		if(curDeviceNum.value!==''){
+			await getDeviceMsgByDeviceNum()
+		}
+		
 	})
 
 	onLoad((opstions)=>{
-		// console.log(111,opstions);
+		console.log(111,opstions);
 		scanQRQuery(opstions.scene)
 	})
 
@@ -272,35 +279,37 @@ import {
 
 	}
 
-	// 游玩和停止游玩
+	// 游玩游玩
 	const clickPlay = () => {
 		makeSureLog()
 		if(isLogIn.value){
 			uni.showLoading({
 				title: "正在请求数据"
 			});
-			setTimeout(() => {
-				uni.hideLoading()
-				// showPlayOptions.value = true
-			},500);
+			startEquipment()
 		}else{
-			getUserInfo()
+			// getUserInfo()
+			uni.showToast({
+				title:"请先登录",
+			})
 		}
 		
 	}
 	// 计费计算处理
 	const startBilling = ()=>{
-		const timer = setInterval(()=>{
+		timer = setInterval(()=>{
 			totalSecond.value = Math.floor((new Date() - startTime.value)/1000)
 			totalMin.value = Math.ceil(totalSecond.value/60)
 			totalCost.value = totalMin.value*2
 		},1000)
-		watch(playing,(newVal)=>{
-			if(!newVal){
-				clearInterval(timer)
-			}
-		})
 	}
+	watch(playing,(newVal)=>{
+		if(!newVal){
+			console.log(newVal)
+			clearTimeout(timer)
+			console.log(timer)
+		}
+	})
 	// 开始游玩
 	const startPlaying = (option)=>{
 		makeSureLog()
@@ -358,9 +367,10 @@ import {
 	// 	countDown.value = 600
 	// }
 	// 第二种模式的主动结束
-	const clickStop = ()=>{
-		isEnd.value = true
-		playing.value = false
+	const clickStop = async()=>{
+		await closeEquipment()
+		// isEnd.value = true
+		// playing.value = false
 	}
 	// 获取二维码中的参数的操作
 	const scanQRQuery = (param)=>{
@@ -431,11 +441,12 @@ import {
 			deviceDetail.value.deviceStatus = res.data.data.deviceDetail.status
 			deviceDetail.value.dropName = res.data.data.deviceDetail.dropName
 			playType.value = res.data.data.deviceDetail.mode
-			playType.value = 0
-			startPlaying(playType.value)
-			
 		}catch(error){
 			console.error('设备详情获取失败',error)
+		}finally{
+			// 测试用
+			playType.value = 1
+			console.log('初始化',playType.value)
 		}
 	}	
 	
@@ -482,18 +493,19 @@ import {
 					satoken:token.value
 				},
 				success(res) {
-					if(res.data.code===200&&res.data.message==='success'){
+					if(res.data.code===200&&res.data.message==='ok'){
 						uni.showToast({
 							title:'设备启动成功',
 							icon:'success'
 						})
+						// 实际
+						// startPlaying(playType.value)
 					}else{
 						uni.showToast({
 							title:"设备启动失败",
-							icon:"fail"
+							// icon:"exception"
 						})
 					}
-					
 				},
 				fail(error){
 					console.error('设备启动失败',error)
@@ -503,6 +515,10 @@ import {
 					})
 				}
 			})
+			// 测试
+			startPlaying(playType.value)
+			
+			
 		}catch(error){
 			console.error('设备启动失败',error)
 		}
@@ -517,12 +533,18 @@ import {
 					satoken:token.value
 				}
 			})
-			if(res.data.status===200&&res.data.message==="success"){
+			if(res.data.status===200&&res.data.message==="ok"){
 				uni.showToast({
 					title:"已结束游玩",
 					icon:"success"
 				})
+				// 实际
+				// isEnd.value=true
+				// playing.value=false
 			}
+			// 测试
+			isEnd.value=true
+			playing.value=false
 			
 		}catch(error){
 			console.error('结束设备失败',error)

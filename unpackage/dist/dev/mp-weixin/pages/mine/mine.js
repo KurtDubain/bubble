@@ -138,6 +138,7 @@ const _sfc_main = {
         common_vendor.index.setStorageSync("Token", res.data.data.token);
         common_vendor.index.setStorageSync("isLogIn", true);
         common_vendor.index.setStorageSync("isBinding", userInfo.value.bindingPhone);
+        isBinding.value = userInfo.value.bindingPhone;
       } catch (error) {
         console.error("发送code到后端失败", error);
       }
