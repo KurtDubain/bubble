@@ -122,7 +122,7 @@
 						<uni-icons type="closeempty" size="18" @click="clickClose()"></uni-icons>
 					</view>
 					<view style="height: 64rpx;">
-						<text style="font-size: 46rpx;font-weight: 600;">{{ `共使用${totalMin}分钟，花费${totalCost}元` }}</text>
+						<text style="font-size: 46rpx;font-weight: 600;">{{ `共使用${lastOrder.min}分钟，花费${lastOrder.cost}元` }}</text>
 					</view>
 					<view style="font-size: 22rpx;display: flex;color: #868686;">
 						<text>游玩后记得带走个人物品哦</text>
@@ -158,6 +158,10 @@ import {
 	const totalSecond = ref(0) // 总秒钟
 	const totalMin = ref(0) // 总分钟
 	const totalCost= ref(0) // 总花费
+	const lastOrder = ref({
+		cost:0,
+		min:0
+	})
 	// const showPlayOptions = ref(false)//游玩模式选项是否展示
 	const countDown = ref(600)//单次游玩倒计时（十分钟）
 	const playType = ref(0)//游玩模式
@@ -306,7 +310,7 @@ import {
 	watch(playing,(newVal)=>{
 		if(!newVal){
 			console.log(newVal)
-			clearTimeout(timer)
+			clearInterval(timer)
 			console.log(timer)
 		}
 	})
@@ -328,8 +332,6 @@ import {
 					// isEnd.value = true
 					startCountDown()
 				},2000)
-				
-				
 			}else{
 				playType.value = 1
 				startBilling()
@@ -353,6 +355,8 @@ import {
 				countDown.value = 60
 				totalCost.value = 5
 				totalMin.value = 10
+				lastOrder.value.cost = 5
+				lastOrder.value.min = 10
 			}
 		},1000)
 	}
@@ -369,6 +373,8 @@ import {
 	// 第二种模式的主动结束
 	const clickStop = async()=>{
 		await closeEquipment()
+		lastOrder.value.cost = totalCost.value
+		lastOrder.value.min = totalMin.value
 		// isEnd.value = true
 		// playing.value = false
 	}
@@ -443,11 +449,12 @@ import {
 			playType.value = res.data.data.deviceDetail.mode
 		}catch(error){
 			console.error('设备详情获取失败',error)
-		}finally{
-			// 测试用
-			playType.value = 1
-			console.log('初始化',playType.value)
 		}
+		// finally{
+		// 	// 测试用
+		// 	playType.value = 1
+		// 	console.log('初始化',playType.value)
+		// }
 	}	
 	
 	const getUserPhoneNumber = async(e) => {
@@ -539,12 +546,15 @@ import {
 					icon:"success"
 				})
 				// 实际
-				// isEnd.value=true
-				// playing.value=false
+				isEnd.value=true
+				playing.value=false
 			}
+			// console.log(res.data)
+			// console.log('结束了')
+			
 			// 测试
-			isEnd.value=true
-			playing.value=false
+			// isEnd.value=true
+			// playing.value=false
 			
 		}catch(error){
 			console.error('结束设备失败',error)

@@ -18,6 +18,10 @@ const _sfc_main = {
     const totalSecond = common_vendor.ref(0);
     const totalMin = common_vendor.ref(0);
     const totalCost = common_vendor.ref(0);
+    const lastOrder = common_vendor.ref({
+      cost: 0,
+      min: 0
+    });
     const countDown = common_vendor.ref(600);
     const playType = common_vendor.ref(0);
     const isLogIn = common_vendor.ref(false);
@@ -139,7 +143,7 @@ const _sfc_main = {
     common_vendor.watch(playing, (newVal) => {
       if (!newVal) {
         console.log(newVal);
-        clearTimeout(timer);
+        clearInterval(timer);
         console.log(timer);
       }
     });
@@ -178,11 +182,15 @@ const _sfc_main = {
           countDown.value = 60;
           totalCost.value = 5;
           totalMin.value = 10;
+          lastOrder.value.cost = 5;
+          lastOrder.value.min = 10;
         }
       }, 1e3);
     };
     const clickStop = async () => {
       await closeEquipment();
+      lastOrder.value.cost = totalCost.value;
+      lastOrder.value.min = totalMin.value;
     };
     const scanQRQuery = (param) => {
       if (param) {
@@ -241,9 +249,6 @@ const _sfc_main = {
         playType.value = res.data.data.deviceDetail.mode;
       } catch (error) {
         console.error("设备详情获取失败", error);
-      } finally {
-        playType.value = 1;
-        console.log("初始化", playType.value);
       }
     };
     const makeSureLog = () => {
@@ -308,9 +313,9 @@ const _sfc_main = {
             title: "已结束游玩",
             icon: "success"
           });
+          isEnd.value = true;
+          playing.value = false;
         }
-        isEnd.value = true;
-        playing.value = false;
       } catch (error) {
         console.error("结束设备失败", error);
       }
@@ -410,7 +415,7 @@ const _sfc_main = {
           type: "closeempty",
           size: "18"
         }),
-        O: common_vendor.t(`共使用${totalMin.value}分钟，花费${totalCost.value}元`),
+        O: common_vendor.t(`共使用${lastOrder.value.min}分钟，花费${lastOrder.value.cost}元`),
         P: common_vendor.o(($event) => toFeedbackClick()),
         Q: common_vendor.p({
           type: "info",
