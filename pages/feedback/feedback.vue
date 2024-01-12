@@ -72,8 +72,10 @@ const sendMessage = () => {
 	// method:''
 	type:0
   };
+  // 将数据存入缓存中，便于读取
   chatMessages.value.push(newMessage);
   saveChatHistory();
+  // 根据用户的回答来进行不同处理
   if(newMessage.isCurrentUser&&newMessage.content.includes('历史订单')){
 	  const historyOrderReply = {
 		isCurrentUser:false,
@@ -156,6 +158,7 @@ const sendMessage = () => {
 
   inputText.value = '';
 };
+// 对特殊方法进行特殊处理
 const methodClick = (type)=>{
 	if(type===2){
 		uni.navigateTo({
