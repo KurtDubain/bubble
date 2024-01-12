@@ -41,7 +41,7 @@
 				</view>
 			</view>
 			<!-- 选项弹窗 -->
-			<view  v-show="showPlayOptions">
+			<!-- <view  v-show="showPlayOptions">
 				<view class="popup">
 					
 					<view class="popup-content">
@@ -67,7 +67,7 @@
 						</view>
 					</view>
 				</view>
-			</view>
+			</view> -->
 			<!-- 第一种游玩方式 -->
 			<view v-show="!isEnd&&playing&&playType===0">
 				<view  class="control_view">
@@ -157,7 +157,7 @@ import {
 	const totalSecond = ref(0) // 总秒钟
 	const totalMin = ref(0) // 总分钟
 	const totalCost= ref(0) // 总花费
-	const showPlayOptions = ref(false)//游玩模式选项是否展示
+	// const showPlayOptions = ref(false)//游玩模式选项是否展示
 	const countDown = ref(600)//单次游玩倒计时（十分钟）
 	const playType = ref(0)//游玩模式
 	const isLogIn = ref(false)// 判断是否登陆
@@ -281,7 +281,7 @@ import {
 			});
 			setTimeout(() => {
 				uni.hideLoading()
-				showPlayOptions.value = true
+				// showPlayOptions.value = true
 			},500);
 		}else{
 			getUserInfo()
@@ -305,7 +305,7 @@ import {
 	const startPlaying = (option)=>{
 		makeSureLog()
 		if(isLogIn.value){
-			showPlayOptions.value = false
+			// showPlayOptions.value = false
 			startTime.value = new Date()
 			playing.value = true
 			// 处理两种不同的游玩模式
@@ -431,6 +431,8 @@ import {
 			deviceDetail.value.deviceStatus = res.data.data.deviceDetail.status
 			deviceDetail.value.dropName = res.data.data.deviceDetail.dropName
 			playType.value = res.data.data.deviceDetail.mode
+			playType.value = 0
+			startPlaying(playType.value)
 			
 		}catch(error){
 			console.error('设备详情获取失败',error)

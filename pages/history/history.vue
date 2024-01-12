@@ -205,23 +205,17 @@ const handleException = () => {
   padding: 20rpx;
   border-radius: 10rpx;
   width:500rpx;
-/*  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center; */
 }
 .form-header{
 	
 }
 .form-item {
   display: flex;
-  /* flex-direction: column; */
   margin-bottom: 15rpx;
 }
 .modal-button {
   flex: 1;
   margin: 15rpx 0 15rpx 0;
-  /* padding: 5rpx; */
   font-size: 27rpx;
   border-radius: 15rpx;
   text-align: center;

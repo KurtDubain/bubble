@@ -183,33 +183,12 @@
 	const changeIsCount = ()=>{
 		isCount.value = !isCount.value
 	}
-	// // 按照游玩时长排序
-	// const timeRank = ()=>{
-	// 	curCityArray.value = totalData.value.filter(item=>item.city === curCity.value)
-	// 	curCityArray.value.sort((a,b)=>b.time-a.time)
-	// }
-	// // 按照游玩人数排序
-	// const countRank = ()=>{
-	// 	curCityArray.value = totalData.value.filter(item=>item.city === curCity.value)
-	// 	curCityArray.value.sort((a,b)=>b.count-a.count)
-	// }
 	// 监听排序类型变化
 	watch(isCount,async()=>{
-		// if(!newVal){
-		// 	timeRank()
-		// }else{
-		// 	countRank()
-		// }
 		await getTotalListByCity()
 	})
 	// 监听当前城市的变化
 	watch(curCity,async()=>{
-		// if(isCount.value){
-		// 	countRank()
-		// }else{
-		// 	timeRank()
-			
-		// }
 		await getTotalListByCity()
 	})
 	// 用户登陆操作

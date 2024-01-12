@@ -18,7 +18,6 @@ const _sfc_main = {
     const totalSecond = common_vendor.ref(0);
     const totalMin = common_vendor.ref(0);
     const totalCost = common_vendor.ref(0);
-    const showPlayOptions = common_vendor.ref(false);
     const countDown = common_vendor.ref(600);
     const playType = common_vendor.ref(0);
     const isLogIn = common_vendor.ref(false);
@@ -119,7 +118,6 @@ const _sfc_main = {
         });
         setTimeout(() => {
           common_vendor.index.hideLoading();
-          showPlayOptions.value = true;
         }, 500);
       } else {
         getUserInfo();
@@ -140,7 +138,6 @@ const _sfc_main = {
     const startPlaying = (option) => {
       makeSureLog();
       if (isLogIn.value) {
-        showPlayOptions.value = false;
         startTime.value = /* @__PURE__ */ new Date();
         playing.value = true;
         if (option === 0) {
@@ -235,6 +232,8 @@ const _sfc_main = {
         deviceDetail.value.deviceStatus = res.data.data.deviceDetail.status;
         deviceDetail.value.dropName = res.data.data.deviceDetail.dropName;
         playType.value = res.data.data.deviceDetail.mode;
+        playType.value = 0;
+        startPlaying(playType.value);
       } catch (error) {
         console.error("设备详情获取失败", error);
       }
@@ -270,9 +269,6 @@ const _sfc_main = {
         });
       }
     };
-    const clickCloseOptions = () => {
-      showPlayOptions.value = false;
-    };
     return (_ctx, _cache) => {
       return {
         a: latitude.value,
@@ -304,71 +300,63 @@ const _sfc_main = {
         n: common_vendor.o(($event) => toFeedbackClick()),
         o: common_vendor.o(($event) => clickPlay()),
         p: !isEnd.value && !playing.value,
-        q: common_vendor.o(($event) => clickCloseOptions()),
-        r: common_vendor.p({
-          type: "closeempty",
-          size: "18"
-        }),
-        s: common_vendor.o(($event) => startPlaying(0)),
-        t: common_vendor.o(($event) => startPlaying(1)),
-        v: showPlayOptions.value,
-        w: common_vendor.p({
+        q: common_vendor.p({
           type: "paperplane-filled",
           size: "14"
         }),
-        x: common_vendor.o(($event) => clickClose()),
-        y: common_vendor.p({
+        r: common_vendor.o(($event) => clickClose()),
+        s: common_vendor.p({
           type: "closeempty",
           size: "18"
         }),
-        z: common_vendor.t(`${Math.floor(countDown.value / 60)}:${countDown.value % 60}`),
-        A: common_vendor.t(curDeviceNum.value),
-        B: common_vendor.o(($event) => toFeedbackClick()),
-        C: common_vendor.p({
+        t: common_vendor.t(`${Math.floor(countDown.value / 60)}:${countDown.value % 60}`),
+        v: common_vendor.t(curDeviceNum.value),
+        w: common_vendor.o(($event) => toFeedbackClick()),
+        x: common_vendor.p({
           type: "info",
           size: "16"
         }),
-        D: common_vendor.o(($event) => toFeedbackClick()),
-        E: common_vendor.t("付款成功，设备已启动"),
-        F: !isEnd.value && playing.value && playType.value === 0,
+        y: common_vendor.o(($event) => toFeedbackClick()),
+        z: common_vendor.t("付款成功，设备已启动"),
+        A: !isEnd.value && playing.value && playType.value === 0,
+        B: common_vendor.p({
+          type: "paperplane-filled",
+          size: "14"
+        }),
+        C: common_vendor.o(($event) => clickClose()),
+        D: common_vendor.p({
+          type: "closeempty",
+          size: "18"
+        }),
+        E: common_vendor.t(`已使用${totalMin.value}分钟，花费${totalCost.value}元`),
+        F: common_vendor.o(($event) => toFeedbackClick()),
         G: common_vendor.p({
-          type: "paperplane-filled",
-          size: "14"
+          type: "info",
+          size: "16"
         }),
-        H: common_vendor.o(($event) => clickClose()),
-        I: common_vendor.p({
-          type: "closeempty",
-          size: "18"
-        }),
-        J: common_vendor.t(`已使用${totalMin.value}分钟，花费${totalCost.value}元`),
-        K: common_vendor.o(($event) => toFeedbackClick()),
+        H: common_vendor.o(($event) => toFeedbackClick()),
+        I: common_vendor.t("结束游玩"),
+        J: common_vendor.o(($event) => clickStop()),
+        K: !isEnd.value && playing.value && playType.value === 1,
         L: common_vendor.p({
-          type: "info",
-          size: "16"
-        }),
-        M: common_vendor.o(($event) => toFeedbackClick()),
-        N: common_vendor.t("结束游玩"),
-        O: common_vendor.o(($event) => clickStop()),
-        P: !isEnd.value && playing.value && playType.value === 1,
-        Q: common_vendor.p({
           type: "paperplane-filled",
           size: "14"
         }),
-        R: common_vendor.o(($event) => clickClose()),
-        S: common_vendor.p({
+        M: common_vendor.o(($event) => clickClose()),
+        N: common_vendor.p({
           type: "closeempty",
           size: "18"
         }),
-        T: common_vendor.t(`共使用${totalMin.value}分钟，花费${totalCost.value}元`),
-        U: common_vendor.o(($event) => toFeedbackClick()),
-        V: common_vendor.p({
+        O: common_vendor.t(`共使用${totalMin.value}分钟，花费${totalCost.value}元`),
+        P: common_vendor.o(($event) => toFeedbackClick()),
+        Q: common_vendor.p({
           type: "info",
           size: "16"
         }),
-        W: common_vendor.o(($event) => toFeedbackClick()),
-        X: common_vendor.o(($event) => clickClose()),
-        Y: isEnd.value,
-        Z: !showQRScan.value
+        R: common_vendor.o(($event) => toFeedbackClick()),
+        S: common_vendor.o(($event) => clickClose()),
+        T: isEnd.value,
+        U: !showQRScan.value
       };
     };
   }
