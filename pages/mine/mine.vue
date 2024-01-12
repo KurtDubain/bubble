@@ -59,7 +59,7 @@
 						<!-- <uni-th width='70' align="center">时长</uni-th> -->
 					</uni-tr>
 					<!-- 具体数据 -->
-					<uni-tr v-for="(item,index) in curCityArray.slice(0,5)" :key="index">
+					<uni-tr v-for="(item,index) in totalData.slice(0,5)" :key="index">
 						<uni-td align="center">
 							<view class="rank-list-index">
 								<text class="rank-number">{{ index + 1 }}</text>
@@ -81,7 +81,7 @@
 			<view class="button" @click="logOut()">退出登录</view>
 		</view>
 		<!-- 绑定手机号功能 -->
-		<view v-show="!userInfo.bindingPhone&&isLogIn">
+		<view v-show="!isBinding&&isLogIn">
 			<button class="phone-button" open-type="getPhoneNumber" @getphonenumber="getUserPhoneNumber">绑定手机号<uni-icons type="compose" size="26" ></uni-icons></button>
 		</view>
 		<!-- 登陆按钮 -->
@@ -97,6 +97,7 @@
 	const code= ref('')
 	// 判断用户登陆状态
 	let isLogIn = ref(false)
+	let isBinding = ref(false)
 	const userInfo = ref({})
 	// 初始化全部数据
 	const totalData = ref([
@@ -114,30 +115,12 @@
 			count:43,
 			time:532
 		},
-		{
-			id:2,
-			city:'天津',
-			name:'开平镇',
-			count:99,
-			time:2314
-		},
 	])
 	let curCity = ref(null) //当前城市
 	let isCount = ref(true) //是否是按照时间排序
 	const token = ref('')
 	// 选择器数据
-	const cityData = ref([
-		{
-			value:"北京",text:"北京"
-		},
-		{
-			value:"天津",text:"天津"
-		},
-		{
-			value:"上海",text:"上海"
-		},
-		
-	])
+	const cityData = ref([])
 	// 获取城市名称数据
 	const getAllCity = async()=>{
 		try{
@@ -174,20 +157,25 @@
 		}
 	}
 	// 筛选过后的数据
-	const curCityArray = ref([])
+	// const curCityArray = ref([])
 	onMounted(async()=>{
 		// 初始化为北京
 		curCity.value = '北京'
 		await getAllCity()
 		await getTotalListByCity()
 		// 初始化排名
-		countRank()
+		// countRank()
 		// 初始化，判断登陆情况，加载用户信息
-		const cachedUserInfo = uni.getStorageSync('isLogIn');
-		if (cachedUserInfo) {
+		const logState = uni.getStorageSync('isLogIn');
+		const bindingState = uni.getStorageSync('isBinding')
+		if (logState) {
 		    // userInfo.value = cachedUserInfo;
+			if(bindingState){
+				isBinding.value =true
+			}
 			await getUserInfo()
 		    isLogIn.value = true;
+			
 		}
 		
 	})

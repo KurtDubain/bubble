@@ -23,6 +23,7 @@ const _sfc_main = {
   setup(__props) {
     common_vendor.ref("");
     let isLogIn = common_vendor.ref(false);
+    let isBinding = common_vendor.ref(false);
     const userInfo = common_vendor.ref({});
     const totalData = common_vendor.ref([
       {
@@ -38,32 +39,12 @@ const _sfc_main = {
         name: "通州",
         count: 43,
         time: 532
-      },
-      {
-        id: 2,
-        city: "天津",
-        name: "开平镇",
-        count: 99,
-        time: 2314
       }
     ]);
     let curCity = common_vendor.ref(null);
     let isCount = common_vendor.ref(true);
     const token = common_vendor.ref("");
-    const cityData = common_vendor.ref([
-      {
-        value: "北京",
-        text: "北京"
-      },
-      {
-        value: "天津",
-        text: "天津"
-      },
-      {
-        value: "上海",
-        text: "上海"
-      }
-    ]);
+    const cityData = common_vendor.ref([]);
     const getAllCity = async () => {
       try {
         const cityDataRes = await common_vendor.index.request({
@@ -95,14 +76,16 @@ const _sfc_main = {
         console.error("获取排名数据成功", error);
       }
     };
-    const curCityArray = common_vendor.ref([]);
     common_vendor.onMounted(async () => {
       curCity.value = "北京";
       await getAllCity();
       await getTotalListByCity();
-      countRank();
-      const cachedUserInfo = common_vendor.index.getStorageSync("isLogIn");
-      if (cachedUserInfo) {
+      const logState = common_vendor.index.getStorageSync("isLogIn");
+      const bindingState = common_vendor.index.getStorageSync("isBinding");
+      if (logState) {
+        if (bindingState) {
+          isBinding.value = true;
+        }
         await getUserInfo();
         isLogIn.value = true;
       }
@@ -277,7 +260,7 @@ const _sfc_main = {
           width: "70",
           align: "center"
         }),
-        r: common_vendor.f(curCityArray.value.slice(0, 5), (item, index, i0) => {
+        r: common_vendor.f(totalData.value.slice(0, 5), (item, index, i0) => {
           return {
             a: common_vendor.t(index + 1),
             b: "367b2d30-12-" + i0 + "," + ("367b2d30-11-" + i0),
@@ -310,7 +293,7 @@ const _sfc_main = {
           size: "26"
         }),
         A: common_vendor.o(getUserPhoneNumber),
-        B: !userInfo.value.bindingPhone && common_vendor.unref(isLogIn),
+        B: !common_vendor.unref(isBinding) && common_vendor.unref(isLogIn),
         C: common_vendor.o(userLogin),
         D: !common_vendor.unref(isLogIn)
       };
