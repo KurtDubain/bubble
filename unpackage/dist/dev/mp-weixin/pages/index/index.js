@@ -44,13 +44,11 @@ const _sfc_main = {
       });
       getUserLocation();
       makeSureLog();
-      console.log(222);
       if (curDeviceNum.value !== "") {
         await getDeviceMsgByDeviceNum();
       }
     });
     common_vendor.onLoad((opstions) => {
-      console.log(111, opstions);
       scanQRQuery(opstions.scene);
     });
     const getUserLocation = () => {

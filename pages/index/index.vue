@@ -192,7 +192,6 @@ import {
 		// 初始化获取二维码参数
 		// 初始化判断是否登陆
 		makeSureLog()
-		console.log(222)
 		if(curDeviceNum.value!==''){
 			await getDeviceMsgByDeviceNum()
 		}
@@ -200,7 +199,6 @@ import {
 	})
 
 	onLoad((opstions)=>{
-		console.log(111,opstions);
 		scanQRQuery(opstions.scene)
 	})
 
@@ -283,7 +281,7 @@ import {
 
 	}
 
-	// 游玩游玩
+	// 点击游玩
 	const clickPlay = () => {
 		makeSureLog()
 		if(isLogIn.value){
@@ -307,6 +305,7 @@ import {
 			totalCost.value = totalMin.value*2
 		},1000)
 	}
+	// 监视关闭定时器
 	watch(playing,(newVal)=>{
 		if(!newVal){
 			console.log(newVal)
@@ -360,16 +359,6 @@ import {
 			}
 		},1000)
 	}
-	// 提前结束当前游玩
-	// const stopPlayingAhead = ()=>{
-		
-	// 	playing.value = false
-	// 	isEnd.value = true
-	// 	totalCost.value = 5
-	// 	totalMin.value = Math.ceil((600-countDown.value)/60)
-	// 	clearInterval(timer)
-	// 	countDown.value = 600
-	// }
 	// 第二种模式的主动结束
 	const clickStop = async()=>{
 		await closeEquipment()
@@ -456,25 +445,6 @@ import {
 		// 	console.log('初始化',playType.value)
 		// }
 	}	
-	
-	const getUserPhoneNumber = async(e) => {
-		console.log(e)
-		  try {
-			const res = await uni.request({
-				url:`https://allmetaahome.com/wxApp/login`,
-				method:'POST',
-				data:{
-					code:e.detail.code
-				}
-			})
-			userInfo.value.phoneNumber = res.data.phone_info.phoneNumber
-			isLogIn.value = true
-			uni.setStorageSync('userInfo',userInfo.value)
-			uni.setStorageSync('isLogin',true)
-		  } catch (error) {
-			console.error('WeChat login error:', error);
-		  }
-	}
 	// 验证当前用户是否登陆
 	const makeSureLog = ()=>{
 		const logIn = uni.getStorageSync('isLogIn');
