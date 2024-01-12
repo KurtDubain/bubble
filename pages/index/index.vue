@@ -550,9 +550,9 @@ import {
 		}
 	} 
 	// 选项卡的选择
-	const clickCloseOptions = ()=>{
-		showPlayOptions.value=false
-	}
+	// const clickCloseOptions = ()=>{
+	// 	showPlayOptions.value=false
+	// }
 </script>
 
 <style scoped>
