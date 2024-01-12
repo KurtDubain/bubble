@@ -425,7 +425,7 @@ import {
 	const getDeviceMsgByDeviceNum = async()=>{
 		try{
 			const res = await uni.request({
-				url:`https://allmetaahome:2333/equipment/detail?equipment=${curDeviceNum.value}`,
+				url:`https://allmetaahome.com:2333/equipment/detail?equipment=${curDeviceNum.value}`,
 				method:"GET",
 			})
 			deviceDetail.value.deviceStatus = res.data.data.deviceDetail.status
@@ -474,7 +474,7 @@ import {
 	const startEquipment = async()=>{
 		try{
 			const res = await uni.request({
-				url:`https://allmetaahome:2333/equipment/startEquipment?equipmentNum=${curDeviceNum.value}`,
+				url:`https://allmetaahome.com:2333/equipment/startEquipment?equipmentNum=${curDeviceNum.value}`,
 				method:"GET",
 				header:{
 					satoken:token.value
@@ -509,7 +509,7 @@ import {
 	const closeEquipment = async()=>{
 		try{
 			const res = await uni.request({
-				url:'https://allmetaahome:2333/equipment/closeEquipmentByUser',
+				url:'https://allmetaahome.com:2333/equipment/closeEquipmentByUser',
 				method:"GET",
 				header:{
 					satoken:token.value

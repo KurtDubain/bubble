@@ -45,12 +45,18 @@ onMounted(()=>{
 const getUserHistroyList = async()=>{
 	try{
 		const res = await uni.request({
-			url:`https://allmetaahome:2333/order/historyListByUser`,
+			url:`https://allmetaahome.com:2333/order/historyListByUser`,
 			method:"GET",
 			header:{
 				satoken:token.value
 			}
 		})
+		orderList.value = res.data.data.map((item)=>({
+			orderNum:item.orderNum,
+			playDate:item.time,
+			playLocation:item.dropName,
+			playCost:item.money,
+		}))
 		
 	}catch(error){
 		console.error('用户历史订单获取失败',error)

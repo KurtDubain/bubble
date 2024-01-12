@@ -41,7 +41,7 @@
 				
 					<button class="rank-change" type="default" size="mini" @click="changeIsCount()">{{ isCount?'按时长':'按次数' }}</button>
 					<view class="rank-select">
-						<uni-data-select placeholder="城市" :localdata="cityData" v-model="curCity" :clear="false">
+						<uni-data-select placeholder="北京市" :localdata="cityData" v-model="curCity" :clear="false">
 							
 						</uni-data-select>
 					</view>
@@ -121,117 +121,12 @@
 			count:99,
 			time:2314
 		},
-		{
-			id:3,
-			city:'天津',
-			name:'西青区',
-			count:21,
-			time:56
-		},
-		{
-			id:4,
-			city:'天津',
-			name:'万象城',
-			count:12,
-			time:432
-		},
-		{
-			id:5,
-			city:'上海',
-			name:'外滩',
-			count:655,
-			time:32432
-		},
-		{
-			id:6,
-			city:'上海',
-			name:'SOHO',
-			count:454,
-			time:6874
-		},
-		{
-			id:7,
-			city:'上海',
-			name:'浦东',
-			count:96,
-			time:546
-		},
-		{
-			id:8,
-			city:'北京',
-			name:'北京站',
-			count:213,
-			time:2312
-		},
-		{
-			id:9,
-			city:'北京',
-			name:'海淀黄庄',
-			count:223,
-			time:13
-		},
-		{
-			id:10,
-			city:'北京',
-			name:'TBD',
-			count:423,
-			time:132
-		},
-		{
-			id:11,
-			city:'天津',
-			name:'冶里村',
-			count:9,
-			time:234
-		},
-		{
-			id:12,
-			city:'天津',
-			name:'路北区',
-			count:121,
-			time:562
-		},
-		{
-			id:13,
-			city:'天津',
-			name:'唐山一中',
-			count:112,
-			time:4
-		},
-		{
-			id:14,
-			city:'上海',
-			name:'11',
-			count:55,
-			time:3232
-		},
-		{
-			id:15,
-			city:'上海',
-			name:'22',
-			count:4514,
-			time:687124
-		},
-		{
-			id:16,
-			city:'上海',
-			name:'33',
-			count:916,
-			time:51246
-		},
-		{
-			id:17,
-			city:'北京',
-			name:'秦皇岛',
-			count:212313,
-			time:23212
-		},
 	])
 	let curCity = ref(null) //当前城市
 	let isCount = ref(true) //是否是按照时间排序
 	const token = ref('')
 	// 选择器数据
-	const cityData = [
+	const cityData = ref([
 		{
 			value:"北京",text:"北京"
 		},
@@ -242,17 +137,20 @@
 			value:"上海",text:"上海"
 		},
 		
-	]
+	])
 	// 获取城市名称数据
 	const getAllCity = async()=>{
 		try{
 			const cityDataRes = await uni.request({
-				url:`https://allmetaahome:2333/dropoff/cityList`,
+				url:`https://allmetaahome.com:2333/dropoff/cityList`,
 				method:"GET"
 			})
-			
+			cityData.value = cityDataRes.data.data.map((item)=>({
+				value:item,
+				text:item
+			}))
 		}catch(error){
-			console.error('获取排名数据成功',error)
+			console.error('获取城市数据失败',error)
 		}
 	}
 	// 获取城市排名数据数组
@@ -260,9 +158,16 @@
 		try{
 			
 			const cityTotalRes = await uni.request({
-				url:`https://allmetaahome:2333/order/rankListByCity?city=${curCity}`,
+				url:`https://allmetaahome.com:2333/order/rankListByCity?city=${curCity.value}&type=${isCount.value?0:1}`,
 				method:"GET"
 			})
+			totalData.value = cityTotalRes.data.data.map((item)=>({
+				id:item.dropNum,
+				city:item.city,
+				name:item.dropName,
+				count:item.amount,
+				time:item.times
+			}))
 			
 		}catch(error){
 			console.error('获取排名数据成功',error)
@@ -290,32 +195,34 @@
 	const changeIsCount = ()=>{
 		isCount.value = !isCount.value
 	}
-	// 按照游玩时长排序
-	const timeRank = ()=>{
-		curCityArray.value = totalData.value.filter(item=>item.city === curCity.value)
-		curCityArray.value.sort((a,b)=>b.time-a.time)
-	}
-	// 按照游玩人数排序
-	const countRank = ()=>{
-		curCityArray.value = totalData.value.filter(item=>item.city === curCity.value)
-		curCityArray.value.sort((a,b)=>b.count-a.count)
-	}
+	// // 按照游玩时长排序
+	// const timeRank = ()=>{
+	// 	curCityArray.value = totalData.value.filter(item=>item.city === curCity.value)
+	// 	curCityArray.value.sort((a,b)=>b.time-a.time)
+	// }
+	// // 按照游玩人数排序
+	// const countRank = ()=>{
+	// 	curCityArray.value = totalData.value.filter(item=>item.city === curCity.value)
+	// 	curCityArray.value.sort((a,b)=>b.count-a.count)
+	// }
 	// 监听排序类型变化
-	watch(isCount,(newVal)=>{
-		if(!newVal){
-			timeRank()
-		}else{
-			countRank()
-		}
+	watch(isCount,async()=>{
+		// if(!newVal){
+		// 	timeRank()
+		// }else{
+		// 	countRank()
+		// }
+		await getTotalListByCity()
 	})
 	// 监听当前城市的变化
-	watch(curCity,()=>{
-		if(isCount.value){
-			countRank()
-		}else{
-			timeRank()
+	watch(curCity,async()=>{
+		// if(isCount.value){
+		// 	countRank()
+		// }else{
+		// 	timeRank()
 			
-		}
+		// }
+		await getTotalListByCity()
 	})
 	// 用户登陆操作
 	const userLogin = async()=>{
@@ -389,7 +296,7 @@
 	const getUserInfo = async()=>{
 		try{
 			const res = await uni.request({
-				url:`https://allmetaahome:2333/wxApp/detail`,
+				url:`https://allmetaahome.com:2333/wxApp/detail`,
 				method:"GET",
 				header:{
 					satoken:token.value

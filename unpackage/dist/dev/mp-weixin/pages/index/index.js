@@ -229,7 +229,7 @@ const _sfc_main = {
     const getDeviceMsgByDeviceNum = async () => {
       try {
         const res = await common_vendor.index.request({
-          url: `https://allmetaahome:2333/equipment/detail?equipment=${curDeviceNum.value}`,
+          url: `https://allmetaahome.com:2333/equipment/detail?equipment=${curDeviceNum.value}`,
           method: "GET"
         });
         deviceDetail.value.deviceStatus = res.data.data.deviceDetail.status;
