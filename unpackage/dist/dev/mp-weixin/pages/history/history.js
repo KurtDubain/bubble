@@ -15,20 +15,7 @@ const _sfc_main = {
     const backMoneyForm = common_vendor.ref(false);
     const backMoneyDetail = common_vendor.ref("");
     const refundReason = common_vendor.ref("");
-    const orderList = common_vendor.ref([
-      {
-        orderNum: "dasho",
-        playDate: "08.29 16:00",
-        playLocation: "xx省xx市xx县xx村A",
-        playCost: "50"
-      },
-      {
-        orderNum: "idsad",
-        playDate: "08.30 14:30",
-        playLocation: "xx省xx市xx县xx村B",
-        playCost: "60"
-      }
-    ]);
+    const orderList = common_vendor.ref([]);
     common_vendor.onMounted(async () => {
       const Token = common_vendor.index.getStorageSync("Token");
       if (Token) {
@@ -47,10 +34,10 @@ const _sfc_main = {
         });
         orderList.value = res.data.data.map((item) => ({
           orderNum: item.orderNum,
-          playDate: item.time,
+          playDate: formattedDateTime(item.time),
           playLocation: item.dropName,
           playCost: item.money
-        }));
+        })).sort((a, b) => new Date(b.playDate) - new Date(a.playDate));
       } catch (error) {
         console.error("用户历史订单获取失败", error);
       }
@@ -87,6 +74,14 @@ const _sfc_main = {
       } catch (error) {
         console.log("退款申请异常", error);
       }
+    };
+    const formattedDateTime = (time) => {
+      const dateTime = new Date(time);
+      const month = (dateTime.getMonth() + 1).toString().padStart(2, "0");
+      const day = dateTime.getDate().toString().padStart(2, "0");
+      const hours = dateTime.getHours().toString().padStart(2, "0");
+      const minutes = dateTime.getMinutes().toString().padStart(2, "0");
+      return `${month}-${day} ${hours}:${minutes}`;
     };
     const cancelRefund = () => {
       backMoneyForm.value = false;

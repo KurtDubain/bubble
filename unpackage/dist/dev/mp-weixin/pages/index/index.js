@@ -22,7 +22,7 @@ const _sfc_main = {
       cost: 0,
       min: 0
     });
-    const countDown = common_vendor.ref(600);
+    const countDown = common_vendor.ref(10);
     const playType = common_vendor.ref(0);
     const isLogIn = common_vendor.ref(false);
     const _mapContext = common_vendor.index.createMapContext("myMap");
@@ -31,9 +31,11 @@ const _sfc_main = {
     const markers = common_vendor.ref(0);
     let timer = null;
     const curDeviceNum = common_vendor.ref("");
+    const orderNum = common_vendor.ref("");
     const deviceDetail = common_vendor.ref({
       dropName: "",
-      deviceStatus: 1
+      deviceStatus: 1,
+      deviceId: null
     });
     const token = common_vendor.ref("");
     common_vendor.onMounted(async () => {
@@ -145,7 +147,7 @@ const _sfc_main = {
         console.log(timer);
       }
     });
-    const startPlaying = (option) => {
+    const startPlaying = async (option) => {
       makeSureLog();
       if (isLogIn.value) {
         startTime.value = /* @__PURE__ */ new Date();
@@ -157,8 +159,9 @@ const _sfc_main = {
           });
           setTimeout(() => {
             common_vendor.index.hideLoading();
-            startCountDown();
-          }, 2e3);
+          }, 1e3);
+          await handlePaymentByPlayBackup();
+          startCountDown();
         } else {
           playType.value = 1;
           startBilling();
@@ -187,6 +190,7 @@ const _sfc_main = {
     };
     const clickStop = async () => {
       await closeEquipment();
+      await handlePaymentByPlayAhead();
       lastOrder.value.cost = totalCost.value;
       lastOrder.value.min = totalMin.value;
     };
@@ -239,7 +243,7 @@ const _sfc_main = {
     const getDeviceMsgByDeviceNum = async () => {
       try {
         const res = await common_vendor.index.request({
-          url: `https://allmetaahome.com:2333/equipment/detail?equipment=${curDeviceNum.value}`,
+          url: `https://allmetaahome.com:2333/equipment/detail?equipmentNum=${curDeviceNum.value}`,
           method: "GET"
         });
         deviceDetail.value.deviceStatus = res.data.data.deviceDetail.status;
@@ -318,6 +322,78 @@ const _sfc_main = {
         }
       } catch (error) {
         console.error("结束设备失败", error);
+      }
+    };
+    const handlePaymentByPlayAhead = async () => {
+      try {
+        const res = await common_vendor.index.request({
+          url: "https://allmetaahome.com:2333/order/requestPayOrder",
+          method: "POST",
+          data: {
+            "orderNum": orderNum.value,
+            "amount": 10,
+            "times": (/* @__PURE__ */ new Date()).getTime()
+          },
+          header: {
+            satoken: token.value
+          }
+        });
+        await common_vendor.index.requestPayment({
+          "provider": "wxpay",
+          "orderInfo": {
+            "appid": "",
+            "noncestr": "",
+            "package": "Sign=WXPay",
+            "partnerid": "21321",
+            "prepayid": "xssadsa",
+            "timetamp": 213,
+            "sign": 21321
+          },
+          success(res2) {
+            console.log("支付成功", res2);
+          },
+          fail(error) {
+            console.log("支付遇到了一点问题", error);
+          }
+        });
+      } catch (error) {
+        console.error("支付失败", error);
+      }
+    };
+    const handlePaymentByPlayBackup = async () => {
+      try {
+        const res = await common_vendor.index.request({
+          url: `https://allmetaahome.com:2333/order/payBeforePlay`,
+          method: "POST",
+          data: {
+            "equipmentId": 1,
+            "amout": 10,
+            "timetamp": (/* @__PURE__ */ new Date()).getTime()
+          },
+          header: {
+            satoken: token.value
+          }
+        });
+        await common_vendor.index.requestPayment({
+          "provider": "wxpay",
+          "orderInfo": {
+            "appid": "",
+            "noncestr": "",
+            "package": "Sign=WXPay",
+            "partnerid": "21321",
+            "prepayid": "xssadsa",
+            "timetamp": 213,
+            "sign": 21321
+          },
+          success(res2) {
+            console.log("支付成功", res2);
+          },
+          fail(error) {
+            console.log("支付遇到了一点问题", error);
+          }
+        });
+      } catch (error) {
+        console.error("支付失败", error);
       }
     };
     const toMineClick = () => {

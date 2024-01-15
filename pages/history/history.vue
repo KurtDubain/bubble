@@ -53,20 +53,7 @@ const token = ref()
 const backMoneyForm = ref(false)
 const backMoneyDetail = ref('')
 const refundReason = ref('')
-const orderList = ref([
-  {
-	orderNum:'dasho',
-    playDate: '08.29 16:00',
-    playLocation: 'xx省xx市xx县xx村A',
-    playCost: '50',
-  },
-  {
-	orderNum:'idsad',
-    playDate: '08.30 14:30',
-    playLocation: 'xx省xx市xx县xx村B',
-    playCost: '60',
-  },
-]);
+const orderList = ref([]);
 onMounted(async()=>{
 	const Token = uni.getStorageSync('Token');
 	if (Token) {
@@ -86,10 +73,10 @@ const getUserHistroyList = async()=>{
 		})
 		orderList.value = res.data.data.map((item)=>({
 			orderNum:item.orderNum,
-			playDate:item.time,
+			playDate:formattedDateTime(item.time),
 			playLocation:item.dropName,
 			playCost:item.money,
-		}))
+		})).sort((a,b)=>new Date(b.playDate) - new Date(a.playDate))
 		
 	}catch(error){
 		console.error('用户历史订单获取失败',error)
@@ -130,7 +117,14 @@ const applyForRefund = async()=>{
 		console.log('退款申请异常',error)
 	}
 }
-
+const formattedDateTime = (time)=>{
+	const dateTime = new Date(time)
+	const month = (dateTime.getMonth()+1).toString().padStart(2,"0")
+	const day = dateTime.getDate().toString().padStart(2,"0")
+	const hours = dateTime.getHours().toString().padStart(2,"0")
+	const minutes = dateTime.getMinutes().toString().padStart(2,"0")
+	return `${month}-${day} ${hours}:${minutes}`
+}
 const cancelRefund = ()=>{
 	backMoneyForm.value = false
 }

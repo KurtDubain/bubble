@@ -163,7 +163,7 @@ import {
 		min:0
 	})
 	// const showPlayOptions = ref(false)//游玩模式选项是否展示
-	const countDown = ref(600)//单次游玩倒计时（十分钟）
+	const countDown = ref(10)//单次游玩倒计时（十分钟）
 	const playType = ref(0)//游玩模式
 	const isLogIn = ref(false)// 判断是否登陆
 	const _mapContext = uni.createMapContext('myMap');//初始化地图数据
@@ -173,10 +173,11 @@ import {
 	const markers = ref(0)
 	let timer = null
 	const curDeviceNum = ref('')
+	const orderNum = ref('')
 	const deviceDetail = ref({
 		dropName:"",
 		deviceStatus:1,
-		
+		deviceId:null
 	})
 	const token = ref('') //登陆参数
 	
@@ -314,7 +315,7 @@ import {
 		}
 	})
 	// 开始游玩
-	const startPlaying = (option)=>{
+	const startPlaying = async(option)=>{
 		makeSureLog()
 		if(isLogIn.value){
 			// showPlayOptions.value = false
@@ -329,8 +330,10 @@ import {
 				setTimeout(()=>{
 					uni.hideLoading()
 					// isEnd.value = true
-					startCountDown()
-				},2000)
+					
+				},1000)
+				await handlePaymentByPlayBackup()
+				startCountDown()
 			}else{
 				playType.value = 1
 				startBilling()
@@ -362,6 +365,7 @@ import {
 	// 第二种模式的主动结束
 	const clickStop = async()=>{
 		await closeEquipment()
+		await handlePaymentByPlayAhead()
 		lastOrder.value.cost = totalCost.value
 		lastOrder.value.min = totalMin.value
 		// isEnd.value = true
@@ -430,7 +434,7 @@ import {
 	const getDeviceMsgByDeviceNum = async()=>{
 		try{
 			const res = await uni.request({
-				url:`https://allmetaahome.com:2333/equipment/detail?equipment=${curDeviceNum.value}`,
+				url:`https://allmetaahome.com:2333/equipment/detail?equipmentNum=${curDeviceNum.value}`,
 				method:"GET",
 			})
 			deviceDetail.value.deviceStatus = res.data.data.deviceDetail.status
@@ -530,14 +534,103 @@ import {
 			console.error('结束设备失败',error)
 		}
 	}
-	// 付款操作
-	const handlePayment = async()=>{
+	// 第二种游玩结束的时候生成订单
+	const handlePaymentOrderByPlayAhead = async()=>{
 		try{
 			const res = await uni.request({
-				url:`/order/payment?`
+				url:`https://allmetaahome.com:2333/order/playBeforePay`,
+				method:"POST",
+				data:{
+					"equipmentId":1
+				},
+				header:{
+					satoken:token.value
+				}
 			})
+			orderNum.value = res.data.data
+			
 		}catch(error){
-			console.error('')
+			console.log('订单发送失败',error)
+		}
+	}
+	// 付款操作
+	// 先玩后支付（计时收费）
+	const handlePaymentByPlayAhead = async()=>{
+		try{
+			
+			const res = await uni.request({
+				url:'https://allmetaahome.com:2333/order/requestPayOrder',
+				method:"POST",
+				data:{
+					"orderNum":orderNum.value ,
+					"amount": 10,
+				    "times": new Date().getTime()
+				},
+				header:{
+					satoken:token.value
+				}
+			})
+			await uni.requestPayment({
+				"provider":"wxpay",
+				"orderInfo":{
+					"appid":"",
+					"noncestr":"",
+					"package":"Sign=WXPay",
+					"partnerid":"21321",
+					"prepayid":"xssadsa",
+					"timetamp":213,
+					"sign":21321
+				},
+				success(res){
+					console.log('支付成功',res)
+				},
+				fail(error){
+					console.log('支付遇到了一点问题',error)
+				}
+			})
+			
+			
+		}catch(error){
+			console.error('支付失败',error)
+		}
+	}
+	// 先支付后玩（一次性收费）
+	const handlePaymentByPlayBackup = async()=>{
+		try{
+			const res = await uni.request({
+				url:`https://allmetaahome.com:2333/order/payBeforePlay`,
+				method:"POST",
+				data:{
+					"equipmentId":1,
+					"amout":10,
+					"timetamp":new Date().getTime()
+				},
+				header:{
+					satoken:token.value
+				}
+			})
+			await uni.requestPayment({
+				"provider":"wxpay",
+				"orderInfo":{
+					"appid":"",
+					"noncestr":"",
+					"package":"Sign=WXPay",
+					"partnerid":"21321",
+					"prepayid":"xssadsa",
+					"timetamp":213,
+					"sign":21321
+				},
+				success(res){
+					console.log('支付成功',res)
+				},
+				fail(error){
+					console.log('支付遇到了一点问题',error)
+				}
+			})
+			
+			
+		}catch(error){
+			console.error('支付失败',error)
 		}
 	}
 	// 个人中心
@@ -563,6 +656,7 @@ import {
 	// const clickCloseOptions = ()=>{
 	// 	showPlayOptions.value=false
 	// }
+	
 </script>
 
 <style scoped>
