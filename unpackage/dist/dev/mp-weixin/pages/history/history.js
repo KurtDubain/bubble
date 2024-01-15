@@ -75,6 +75,42 @@ const _sfc_main = {
         console.log("退款申请异常", error);
       }
     };
+    const orderPayment = async (order) => {
+      try {
+        const res = await common_vendor.index.request({
+          url: "https://allmetaahome.com:2333/order/requestPayOrder",
+          method: "POST",
+          data: {
+            "orderNum": order.orderNum,
+            "amount": order.money,
+            "times": order.time
+          },
+          header: {
+            satoken: token.value
+          }
+        });
+        await common_vendor.index.requestPayment({
+          "provider": "wxpay",
+          "orderInfo": {
+            "appid": "",
+            "noncestr": "",
+            "package": "Sign=WXPay",
+            "partnerid": "21321",
+            "prepayid": "xssadsa",
+            "timetamp": 213,
+            "sign": 21321
+          },
+          success(res2) {
+            console.log("支付成功", res2);
+          },
+          fail(error) {
+            console.log("支付遇到了一点问题", error);
+          }
+        });
+      } catch (error) {
+        console.error("支付失败", error);
+      }
+    };
     const formattedDateTime = (time) => {
       const dateTime = new Date(time);
       const month = (dateTime.getMonth() + 1).toString().padStart(2, "0");
@@ -96,7 +132,10 @@ const _sfc_main = {
             d: common_vendor.t(order.playCost),
             e: "b2d018fa-1-" + i0,
             f: common_vendor.o(($event) => showBackMoneyForm(order), index),
-            g: index
+            g: "b2d018fa-2-" + i0,
+            h: "b2d018fa-3-" + i0,
+            i: common_vendor.o(($event) => orderPayment(order), index),
+            j: index
           };
         }),
         b: common_vendor.p({
@@ -108,15 +147,25 @@ const _sfc_main = {
           size: "17",
           color: "white"
         }),
-        d: backMoneyForm.value
+        d: common_vendor.p({
+          type: "help",
+          size: "17",
+          color: "white"
+        }),
+        e: common_vendor.p({
+          type: "help",
+          size: "17",
+          color: "white"
+        }),
+        f: backMoneyForm.value
       }, backMoneyForm.value ? {
-        e: common_vendor.t(backMoneyDetail.value.playDate),
-        f: common_vendor.t(backMoneyDetail.value.playCost),
-        g: common_vendor.t(backMoneyDetail.value.playLocation),
-        h: refundReason.value,
-        i: common_vendor.o(($event) => refundReason.value = $event.detail.value),
-        j: common_vendor.o(applyForRefund),
-        k: common_vendor.o(cancelRefund)
+        g: common_vendor.t(backMoneyDetail.value.playDate),
+        h: common_vendor.t(backMoneyDetail.value.playCost),
+        i: common_vendor.t(backMoneyDetail.value.playLocation),
+        j: refundReason.value,
+        k: common_vendor.o(($event) => refundReason.value = $event.detail.value),
+        l: common_vendor.o(applyForRefund),
+        m: common_vendor.o(cancelRefund)
       } : {});
     };
   }

@@ -13,7 +13,10 @@
       <view class="bottom-container">
         <text class="play-cost" style="font-weight: bold;">{{ order.playCost }}元</text>
         <view class="exception-button" @click="showBackMoneyForm(order)"><uni-icons type="help" size="17" color="white"></uni-icons>申请退款</view>
-      </view>
+		<view class="exception-button" ><uni-icons type="help" size="17" color="white"></uni-icons>已退款</view>
+		<view class="exception-button" @click="orderPayment(order)"><uni-icons type="help" size="17" color="white"></uni-icons>待支付</view>
+		
+	  </view>
     </view>
 	<view v-if="backMoneyForm" class="overlay">
 	      <view class="modal">
@@ -117,6 +120,44 @@ const applyForRefund = async()=>{
 		console.log('退款申请异常',error)
 	}
 }
+// 对未支付的订单发起付款操作
+const orderPayment = async(order)=>{
+	try{
+		const res = await uni.request({
+			url:'https://allmetaahome.com:2333/order/requestPayOrder',
+			method:"POST",
+			data:{
+				"orderNum":order.orderNum ,
+				"amount": order.money,
+			    "times": order.time
+			},
+			header:{
+				satoken:token.value
+			}
+		})
+		await uni.requestPayment({
+			"provider":"wxpay",
+			"orderInfo":{
+				"appid":"",
+				"noncestr":"",
+				"package":"Sign=WXPay",
+				"partnerid":"21321",
+				"prepayid":"xssadsa",
+				"timetamp":213,
+				"sign":21321
+			},
+			success(res){
+				console.log('支付成功',res)
+			},
+			fail(error){
+				console.log('支付遇到了一点问题',error)
+			}
+		})
+	}catch(error){
+		console.error('支付失败',error)
+	}
+}
+
 const formattedDateTime = (time)=>{
 	const dateTime = new Date(time)
 	const month = (dateTime.getMonth()+1).toString().padStart(2,"0")

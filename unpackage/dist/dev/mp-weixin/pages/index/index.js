@@ -190,6 +190,7 @@ const _sfc_main = {
     };
     const clickStop = async () => {
       await closeEquipment();
+      await handlePaymentOrderByPlayAhead();
       await handlePaymentByPlayAhead();
       lastOrder.value.cost = totalCost.value;
       lastOrder.value.min = totalMin.value;
@@ -284,6 +285,7 @@ const _sfc_main = {
                 title: "设备启动成功",
                 icon: "success"
               });
+              startPlaying(playType.value);
             } else {
               common_vendor.index.showToast({
                 title: "设备启动失败"
@@ -298,7 +300,6 @@ const _sfc_main = {
             });
           }
         });
-        startPlaying(playType.value);
       } catch (error) {
         console.error("设备启动失败", error);
       }
@@ -322,6 +323,23 @@ const _sfc_main = {
         }
       } catch (error) {
         console.error("结束设备失败", error);
+      }
+    };
+    const handlePaymentOrderByPlayAhead = async () => {
+      try {
+        const res = await common_vendor.index.request({
+          url: `https://allmetaahome.com:2333/order/playBeforePay`,
+          method: "POST",
+          data: {
+            "equipmentId": 1
+          },
+          header: {
+            satoken: token.value
+          }
+        });
+        orderNum.value = res.data.data;
+      } catch (error) {
+        console.log("订单发送失败", error);
       }
     };
     const handlePaymentByPlayAhead = async () => {
@@ -374,6 +392,7 @@ const _sfc_main = {
             satoken: token.value
           }
         });
+        orderNum.value = res.data.data;
         await common_vendor.index.requestPayment({
           "provider": "wxpay",
           "orderInfo": {

@@ -365,6 +365,7 @@ import {
 	// 第二种模式的主动结束
 	const clickStop = async()=>{
 		await closeEquipment()
+		await handlePaymentOrderByPlayAhead()
 		await handlePaymentByPlayAhead()
 		lastOrder.value.cost = totalCost.value
 		lastOrder.value.min = totalMin.value
@@ -480,7 +481,7 @@ import {
 							icon:'success'
 						})
 						// 实际
-						// startPlaying(playType.value)
+						startPlaying(playType.value)
 					}else{
 						uni.showToast({
 							title:"设备启动失败",
@@ -496,7 +497,7 @@ import {
 				}
 			})
 			// 测试
-			startPlaying(playType.value)
+			// startPlaying(playType.value)
 			
 			
 		}catch(error){
@@ -609,6 +610,7 @@ import {
 					satoken:token.value
 				}
 			})
+			orderNum.value= res.data.data
 			await uni.requestPayment({
 				"provider":"wxpay",
 				"orderInfo":{
