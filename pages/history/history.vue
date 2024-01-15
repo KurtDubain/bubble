@@ -104,7 +104,7 @@ const showBackMoneyForm = (order)=>{
 const applyForRefund = async()=>{
 	try{
 		const res = await uni.request({
-			url:`https://allmetaahome.com:2333/order/refund`,
+			url:`https://allmetaahome.com:2333/order/refundMini/`,
 			method:"POST",
 			header:{
 				satoken:token.value

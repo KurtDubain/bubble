@@ -77,12 +77,13 @@ const _sfc_main = {
       }
     };
     common_vendor.onMounted(async () => {
-      curCity.value = "北京";
+      curCity.value = "北京市";
       await getAllCity();
       await getTotalListByCity();
       const logState = common_vendor.index.getStorageSync("isLogIn");
       const bindingState = common_vendor.index.getStorageSync("isBinding");
       if (logState) {
+        token.value = common_vendor.index.getStorageSync("Token");
         if (bindingState) {
           isBinding.value = true;
         }

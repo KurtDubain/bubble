@@ -29,7 +29,7 @@ const _sfc_main = {
     const latitude = common_vendor.ref(null);
     const longitude = common_vendor.ref(null);
     const markers = common_vendor.ref(0);
-    const timer = null;
+    let timer = null;
     const curDeviceNum = common_vendor.ref("");
     const deviceDetail = common_vendor.ref({
       dropName: "",
@@ -247,6 +247,9 @@ const _sfc_main = {
         playType.value = res.data.data.deviceDetail.mode;
       } catch (error) {
         console.error("设备详情获取失败", error);
+      } finally {
+        playType.value = 1;
+        console.log("初始化", playType.value);
       }
     };
     const makeSureLog = () => {
@@ -272,7 +275,7 @@ const _sfc_main = {
             satoken: token.value
           },
           success(res2) {
-            if (res2.data.code === 200 && res2.data.message === "ok") {
+            if (res2.data.code === 200 && res2.data.message === "success") {
               common_vendor.index.showToast({
                 title: "设备启动成功",
                 icon: "success"
@@ -287,8 +290,7 @@ const _sfc_main = {
           fail(error) {
             console.error("设备启动失败", error);
             common_vendor.index.showToast({
-              title: "设备启动失败",
-              icon: "fail"
+              title: "设备启动失败"
             });
           }
         });
@@ -300,13 +302,13 @@ const _sfc_main = {
     const closeEquipment = async () => {
       try {
         const res = await common_vendor.index.request({
-          url: "https://allmetaahome.com:2333/equipment/closeEquipmentByUser",
-          method: "GET",
+          url: `https://allmetaahome.com:2333/equipment/closeEquipmentByUser?equipmentNum=${curDeviceNum.value}`,
+          method: "POST",
           header: {
             satoken: token.value
           }
         });
-        if (res.data.status === 200 && res.data.message === "ok") {
+        if (res.data.code == 200 && res.data.message == "success") {
           common_vendor.index.showToast({
             title: "已结束游玩",
             icon: "success"

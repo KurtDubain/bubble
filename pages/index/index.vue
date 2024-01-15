@@ -171,7 +171,7 @@ import {
 	const latitude = ref(null)
 	const longitude = ref(null)
 	const markers = ref(0)
-	const timer = null
+	let timer = null
 	const curDeviceNum = ref('')
 	const deviceDetail = ref({
 		dropName:"",
@@ -439,11 +439,11 @@ import {
 		}catch(error){
 			console.error('设备详情获取失败',error)
 		}
-		// finally{
-		// 	// 测试用
-		// 	playType.value = 1
-		// 	console.log('初始化',playType.value)
-		// }
+		finally{
+			// 测试用
+			playType.value = 1
+			console.log('初始化',playType.value)
+		}
 	}	
 	// 验证当前用户是否登陆
 	const makeSureLog = ()=>{
@@ -470,7 +470,7 @@ import {
 					satoken:token.value
 				},
 				success(res) {
-					if(res.data.code===200&&res.data.message==='ok'){
+					if(res.data.code===200&&res.data.message==='success'){
 						uni.showToast({
 							title:'设备启动成功',
 							icon:'success'
@@ -488,7 +488,6 @@ import {
 					console.error('设备启动失败',error)
 					uni.showToast({
 						title:"设备启动失败",
-						icon:"fail"
 					})
 				}
 			})
@@ -504,13 +503,14 @@ import {
 	const closeEquipment = async()=>{
 		try{
 			const res = await uni.request({
-				url:'https://allmetaahome.com:2333/equipment/closeEquipmentByUser',
-				method:"GET",
+				url:`https://allmetaahome.com:2333/equipment/closeEquipmentByUser?equipmentNum=${curDeviceNum.value}`,
+				method:"POST",
 				header:{
 					satoken:token.value
-				}
+				},
 			})
-			if(res.data.status===200&&res.data.message==="ok"){
+			
+			if(res.data.code==200&&res.data.message=="success"){
 				uni.showToast({
 					title:"已结束游玩",
 					icon:"success"
@@ -528,6 +528,16 @@ import {
 			
 		}catch(error){
 			console.error('结束设备失败',error)
+		}
+	}
+	// 付款操作
+	const handlePayment = async()=>{
+		try{
+			const res = await uni.request({
+				url:`/order/payment?`
+			})
+		}catch(error){
+			console.error('')
 		}
 	}
 	// 个人中心

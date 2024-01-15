@@ -62,7 +62,7 @@ const _sfc_main = {
     const applyForRefund = async () => {
       try {
         const res = await common_vendor.index.request({
-          url: `https://allmetaahome.com:2333/order/refund`,
+          url: `https://allmetaahome.com:2333/order/refundMini/`,
           method: "POST",
           header: {
             satoken: token.value

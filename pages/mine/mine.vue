@@ -160,7 +160,7 @@
 	// const curCityArray = ref([])
 	onMounted(async()=>{
 		// 初始化为北京
-		curCity.value = '北京'
+		curCity.value = '北京市'
 		await getAllCity()
 		await getTotalListByCity()
 		// 初始化排名
@@ -168,7 +168,9 @@
 		// 初始化，判断登陆情况，加载用户信息
 		const logState = uni.getStorageSync('isLogIn');
 		const bindingState = uni.getStorageSync('isBinding')
+		
 		if (logState) {
+			token.value = uni.getStorageSync('Token')
 		    // userInfo.value = cachedUserInfo;
 			if(bindingState){
 				isBinding.value =true
