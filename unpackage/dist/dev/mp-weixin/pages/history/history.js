@@ -89,17 +89,18 @@ const _sfc_main = {
             satoken: token.value
           }
         });
+        let orderInfo = {
+          appId: "wx8c9cc8582d153543",
+          timeStamp: res.data.data.timeStamp,
+          nonceStr: res.data.data.nonceStr,
+          // package: "Sign=WXPay",
+          package: res.data.data.packageX,
+          signType: res.data.data.signType,
+          paySign: res.data.data.paySign
+        };
         await common_vendor.index.requestPayment({
           "provider": "wxpay",
-          "orderInfo": {
-            "appid": "",
-            "noncestr": "",
-            "package": "Sign=WXPay",
-            "partnerid": "21321",
-            "prepayid": "xssadsa",
-            "timetamp": 213,
-            "sign": 21321
-          },
+          ...orderInfo,
           success(res2) {
             console.log("支付成功", res2);
           },

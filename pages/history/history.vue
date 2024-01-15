@@ -135,17 +135,18 @@ const orderPayment = async(order)=>{
 				satoken:token.value
 			}
 		})
+		let orderInfo = {
+			appId: "wx8c9cc8582d153543",
+			timeStamp: res.data.data.timeStamp,
+			nonceStr: res.data.data.nonceStr,
+			// package: "Sign=WXPay",
+			package:res.data.data.packageX,
+			signType: res.data.data.signType,
+			paySign: res.data.data.paySign,
+		}
 		await uni.requestPayment({
 			"provider":"wxpay",
-			"orderInfo":{
-				"appid":"",
-				"noncestr":"",
-				"package":"Sign=WXPay",
-				"partnerid":"21321",
-				"prepayid":"xssadsa",
-				"timetamp":213,
-				"sign":21321
-			},
+			...orderInfo,
 			success(res){
 				console.log('支付成功',res)
 			},
