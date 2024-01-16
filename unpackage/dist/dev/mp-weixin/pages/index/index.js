@@ -164,7 +164,6 @@ const _sfc_main = {
             common_vendor.index.hideLoading();
           }, 1e3);
           await handlePaymentByPlayBackup();
-          startCountDown();
         } else {
           playType.value = 1;
           startBilling();
@@ -438,6 +437,7 @@ const _sfc_main = {
           ...orderInfo,
           success(res2) {
             console.log("支付成功", res2);
+            startCountDown();
           },
           fail(error) {
             console.log("支付遇到了一点问题", error);

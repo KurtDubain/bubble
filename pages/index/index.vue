@@ -308,7 +308,7 @@ import {
 					
 				},1000)
 				await handlePaymentByPlayBackup()
-				startCountDown()
+				
 			}else{
 				playType.value = 1
 				startBilling()
@@ -626,6 +626,7 @@ import {
 				...orderInfo,
 				success(res){
 					console.log('支付成功',res)
+					startCountDown()
 				},
 				fail(error){
 					console.log('支付遇到了一点问题',error)
