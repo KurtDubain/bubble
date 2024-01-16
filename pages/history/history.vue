@@ -12,10 +12,10 @@
       </view>
       <view class="bottom-container">
         <text class="play-cost" style="font-weight: bold;">{{ order.playCost }}元</text>
-        <view class="exception-button" @click="showBackMoneyForm(order)"><uni-icons type="help" size="17" color="white"></uni-icons>申请退款</view>
-		<view class="exception-button" ><uni-icons type="help" size="17" color="white"></uni-icons>已退款</view>
-		<view class="exception-button" @click="orderPayment(order)"><uni-icons type="help" size="17" color="white"></uni-icons>待支付</view>
-		
+        <view v-if="order.status==1" class="exception-button" @click="showBackMoneyForm(order)"><uni-icons type="help" size="17" color="white"></uni-icons>申请退款</view>
+		<view v-if="order.status==-1" class="exception-button" ><uni-icons type="help" size="17" color="white"></uni-icons>已退款</view>
+		<view v-if="order.status==0" class="exception-button" @click="orderPayment(order)"><uni-icons type="help" size="17" color="white"></uni-icons>待支付</view>
+		<view v-if="order.status==2" class="exception-button"><uni-icons type="help" size="17" color="white"></uni-icons>正在退款</view>
 	  </view>
     </view>
 	<view v-if="backMoneyForm" class="overlay">
@@ -79,6 +79,7 @@ const getUserHistroyList = async()=>{
 			playDate:formattedDateTime(item.time),
 			playLocation:item.dropName,
 			playCost:item.money/100,
+			status:item.status
 		})).sort((a,b)=>new Date(b.playDate) - new Date(a.playDate))
 		
 	}catch(error){
@@ -94,7 +95,7 @@ const showBackMoneyForm = (order)=>{
 const applyForRefund = async()=>{
 	try{
 		const res = await uni.request({
-			url:`https://allmetaahome.com:2333/order/refundMini/`,
+			url:`https://allmetaahome.com:2333/order/refundMini`,
 			method:"POST",
 			header:{
 				satoken:token.value
@@ -128,7 +129,7 @@ const orderPayment = async(order)=>{
 			method:"POST",
 			data:{
 				"orderNum":order.orderNum ,
-				"amount": order.money,
+				"amount": order.playCost*100,
 			    "times": order.time
 			},
 			header:{

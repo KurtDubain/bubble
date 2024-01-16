@@ -24,7 +24,7 @@
 				<view  class="control_view">
 					<view style="display: flex;align-items: center;">
 						<uni-icons type="paperplane-filled" size="14"></uni-icons>
-						<text style="font-size: 24rpx;">xx省xx市xx县xx村</text>
+						<text style="font-size: 24rpx;">{{deviceDetail.dropName}}</text>
 						<view style="flex: 1"></view>
 						<uni-icons type="closeempty" size="18" @click="clickClose()"></uni-icons>
 					</view>
@@ -40,40 +40,12 @@
 					<view class="button" style="width: 100%;color: white;" @click="clickPlay()">开始游玩</view>
 				</view>
 			</view>
-			<!-- 选项弹窗 -->
-			<!-- <view  v-show="showPlayOptions">
-				<view class="popup">
-					
-					<view class="popup-content">
-						<view class="popup-header">
-							<view>
-								<text class="popup-title">选择游玩方式 :</text>
-							</view>
-							<view>
-								<uni-icons class="closeEmpty" type="closeempty" size="18" @click="clickCloseOptions()"></uni-icons>
-							</view>
-							
-						</view>
-						
-						<view class="popup-buttons">
-							<button @click="startPlaying(0)" class="popup-button">
-								<text class="button-text">按次付费</text>
-								<text class="button-description">5元/次=10分钟</text>
-							</button>
-							<button @click="startPlaying(1)" class="popup-button">
-								<text class="button-text">先游玩后付费</text>
-								<text class="button-description">2元/1分钟</text>
-							</button>
-						</view>
-					</view>
-				</view>
-			</view> -->
 			<!-- 第一种游玩方式 -->
 			<view v-show="!isEnd&&playing&&playType===0">
 				<view  class="control_view">
 					<view style="display: flex;align-items: center;">
 						<uni-icons type="paperplane-filled" size="14"></uni-icons>
-						<text style="font-size: 24rpx;">xx省xx市xx县xx村</text>
+						<text style="font-size: 24rpx;">{{deviceDetail.dropName}}</text>
 						<view style="flex: 1"></view>
 						<uni-icons type="closeempty" size="18" @click="clickClose()"></uni-icons>
 					</view>
@@ -94,7 +66,7 @@
 				<view  class="control_view">
 					<view style="display: flex;align-items: center;">
 						<uni-icons type="paperplane-filled" size="14"></uni-icons>
-						<text style="font-size: 24rpx;">xx省xx市xx县xx村</text>
+						<text style="font-size: 24rpx;">{{deviceDetail.dropName}}</text>
 						<view style="flex: 1"></view>
 						<uni-icons type="closeempty" size="18" @click="clickClose()"></uni-icons>
 					</view>
@@ -117,7 +89,7 @@
 				<view class="control_view">
 					<view style="display: flex;align-items: center;">
 						<uni-icons type="paperplane-filled" size="14"></uni-icons>
-						<text style="font-size: 24rpx;">xx省xx市xx县xx村</text>
+						<text style="font-size: 24rpx;">{{deviceDetail.dropName}}</text>
 						<view style="flex: 1"></view>
 						<uni-icons type="closeempty" size="18" @click="clickClose()"></uni-icons>
 					</view>
@@ -177,7 +149,8 @@ import {
 	const deviceDetail = ref({
 		dropName:"",
 		deviceStatus:1,
-		deviceId:null
+		deviceId:null,
+		status:null
 	})
 	const token = ref('') //登陆参数
 	
@@ -193,6 +166,7 @@ import {
 		// 初始化获取二维码参数
 		// 初始化判断是否登陆
 		makeSureLog()
+		await getUserIsVaild()
 		if(curDeviceNum.value!==''){
 			await getDeviceMsgByDeviceNum()
 		}
@@ -200,6 +174,7 @@ import {
 	})
 
 	onLoad((opstions)=>{
+		makeSureLog()
 		scanQRQuery(opstions.scene)
 	})
 
@@ -373,32 +348,31 @@ import {
 		// playing.value = false
 	}
 	// 获取二维码中的参数的操作
-	const scanQRQuery = (param)=>{
-		// const launchOptions = uni.getLaunchOptionsSync()
-		// // console.log(launchOptions)
-		// curDeviceNum.value = launchOptions.query.scene
-		if(param){
-			curDeviceNum.value=param
-			getDeviceMsgByDeviceNum()
-			if(deviceDetail.value.deviceStatus===1){
-				showQRScan.value = false
+	const scanQRQuery = async(param)=>{
+		try{
+			let passToken = false
+			passToken = await getUserIsVaild()
+			if(param&&passToken){
+				curDeviceNum.value=param
+				getDeviceMsgByDeviceNum()
+				if(deviceDetail.value.deviceStatus===1){
+					showQRScan.value = false
+				}else{
+					uni.showToast({
+						title:"设备不可用",
+						icon:"error",
+					})
+				}
 			}else{
 				uni.showToast({
-					title:"当前设备已经在启动了",
-					icon:"error"
+					title:'扫码开始游玩',
+					icon:"none"
 				})
 			}
-		}else{
-			uni.showToast({
-				title:'扫描设备码开始游玩',
-				icon:"none"
-			})
+		}catch(error){
+			console.error('',error)
 		}
-		const launchOptions = uni.getEnterOptionsSync()
 		
-		// location.value = launchOptions.query.location
-		// status.value = launchOptions.query.status
-		console.log(`扫描到了登录参数，他们分别是deviceNum:${curDeviceNum.value}`,launchOptions)
 	}
 	// 扫描二维码
 	const toQRScanClick = () => {
@@ -438,9 +412,11 @@ import {
 				url:`https://allmetaahome.com:2333/equipment/detail?equipmentNum=${curDeviceNum.value}`,
 				method:"GET",
 			})
-			deviceDetail.value.deviceStatus = res.data.data.deviceDetail.status
-			deviceDetail.value.dropName = res.data.data.deviceDetail.dropName
-			playType.value = res.data.data.deviceDetail.mode
+			deviceDetail.value.deviceStatus = res.data.data.status
+			deviceDetail.value.dropName = res.data.data.dropName
+			playType.value = res.data.data.mode
+			deviceDetail.value.deviceId = res.data.data.id
+			
 		}catch(error){
 			console.error('设备详情获取失败',error)
 		}
@@ -450,6 +426,31 @@ import {
 			console.log('初始化',playType.value)
 		}
 	}	
+	// 让用户支付上一次的订单
+	const getUserIsVaild = async()=>{
+		try{
+			const res = await uni.request({
+				url:'https://allmetaahome.com:2333/order/getUnpaidOrders',
+				method:"GET",
+				header:{
+					satoken:token.value
+				}
+			})
+			if(res.data.data.length<=0){
+				return true
+			}else{
+				showQRScan.value=true
+				uni.showToast({
+					title:"请支付上一次的订单",
+					icon:"error"
+				})
+				return false
+			}
+			
+		}catch(error){
+			console.error("验证用户失败",error)
+		}
+	}
 	// 验证当前用户是否登陆
 	const makeSureLog = ()=>{
 		const logIn = uni.getStorageSync('isLogIn');
@@ -542,7 +543,7 @@ import {
 				url:`https://allmetaahome.com:2333/order/playBeforePay`,
 				method:"POST",
 				data:{
-					"equipmentId":1
+					"equipmentId":deviceDetail.value.deviceId
 				},
 				header:{
 					satoken:token.value
@@ -563,9 +564,9 @@ import {
 				url:'https://allmetaahome.com:2333/order/requestPayOrder',
 				method:"POST",
 				data:{
-					"orderNum":orderNum.value ,
-					"amount": 10,
-				    "times": 10
+					"orderNum":orderNum.value,
+					"amount": lastOrder.value.cost*100,
+				    "times": lastOrder.value.min
 				},
 				header:{
 					satoken:token.value
@@ -603,15 +604,14 @@ import {
 				url:`https://allmetaahome.com:2333/order/payBeforePlay`,
 				method:"POST",
 				data:{
-					"equipmentId":1,
-					"amount":0.1,
+					"equipmentId":deviceDetail.value.deviceId,
+					"amount":500,
 					"timetamp":10
 				},
 				header:{
 					satoken:token.value
 				}
 			})
-			orderNum.value= res.data.data
 			let orderInfo = {
 				appId: "wx8c9cc8582d153543",
 				timeStamp: res.data.data.timeStamp,
