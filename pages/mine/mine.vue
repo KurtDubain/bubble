@@ -255,6 +255,7 @@
 			console.log(res)
 			userInfo.value.phoneNumber = res.data.data.phone
 			isLogIn.value = true
+			isBinding.value = true
 			uni.setStorageSync('isBinding',userInfo.value.bindingPhone)
 			uni.setStorageSync('isLogIn',true)
 		  } catch (error) {

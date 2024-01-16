@@ -36,7 +36,7 @@ const _sfc_main = {
           orderNum: item.orderNum,
           playDate: formattedDateTime(item.time),
           playLocation: item.dropName,
-          playCost: item.money
+          playCost: item.money / 100
         })).sort((a, b) => new Date(b.playDate) - new Date(a.playDate));
       } catch (error) {
         console.error("用户历史订单获取失败", error);

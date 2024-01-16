@@ -158,6 +158,7 @@ const _sfc_main = {
         console.log(res);
         userInfo.value.phoneNumber = res.data.data.phone;
         isLogIn.value = true;
+        isBinding.value = true;
         common_vendor.index.setStorageSync("isBinding", userInfo.value.bindingPhone);
         common_vendor.index.setStorageSync("isLogIn", true);
       } catch (error) {

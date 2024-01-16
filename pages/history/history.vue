@@ -78,7 +78,7 @@ const getUserHistroyList = async()=>{
 			orderNum:item.orderNum,
 			playDate:formattedDateTime(item.time),
 			playLocation:item.dropName,
-			playCost:item.money,
+			playCost:item.money/100,
 		})).sort((a,b)=>new Date(b.playDate) - new Date(a.playDate))
 		
 	}catch(error){

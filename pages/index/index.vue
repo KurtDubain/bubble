@@ -604,7 +604,7 @@ import {
 				method:"POST",
 				data:{
 					"equipmentId":1,
-					"amout":10,
+					"amount":0.1,
 					"timetamp":10
 				},
 				header:{
