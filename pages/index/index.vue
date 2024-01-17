@@ -340,10 +340,11 @@ import {
 	// 第二种模式的主动结束
 	const clickStop = async()=>{
 		await closeEquipment()
-		await handlePaymentOrderByPlayAhead()
-		await handlePaymentByPlayAhead()
+		
 		lastOrder.value.cost = totalCost.value
 		lastOrder.value.min = totalMin.value
+		await handlePaymentOrderByPlayAhead()
+		await handlePaymentByPlayAhead()
 		// isEnd.value = true
 		// playing.value = false
 	}

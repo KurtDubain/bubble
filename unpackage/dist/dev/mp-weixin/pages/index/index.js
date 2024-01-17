@@ -192,10 +192,10 @@ const _sfc_main = {
     };
     const clickStop = async () => {
       await closeEquipment();
-      await handlePaymentOrderByPlayAhead();
-      await handlePaymentByPlayAhead();
       lastOrder.value.cost = totalCost.value;
       lastOrder.value.min = totalMin.value;
+      await handlePaymentOrderByPlayAhead();
+      await handlePaymentByPlayAhead();
     };
     const scanQRQuery = async (param) => {
       try {

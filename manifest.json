@@ -75,9 +75,7 @@
 		"requiredPrivateInfos":[
 			"getLocation"
 		],
-		"plugins":{
-			
-		}
+		"libVersion": "latest"
 		
     },
     "vueVersion" : "3"
