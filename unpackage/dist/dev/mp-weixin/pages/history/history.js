@@ -72,6 +72,7 @@ const _sfc_main = {
             icon: "error"
           });
         }
+        await getUserHistroyList();
       } catch (error) {
         console.log("退款申请异常", error);
       }
@@ -109,6 +110,7 @@ const _sfc_main = {
             console.log("支付遇到了一点问题", error);
           }
         });
+        await getUserHistroyList();
       } catch (error) {
         console.error("支付失败", error);
       }

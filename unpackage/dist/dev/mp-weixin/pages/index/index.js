@@ -259,9 +259,6 @@ const _sfc_main = {
         deviceDetail.value.deviceId = res.data.data.id;
       } catch (error) {
         console.error("设备详情获取失败", error);
-      } finally {
-        playType.value = 1;
-        console.log("初始化", playType.value);
       }
     };
     const getUserIsVaild = async () => {

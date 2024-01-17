@@ -421,11 +421,11 @@ import {
 		}catch(error){
 			console.error('设备详情获取失败',error)
 		}
-		finally{
-			// 测试用
-			playType.value = 1
-			console.log('初始化',playType.value)
-		}
+		// finally{
+		// 	// 测试用
+		// 	playType.value = 1
+		// 	console.log('初始化',playType.value)
+		// }
 	}	
 	// 让用户支付上一次的订单
 	const getUserIsVaild = async()=>{

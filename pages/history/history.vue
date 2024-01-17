@@ -111,12 +111,14 @@ const applyForRefund = async()=>{
 				title:"退款申请发送成功",
 				icon:'success'
 			})
+			
 		}else{
 			uni.showToast({
 				title:"退款失败",
 				icon:'error'
 			})
 		}
+		await getUserHistroyList()
 	}catch(error){
 		console.log('退款申请异常',error)
 	}
@@ -155,6 +157,7 @@ const orderPayment = async(order)=>{
 				console.log('支付遇到了一点问题',error)
 			}
 		})
+		await getUserHistroyList()
 	}catch(error){
 		console.error('支付失败',error)
 	}
