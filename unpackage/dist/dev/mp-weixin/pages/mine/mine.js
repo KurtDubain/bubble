@@ -215,7 +215,7 @@ const _sfc_main = {
     return (_ctx, _cache) => {
       return {
         a: common_vendor.unref(isLogIn) ? `${userInfo.value.avatar}` : `../../static/uni.png`,
-        b: common_vendor.t(common_vendor.unref(isLogIn) ? `${userInfo.value.userName}已登录` : `未登录`),
+        b: common_vendor.t(common_vendor.unref(isLogIn) ? `${userInfo.value.userName}` : `未登录`),
         c: common_vendor.p({
           type: "email",
           size: "26",

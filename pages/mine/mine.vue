@@ -3,7 +3,7 @@
 		<view class="card_view">
 			<view class="header_view">
 				<image :src=" isLogIn?`${userInfo.avatar}`:`../../static/uni.png` "></image>
-				<text>{{isLogIn?`${userInfo.userName}已登录`:`未登录`}}</text>
+				<text>{{isLogIn?`${userInfo.userName}`:`未登录`}}</text>
 				<!-- <view class="header-login" v-show="!isLogIn" @click="getUserPhone()">
 					<text>手机号登录</text>
 				</view> -->
