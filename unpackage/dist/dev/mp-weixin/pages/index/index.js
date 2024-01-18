@@ -53,6 +53,8 @@ const _sfc_main = {
       }
     });
     common_vendor.onLoad((opstions) => {
+      console.log(opstions);
+      console.log(opstions.query);
       makeSureLog();
       scanQRQuery(opstions.scene);
     });
@@ -86,19 +88,25 @@ const _sfc_main = {
           latitude: location.latitude,
           longitude: location.longitude,
           title: location.address,
-          iconPath: "/path/to/marker-icon.png",
-          // 标记点图标路径
+          // iconPath: '/path/to/marker-icon.png', // 标记点图标路径
           width: 30,
           height: 30,
           callout: {
             content: location.address,
             color: "#000000",
-            fontSize: 14,
+            fontSize: 12,
             borderRadius: 4,
-            bgColor: "rgba(255, 255, 255, 0.5)",
-            padding: 8,
+            // bgColor: 'rgba(93, 255, 169, 0.2)',
+            padding: 3,
             display: "ALWAYS"
-          }
+          },
+          alpha: 0.8
+          // label: {
+          //    content: '这是一个标签',
+          //    color: '#ff0000',  // 标签文字颜色
+          //    fontSize: 14,      // 标签文字大小
+          //    // offset: new qq.maps.Size(0, -20)  // 标签偏移量，负值表示向上偏移
+          //  }
         }));
       } catch (error) {
         console.error("获取娃娃机位置失败了", error);
@@ -227,6 +235,7 @@ const _sfc_main = {
       if (isLogIn.value) {
         common_vendor.index.scanCode({
           success(res) {
+            console.log(`二维码的数据有${JSON.stringify(res)}`);
             const url = decodeURIComponent(res.path);
             url.split("?")[1].split("=")[1];
             common_vendor.index.reLaunch({
@@ -377,6 +386,7 @@ const _sfc_main = {
           data: {
             "orderNum": orderNum.value,
             "amount": lastOrder.value.cost * 100,
+            // "amount":1,
             "times": lastOrder.value.min
           },
           header: {
