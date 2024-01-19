@@ -1,6 +1,7 @@
 <template>
 	<!-- <map id="map" style="width: 100vw; height: 100vh;z-index: 0;" show-location="true" :markers="map.marks">
 	</map> -->
+	<!-- <text>{{scanData}}</text> -->
 	<map id="myMap" style="width: 100vw; height: 100vh;z-index: 0;" :latitude="latitude" show-location="true" :longitude="longitude" :markers="markers"></map>
 	<!-- logo -->
 	<view class="top_items">
@@ -107,6 +108,7 @@
 			</view>
 		</view>
 	</view>
+	
 </template>
 
 <script setup>
@@ -153,7 +155,7 @@ import {
 		status:null
 	})
 	const token = ref('') //登陆参数
-	
+	const scanData = ref('')
 	// 初始化
 	onMounted(async() => {
 		uni.login({
@@ -161,6 +163,7 @@ import {
 				console.log(data)
 			}
 		})
+
 		// 获取用户地理位置以及其他数据信息
 		getUserLocation()
 		// 初始化获取二维码参数
@@ -173,13 +176,20 @@ import {
 		
 	})
 
-	onLoad((opstions)=>{
-		console.log(opstions)
-		console.log(opstions.query)
+	onLoad((options)=>{
 		makeSureLog()
-		scanQRQuery(opstions.scene)
+		let url = decodeURIComponent(options.q)
+		const reg = /scene=([^&]+)/
+		const match = url.match(reg)
+		const scene = match && match[1]
+		console.log("启动参数为",scene)
+		console.log("启动url为",url)
+		scanQRQuery(scene)
+		console.log("我是",options)
+		scanQRQuery(options.scene)
 	})
-
+	
+	
 	// 获取用户地理位置的方法
 	const getUserLocation = ()=>{
 		uni.getLocation({
@@ -225,23 +235,15 @@ import {
 			    color: '#000000',
 			    fontSize: 12,
 			    borderRadius: 4,
-			    // bgColor: 'rgba(93, 255, 169, 0.2)',
 			    padding: 3,
 			    display: 'ALWAYS',
 			  },
-			  alpha:0.8,
-			   // label: {
-			   //    content: '这是一个标签',
-			   //    color: '#ff0000',  // 标签文字颜色
-			   //    fontSize: 14,      // 标签文字大小
-			   //    // offset: new qq.maps.Size(0, -20)  // 标签偏移量，负值表示向上偏移
-			   //  }
+			  alpha:0.6,
 		  }));
 		}catch(error){
 			console.error('获取娃娃机位置失败了',error)
 		}
 	};
-
 	// 回到定位点
 	function goMoveToLocation(longitude, latitude) {
 		_mapContext.moveToLocation({
@@ -252,7 +254,6 @@ import {
 			}
 		});
 	}
-
 	// 点击叉叉
 	const clickClose = () => {
 		if (!playing.value) {
@@ -265,7 +266,6 @@ import {
 		})
 
 	}
-
 	// 点击游玩
 	const clickPlay = () => {
 		makeSureLog()
@@ -393,19 +393,28 @@ import {
 					// console.log(res)
 					console.log(`二维码的数据有${JSON.stringify(res)}`)
 					// console.log(res.data)
-					const url = decodeURIComponent(res.path)
+					const url = decodeURIComponent(res.result)
+					// const params = url.split('?')[1].split('=')[1]
+					const reg = 'https://allmetaahome.com?scene=';
 					const params = url.split('?')[1].split('=')[1]
-					
-					uni.reLaunch({
-						url:`/${url}`,
-						fail() {
-							uni.showToast({
-								title:'二维码异常'
-							})
-						}
-					})
-					
-					console.log('扫码成功：')
+					// console.log(url.split('=')[0].concat('='))
+					if(url.split('=')[0].concat('=')===reg){
+						uni.reLaunch({
+							url:`/pages/index/index?scene=${params}`,
+							fail(error) {
+								console.error(error)
+								uni.showToast({
+									title:'二维码异常'
+								})
+							}
+						})
+						console.log('扫码成功：')
+					}else{
+						uni.showToast({
+							title:'二维码不正确',
+							icon:'error'
+						})
+					}
 				}
 			})
 		}else{

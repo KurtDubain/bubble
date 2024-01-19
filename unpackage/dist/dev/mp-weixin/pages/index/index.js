@@ -39,6 +39,7 @@ const _sfc_main = {
       status: null
     });
     const token = common_vendor.ref("");
+    common_vendor.ref("");
     common_vendor.onMounted(async () => {
       common_vendor.index.login({
         success(data) {
@@ -52,11 +53,17 @@ const _sfc_main = {
         await getDeviceMsgByDeviceNum();
       }
     });
-    common_vendor.onLoad((opstions) => {
-      console.log(opstions);
-      console.log(opstions.query);
+    common_vendor.onLoad((options) => {
       makeSureLog();
-      scanQRQuery(opstions.scene);
+      let url = decodeURIComponent(options.q);
+      const reg = /scene=([^&]+)/;
+      const match = url.match(reg);
+      const scene = match && match[1];
+      console.log("启动参数为", scene);
+      console.log("启动url为", url);
+      scanQRQuery(scene);
+      console.log("我是", options);
+      scanQRQuery(options.scene);
     });
     const getUserLocation = () => {
       common_vendor.index.getLocation({
@@ -96,17 +103,10 @@ const _sfc_main = {
             color: "#000000",
             fontSize: 12,
             borderRadius: 4,
-            // bgColor: 'rgba(93, 255, 169, 0.2)',
             padding: 3,
             display: "ALWAYS"
           },
-          alpha: 0.8
-          // label: {
-          //    content: '这是一个标签',
-          //    color: '#ff0000',  // 标签文字颜色
-          //    fontSize: 14,      // 标签文字大小
-          //    // offset: new qq.maps.Size(0, -20)  // 标签偏移量，负值表示向上偏移
-          //  }
+          alpha: 0.6
         }));
       } catch (error) {
         console.error("获取娃娃机位置失败了", error);
@@ -236,17 +236,26 @@ const _sfc_main = {
         common_vendor.index.scanCode({
           success(res) {
             console.log(`二维码的数据有${JSON.stringify(res)}`);
-            const url = decodeURIComponent(res.path);
-            url.split("?")[1].split("=")[1];
-            common_vendor.index.reLaunch({
-              url: `/${url}`,
-              fail() {
-                common_vendor.index.showToast({
-                  title: "二维码异常"
-                });
-              }
-            });
-            console.log("扫码成功：");
+            const url = decodeURIComponent(res.result);
+            const reg = "https://allmetaahome.com?scene=";
+            const params = url.split("?")[1].split("=")[1];
+            if (url.split("=")[0].concat("=") === reg) {
+              common_vendor.index.reLaunch({
+                url: `/pages/index/index?scene=${params}`,
+                fail(error) {
+                  console.error(error);
+                  common_vendor.index.showToast({
+                    title: "二维码异常"
+                  });
+                }
+              });
+              console.log("扫码成功：");
+            } else {
+              common_vendor.index.showToast({
+                title: "二维码不正确",
+                icon: "error"
+              });
+            }
           }
         });
       } else {
