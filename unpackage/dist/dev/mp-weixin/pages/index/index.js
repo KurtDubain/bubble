@@ -23,7 +23,7 @@ const _sfc_main = {
       min: 0
     });
     const countDown = common_vendor.ref(10);
-    const playType = common_vendor.ref(0);
+    const playType = common_vendor.ref(null);
     const isLogIn = common_vendor.ref(false);
     const _mapContext = common_vendor.index.createMapContext("myMap");
     const latitude = common_vendor.ref(null);
@@ -33,13 +33,13 @@ const _sfc_main = {
     const curDeviceNum = common_vendor.ref("");
     const orderNum = common_vendor.ref("");
     const deviceDetail = common_vendor.ref({
+      //设备的详细信息
       dropName: "",
-      deviceStatus: 1,
-      deviceId: null,
-      status: null
+      deviceStatus: null,
+      deviceId: null
+      // status:null
     });
     const token = common_vendor.ref("");
-    common_vendor.ref("");
     common_vendor.onMounted(async () => {
       common_vendor.index.login({
         success(data) {
@@ -59,11 +59,11 @@ const _sfc_main = {
       const reg = /scene=([^&]+)/;
       const match = url.match(reg);
       const scene = match && match[1];
-      console.log("启动参数为", scene);
-      console.log("启动url为", url);
-      scanQRQuery(scene);
-      console.log("我是", options);
-      scanQRQuery(options.scene);
+      if (scene !== null) {
+        scanQRQuery(scene);
+      } else {
+        scanQRQuery(options.scene);
+      }
     });
     const getUserLocation = () => {
       common_vendor.index.getLocation({
@@ -153,9 +153,7 @@ const _sfc_main = {
     };
     common_vendor.watch(playing, (newVal) => {
       if (!newVal) {
-        console.log(newVal);
         clearInterval(timer);
-        console.log(timer);
       }
     });
     const startPlaying = async (option) => {
@@ -202,8 +200,14 @@ const _sfc_main = {
       await closeEquipment();
       lastOrder.value.cost = totalCost.value;
       lastOrder.value.min = totalMin.value;
-      await handlePaymentOrderByPlayAhead();
-      await handlePaymentByPlayAhead();
+      if (lastOrder.value.cost !== 0) {
+        await handlePaymentOrderByPlayAhead();
+        await handlePaymentByPlayAhead();
+      } else {
+        common_vendor.index.showToast({
+          title: "游玩时间太短了"
+        });
+      }
     };
     const scanQRQuery = async (param) => {
       try {
@@ -211,8 +215,8 @@ const _sfc_main = {
         passToken = await getUserIsVaild();
         if (param && passToken) {
           curDeviceNum.value = param;
-          getDeviceMsgByDeviceNum();
-          if (deviceDetail.value.deviceStatus === 1) {
+          await getDeviceMsgByDeviceNum();
+          if (deviceDetail.value.deviceStatus === 1 && playType.value !== null) {
             showQRScan.value = false;
           } else {
             common_vendor.index.showToast({
@@ -235,7 +239,6 @@ const _sfc_main = {
       if (isLogIn.value) {
         common_vendor.index.scanCode({
           success(res) {
-            console.log(`二维码的数据有${JSON.stringify(res)}`);
             const url = decodeURIComponent(res.result);
             const reg = "https://allmetaahome.com?scene=";
             const params = url.split("?")[1].split("=")[1];

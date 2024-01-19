@@ -138,24 +138,24 @@ import {
 	})
 	// const showPlayOptions = ref(false)//游玩模式选项是否展示
 	const countDown = ref(10)//单次游玩倒计时（十分钟）
-	const playType = ref(0)//游玩模式
+	const playType = ref(null)//游玩模式
 	const isLogIn = ref(false)// 判断是否登陆
 	const _mapContext = uni.createMapContext('myMap');//初始化地图数据
 	// 初始化地理位置（用户）
 	const latitude = ref(null)
 	const longitude = ref(null)
-	const markers = ref(0)
-	let timer = null
-	const curDeviceNum = ref('')
-	const orderNum = ref('')
-	const deviceDetail = ref({
+	const markers = ref(0)//腾讯地图标识
+	let timer = null //全局定时器
+	const curDeviceNum = ref('')//当前选中的设备名称
+	const orderNum = ref('')//当前生成的订单编号
+	const deviceDetail = ref({//设备的详细信息
 		dropName:"",
-		deviceStatus:1,
+		deviceStatus:null,
 		deviceId:null,
-		status:null
+		// status:null
 	})
 	const token = ref('') //登陆参数
-	const scanData = ref('')
+	// const scanData = ref('')
 	// 初始化
 	onMounted(async() => {
 		uni.login({
@@ -166,10 +166,12 @@ import {
 
 		// 获取用户地理位置以及其他数据信息
 		getUserLocation()
-		// 初始化获取二维码参数
+		
 		// 初始化判断是否登陆
 		makeSureLog()
+		// 判断用户是否有未完成订单
 		await getUserIsVaild()
+		// 如果获取到了编号就更新
 		if(curDeviceNum.value!==''){
 			await getDeviceMsgByDeviceNum()
 		}
@@ -177,16 +179,21 @@ import {
 	})
 
 	onLoad((options)=>{
+		// 判断用户是否有未完成订单
 		makeSureLog()
 		let url = decodeURIComponent(options.q)
 		const reg = /scene=([^&]+)/
 		const match = url.match(reg)
 		const scene = match && match[1]
-		console.log("启动参数为",scene)
-		console.log("启动url为",url)
-		scanQRQuery(scene)
-		console.log("我是",options)
-		scanQRQuery(options.scene)
+		// console.log("启动参数为",scene)
+		// console.log("启动url为",url)
+		// 外界扫码跳转
+		if(scene!==null){
+			scanQRQuery(scene)
+		}else{
+			// 小程序内扫码跳转
+			scanQRQuery(options.scene)
+		}
 	})
 	
 	
@@ -293,13 +300,14 @@ import {
 	// 监视关闭定时器
 	watch(playing,(newVal)=>{
 		if(!newVal){
-			console.log(newVal)
+			// console.log(newVal)
 			clearInterval(timer)
-			console.log(timer)
+			// console.log(timer)
 		}
 	})
 	// 开始游玩
 	const startPlaying = async(option)=>{
+		// 验证用户是否登陆
 		makeSureLog()
 		if(isLogIn.value){
 			// showPlayOptions.value = false
@@ -316,9 +324,11 @@ import {
 					// isEnd.value = true
 					
 				},1000)
+				// 先支付后玩
 				await handlePaymentByPlayBackup()
 				
 			}else{
+				// 先玩后支付
 				playType.value = 1
 				startBilling()
 			}
@@ -348,24 +358,36 @@ import {
 	}
 	// 第二种模式的主动结束
 	const clickStop = async()=>{
+		
 		await closeEquipment()
 		
 		lastOrder.value.cost = totalCost.value
 		lastOrder.value.min = totalMin.value
-		await handlePaymentOrderByPlayAhead()
-		await handlePaymentByPlayAhead()
+		// 如果游玩时间过短，则取消订单的建立
+		if(lastOrder.value.cost!==0){
+			await handlePaymentOrderByPlayAhead()
+			await handlePaymentByPlayAhead()
+		}else{
+			uni.showToast({
+				title:"游玩时间太短了",
+			})
+		}
+		
 		// isEnd.value = true
 		// playing.value = false
 	}
 	// 获取二维码中的参数的操作
 	const scanQRQuery = async(param)=>{
 		try{
+			// 验证用户是否有未支付订单
 			let passToken = false
 			passToken = await getUserIsVaild()
 			if(param&&passToken){
 				curDeviceNum.value=param
-				getDeviceMsgByDeviceNum()
-				if(deviceDetail.value.deviceStatus===1){
+				// 条件符合，获取设备信息
+				await getDeviceMsgByDeviceNum()
+				// 验证设备是否可用
+				if(deviceDetail.value.deviceStatus===1&&playType.value!==null){
 					showQRScan.value = false
 				}else{
 					uni.showToast({
@@ -391,13 +413,14 @@ import {
 			uni.scanCode({
 				success(res) {
 					// console.log(res)
-					console.log(`二维码的数据有${JSON.stringify(res)}`)
+					// console.log(`二维码的数据有${JSON.stringify(res)}`)
 					// console.log(res.data)
 					const url = decodeURIComponent(res.result)
 					// const params = url.split('?')[1].split('=')[1]
 					const reg = 'https://allmetaahome.com?scene=';
 					const params = url.split('?')[1].split('=')[1]
 					// console.log(url.split('=')[0].concat('='))
+					// 验证二维码中的url是否合规
 					if(url.split('=')[0].concat('=')===reg){
 						uni.reLaunch({
 							url:`/pages/index/index?scene=${params}`,
@@ -458,6 +481,7 @@ import {
 					satoken:token.value
 				}
 			})
+			// 通过检测未支付订单的长度来判断是否存在未支付订单
 			if(res.data.data.length<=0){
 				return true
 			}else{
@@ -475,6 +499,7 @@ import {
 	}
 	// 验证当前用户是否登陆
 	const makeSureLog = ()=>{
+		// 获取登陆状态和绑定手机号状态
 		const logIn = uni.getStorageSync('isLogIn');
 		const binding = uni.getStorageSync('isBinding')
 		if (binding&&logIn) {
@@ -571,6 +596,7 @@ import {
 					satoken:token.value
 				}
 			})
+			// 拿到订单号，用于后续支付
 			orderNum.value = res.data.data
 			
 		}catch(error){
@@ -623,6 +649,7 @@ import {
 	// 先支付后玩（一次性收费）
 	const handlePaymentByPlayBackup = async()=>{
 		try{
+			// 固定金额
 			const res = await uni.request({
 				url:`https://allmetaahome.com:2333/order/payBeforePlay`,
 				method:"POST",
