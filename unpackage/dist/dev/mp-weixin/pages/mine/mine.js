@@ -102,30 +102,67 @@ const _sfc_main = {
     });
     const userLogin = async () => {
       try {
+        const providerInfo = await common_vendor.index.getProvider({
+          service: "oauth"
+        });
+        if (providerInfo.provider.indexOf("weixin") !== -1) {
+          await wxLogin();
+        } else if (providerInfo.provider.indexOf("alipay") !== -1) {
+          await aliLogin();
+        } else {
+          console.error("不支持的登陆服务");
+        }
+      } catch (error) {
+        console.error("用户登陆失败", error);
+      }
+    };
+    const wxLogin = async () => {
+      try {
         const loginRes = await common_vendor.index.login({
           provider: "weixin",
           success: (res) => {
             if (res.code) {
-              sendLoginCode(res.code);
+              sendLoginCode(res.code, "wx");
             } else {
-              console.error("获取用户凭证失败", res.errMsg);
+              console.error("获取微信用户code失败");
             }
           },
-          fail: (err) => {
-            console.error("登陆验证失败", err);
+          fail: (error) => {
+            console.error("微信登陆请求异常", error);
           }
         });
       } catch (error) {
-        console.log("userLogin执行失败", error);
+        console.error("微信登陆异常", error);
       }
     };
-    const sendLoginCode = async (code) => {
+    const aliLogin = async () => {
+      try {
+        const authRes = await common_vendor.index.login({
+          provider: "alipay",
+          success: (res) => {
+            if (res.code) {
+              sendLoginCode(res.code, "ali");
+            } else {
+              console.error("获取支付宝用户code失败");
+            }
+          },
+          fail: (error) => {
+            console.error("支付宝登录请求异常", error);
+          }
+        });
+      } catch (error) {
+        console.log("支付宝登录异常", error);
+      }
+    };
+    const sendLoginCode = async (code, platform) => {
       try {
         const res = await common_vendor.index.request({
           url: "https://allmetaahome.com:2333/wxApp/login",
           method: "POST",
           data: {
-            code
+            code,
+            platform
+            //或者ali
           }
         });
         console.log("后端返回的数据", res.data);

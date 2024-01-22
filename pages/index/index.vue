@@ -155,6 +155,7 @@ import {
 		// status:null
 	})
 	const token = ref('') //登陆参数
+	const isWx = ref(true)
 	// const scanData = ref('')
 	// 初始化
 	onMounted(async() => {
@@ -202,6 +203,7 @@ import {
 		uni.getLocation({
 			// type:'wgs84',
 			success:(res)=>{
+				console.log(res)
 				// 存储用户位置信息
 				latitude.value = res.latitude
 				longitude.value = res.longitude
@@ -214,6 +216,7 @@ import {
 				// 失败之后跳转到一个默认位置，并获取默认位置周边的泡泡机情况
 				latitude.value = 39.916527
 				longitude.value = 116.397128
+				
 				console.log('出错了',error)
 				getClawMachineLocations(latitude.value,longitude.value)
 			},

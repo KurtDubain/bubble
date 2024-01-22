@@ -40,6 +40,7 @@ const _sfc_main = {
       // status:null
     });
     const token = common_vendor.ref("");
+    common_vendor.ref(true);
     common_vendor.onMounted(async () => {
       common_vendor.index.login({
         success(data) {
@@ -69,6 +70,7 @@ const _sfc_main = {
       common_vendor.index.getLocation({
         // type:'wgs84',
         success: (res) => {
+          console.log(res);
           latitude.value = res.latitude;
           longitude.value = res.longitude;
           goMoveToLocation(longitude.value, latitude.value);
