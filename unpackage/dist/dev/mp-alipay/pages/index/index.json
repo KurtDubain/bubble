@@ -1,0 +1,6 @@
+{
+  "defaultTitle": "宽居E家泡泡车",
+  "usingComponents": {
+    "uni-icons": "../../uni_modules/uni-icons/components/uni-icons/uni-icons"
+  }
+}

@@ -1,0 +1,1 @@
+<view class="uni-table-checkbox" onTap="{{d}}"><view a:if="{{a}}" class="{{('checkbox__inner') + ' ' + (b && 'is-checked') + ' ' + (c && 'is-disable')}}"><view class="checkbox__inner-icon"></view></view><view a:else class="checkbox__inner checkbox--indeterminate"><view class="checkbox__inner-icon"></view></view></view>

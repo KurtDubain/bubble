@@ -1,0 +1,7 @@
+{
+  "component": true,
+  "styleIsolation": "apply-shared",
+  "usingComponents": {
+    "uni-icons": "../../../uni-icons/components/uni-icons/uni-icons"
+  }
+}

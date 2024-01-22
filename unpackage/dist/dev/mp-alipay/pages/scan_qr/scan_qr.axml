@@ -1,0 +1,1 @@
+<button onTap="{{a}}">扫码</button>

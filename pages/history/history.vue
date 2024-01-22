@@ -12,7 +12,8 @@
       </view>
       <view class="bottom-container">
         <text class="play-cost" style="font-weight: bold;">{{ order.playCost }}元</text>
-        <view v-if="order.status==1" class="exception-button" @click="showBackMoneyForm(order)"><uni-icons type="help" size="17" color="white"></uni-icons>申请退款</view>
+        <view v-if="order.status==1&&checkTime(order.playDate)" class="exception-button" ><uni-icons type="help" size="17" color="white"></uni-icons>已完成</view>
+		<view v-if="order.status==1&&!checkTime(order.playDate)" class="exception-button" @click="showBackMoneyForm(order)"><uni-icons type="help" size="17" color="white"></uni-icons>申请退款</view>
 		<view v-if="order.status==-1" class="exception-button" ><uni-icons type="help" size="17" color="white"></uni-icons>已退款</view>
 		<view v-if="order.status==0" class="exception-button" @click="orderPayment(order)"><uni-icons type="help" size="17" color="white"></uni-icons>待支付</view>
 		<view v-if="order.status==2" class="exception-button"><uni-icons type="help" size="17" color="white"></uni-icons>正在退款</view>
@@ -171,6 +172,24 @@ const formattedDateTime = (time)=>{
 	const hours = dateTime.getHours().toString().padStart(2,"0")
 	const minutes = dateTime.getMinutes().toString().padStart(2,"0")
 	return `${month}-${day} ${hours}:${minutes}`
+}
+const checkTime=(timeStr)=> {
+  // 获取当前时间
+  var currentTime = new Date();
+
+  // 解析时间字符串
+  var timeFormat = "MM-DD HH:mm";
+  var targetTime = new Date(currentTime.getFullYear() + "-" + timeStr + ":00");
+
+  // 增加24小时
+  var targetTimePlus24h = new Date(targetTime.getTime() + 24 * 60 * 60 * 1000);
+
+  // 比较当前时间和目标时间是否超过24小时
+  if (currentTime > targetTimePlus24h) {
+    return true;
+  } else {
+    return false;
+  }
 }
 const cancelRefund = ()=>{
 	backMoneyForm.value = false

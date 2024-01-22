@@ -12,7 +12,7 @@
 		</view>
 		
         <view v-for="(message, index) in chatMessages" :key="index" :class="{ 'user-message': message.isCurrentUser, 'service-message': !message.isCurrentUser }">
-          <image v-if="!message.isCurrentUser" class="avatar" src="../../static/uni.png"></image>
+          <image v-if="!message.isCurrentUser" class="avatar" src="../../static/客服头像.png"></image>
           <!-- <view class="message-content" v-html="message.content" v-if="!message.isCurrentUser"></view> -->
 		  <view v-if="message.type===0" class="message-content">{{message.content}}</view>
 		  <view v-if="message.type===1" ><button size="mini"  open-type="contact">人工客服</button></view>

@@ -1,0 +1,96 @@
+
+.feedback-page.data-v-a24b82f2 {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+.chat-container.data-v-a24b82f2 {
+  flex: 1;
+  overflow: hidden;
+}
+.chat-scroll.data-v-a24b82f2 {
+  height: 100%;
+}
+.system-message.data-v-a24b82f2 {
+  text-align: center;
+  color: #888888;
+  margin-top: 10px;
+}
+.user-message.data-v-a24b82f2 {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+}
+.service-message.data-v-a24b82f2 {
+  display: flex;
+  align-items: center;
+}
+.avatar.data-v-a24b82f2 {
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
+  margin: 0 10px;
+}
+.message-content.data-v-a24b82f2 {
+  background-color: #f0f0f0;
+  padding: 8px;
+  border-radius: 8px;
+  margin: 5px;
+  max-width: 70%;
+}
+.faq-container.data-v-a24b82f2 {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 20rpx;
+  border: 1px solid #e0e0e0;
+  border-radius: 10rpx;
+  box-shadow: 0 0 10rpx rgba(0, 0, 0, 0.1);
+  margin: 30rpx;
+}
+.faq-card.data-v-a24b82f2 {
+  background-color: #e0e0e0;
+  padding: 10px;
+  border-radius: 8px;
+  margin: 5px;
+  cursor: pointer;
+}
+.input-container.data-v-a24b82f2 {
+  display: flex;
+  align-items: center;
+  padding: 10rpx;
+  background-color: #f5f5f5; /* Background color for the input container */
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+}
+textarea.data-v-a24b82f2 {
+  flex: 1;
+  resize: none;
+  padding: 10rpx;
+  border: none;
+  border-radius: 8px;
+  margin-right: 10rpx; 
+  height: 60rpx; 
+  /* font-size: 14rpx; */
+  background-color: #ffffff;
+}
+.send-button.data-v-a24b82f2 {
+  background-color: #cc4143;
+  color: #ffffff;
+  padding: 10rpx;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.custom-button.data-v-a24b82f2 {
+  background-color: #82af81; /* Green background */
+  color: white;
+  padding: 10rpx 20rpx; /* Padding for better appearance */
+  border: none;
+  border-radius: 8rpx;
+  cursor: pointer;
+  margin: 5rpx; /* Adjust margin as needed */
+}
+.custom-button.data-v-a24b82f2:hover {
+  background-color: #98a099; /* Darker green on hover */
+}
+

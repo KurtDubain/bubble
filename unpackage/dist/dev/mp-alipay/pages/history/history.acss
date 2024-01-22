@@ -1,0 +1,114 @@
+
+.card.data-v-b2d018fa {
+  margin: 30rpx;
+  padding: 30rpx;
+  background-color: #ffffff;
+  border-radius: 30rpx;
+  box-shadow: 0 9rpx 10rpx rgba(0, 0, 0, 0.1);
+}
+.top-container.data-v-b2d018fa {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.play-date.data-v-b2d018fa,
+.play-location.data-v-b2d018fa {
+  font-size: 25rpx;
+  color: #888888;
+}
+.bottom-container.data-v-b2d018fa {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 30rpx;
+}
+.play-cost.data-v-b2d018fa {
+  font-size: 35rpx;
+  color: #000000;
+}
+.exception-button.data-v-b2d018fa {
+	background-color: #cc4143;
+	color: #ffffff;
+    padding: 10rpx 15rpx;
+    border-radius: 10rpx;
+    font-size: 30rpx;
+    cursor: pointer;
+	display: flex;
+	justify-content: center;
+}
+.overlay.data-v-b2d018fa {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  /* flex-direction: column; */
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+.modal.data-v-b2d018fa {
+  background: #fff;
+  padding: 20rpx;
+  border-radius: 10rpx;
+  width:500rpx;
+}
+.form-header.data-v-b2d018fa{
+}
+.form-item.data-v-b2d018fa {
+  display: flex;
+  margin-bottom: 15rpx;
+}
+.modal-button.data-v-b2d018fa {
+  flex: 1;
+  margin: 15rpx 0 15rpx 0;
+  font-size: 27rpx;
+  border-radius: 15rpx;
+  text-align: center;
+  background-color: #cc4143;
+  color: #ffffff;
+  cursor: pointer;
+}
+.form-label.data-v-b2d018fa {
+  font-size: 28rpx;
+  color: #333;
+  margin-bottom: 5rpx;
+}
+.form-value.data-v-b2d018fa {
+  font-size: 28rpx;
+  color: #666;
+  margin-bottom: 15rpx;
+}
+.form-textarea.data-v-b2d018fa {
+  width: 100%;
+  margin-top: 10rpx;
+  padding: 15rpx;
+  border: 1rpx solid #ccc;
+  border-radius: 5rpx;
+  height: 100rpx;
+}
+.form-item-textarea.data-v-b2d018fa{
+	height: 20%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.form-header.data-v-b2d018fa {
+  /* background-color: #cc4143; */
+  padding: 5rpx;
+  margin-bottom: 12rpx;
+  text-align: center;
+}
+.form-header-text.data-v-b2d018fa {
+  font-size: 32rpx;
+  /* color: #ffffff; */
+}
+/* textarea {
+  width: 100%;
+  margin-top: 10rpx;
+  padding: 5rpx;
+  border: 1rpx solid #ccc;
+  border-radius: 5rpx;
+} */

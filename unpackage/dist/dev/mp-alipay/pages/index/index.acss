@@ -1,0 +1,140 @@
+
+.container.data-v-1cf27b2a {
+		position: absolute;
+		bottom: 0;
+		width: 100vw;
+		height: 100vh;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+}
+.top_items.data-v-1cf27b2a {
+		width: 100%;
+		height: 100rpx;
+		position: absolute;
+		top: 0;
+		padding: 16rpx;
+		display: flex;
+		box-sizing: border-box;
+}
+.card_box.data-v-1cf27b2a {
+		width: 74rpx;
+		height: 74rpx;
+		background-color: white;
+		border-radius: 16rpx;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+}
+.bottom_items.data-v-1cf27b2a {
+		/* height: 360rpx; */
+		width: 100vw;
+		position: absolute;
+		bottom: 32rpx;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		padding: 20rpx;
+		box-sizing: border-box;
+}
+.control_view.data-v-1cf27b2a {
+		height: 260rpx;
+		width: 92vw;
+		background-color: white;
+		border-radius: 24rpx;
+		padding: 16rpx;
+		display: flex;
+		flex-direction: column;
+		box-sizing: border-box;
+		box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+}
+
+
+	/* 扫码按钮 */
+.button.data-v-1cf27b2a {
+		width: 90vw;
+		height: 78rpx;
+		background-color: #cc1d34;
+		border-radius: 20rpx;
+		margin: auto;
+		margin-bottom: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+}
+.button.data-v-1cf27b2a:active {
+		background-color: #cc4143;
+}
+.button text.data-v-1cf27b2a {
+		text-align: center;
+		color: white;
+}
+.button-back.data-v-1cf27b2a{
+		background-color: white;
+		border: #cc1d34 solid 2px;
+		font-weight: bold;
+}
+.popup.data-v-1cf27b2a {
+	  position: fixed;
+	  top: 0;
+	  left: 0;
+	  width: 100vw;
+	  height: 100vh;
+	  background: rgba(0, 0, 0, 0.5);
+	  display: flex;
+	  justify-content: center;
+	  align-items: center;
+	  z-index: 999;
+}
+.popup-content.data-v-1cf27b2a {
+	  background: #fff;
+	  border-radius: 10px;
+	  padding: 30rpx; 
+	  text-align: center;
+	  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	  width: 80vw; 
+	  max-width: 450rpx;
+}
+.popup-buttons.data-v-1cf27b2a {
+	  display: flex;
+	  justify-content: space-around;
+	  flex-direction: column;
+	  margin-top: 20rpx;
+}
+.popup-button.data-v-1cf27b2a {
+	  background: #cc1d34;
+	  color: #fff;
+	  padding: 15rpx 20rpx; 
+	  margin: 10rpx; 
+	  border-radius: 8px;
+	  cursor: pointer;
+	  display: flex;
+	  flex-direction: column;
+	  align-items: center;
+}
+.button-text.data-v-1cf27b2a {
+	  font-size: 35rpx;
+	  line-height: 50rpx;
+	  font-weight: bold;
+}
+.button-description.data-v-1cf27b2a {
+	  font-size: 22rpx;
+	  line-height: 40rpx; 
+	  color: #fff;
+}
+.button-back.data-v-1cf27b2a:hover{
+		background-color: white;
+}
+.closeEmpty.data-v-1cf27b2a{
+		margin: 10rpx;
+}
+.popup-header.data-v-1cf27b2a{
+		display: flex;
+		justify-content: space-between;
+}
+.popup-title.data-v-1cf27b2a{
+		margin:10rpx;
+}
+

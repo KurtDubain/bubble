@@ -1,0 +1,1 @@
+<view class="uni-table-tr"><view a:if="{{a}}" class="{{('checkbox') + ' ' + (d && 'tr-table--border')}}"><table-checkbox onCheckboxSelected="{{b}}" u-i="6c432c12-0" onVI="__l" u-p="{{c}}"></table-checkbox></view><slot></slot></view>

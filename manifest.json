@@ -78,5 +78,26 @@
 		"libVersion": "latest"
 		
     },
+	"mp-alipay": {
+	    // 支付宝小程序配置项
+	    "appid": "2021004131698427",
+	    "usingComponents": true,
+	    "permission": {
+	      "scope.userLocation": {
+	        "desc": "地图定位"
+	      },
+	      "scope.camera": {
+	        "desc": "摄像头"
+	      },
+	      "scope.userProfile": {
+	        "desc": "获取用户授权"
+	      },
+	      "scope.userInfo": {
+	        "desc": "获取用户信息"
+	      }
+	      // 添加其他权限配置项
+	    }
+	    // 如果需要设置其他配置项，可以在这里添加
+	  },
     "vueVersion" : "3"
 }

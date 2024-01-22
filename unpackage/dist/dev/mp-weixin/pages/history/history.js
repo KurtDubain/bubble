@@ -123,6 +123,16 @@ const _sfc_main = {
       const minutes = dateTime.getMinutes().toString().padStart(2, "0");
       return `${month}-${day} ${hours}:${minutes}`;
     };
+    const checkTime = (timeStr) => {
+      var currentTime = /* @__PURE__ */ new Date();
+      var targetTime = /* @__PURE__ */ new Date(currentTime.getFullYear() + "-" + timeStr + ":00");
+      var targetTimePlus24h = new Date(targetTime.getTime() + 24 * 60 * 60 * 1e3);
+      if (currentTime > targetTimePlus24h) {
+        return true;
+      } else {
+        return false;
+      }
+    };
     const cancelRefund = () => {
       backMoneyForm.value = false;
     };
@@ -134,45 +144,54 @@ const _sfc_main = {
             b: "b2d018fa-0-" + i0,
             c: common_vendor.t(order.playLocation),
             d: common_vendor.t(order.playCost),
-            e: order.status == 1
-          }, order.status == 1 ? {
+            e: order.status == 1 && checkTime(order.playDate)
+          }, order.status == 1 && checkTime(order.playDate) ? {
             f: "b2d018fa-1-" + i0,
             g: common_vendor.p({
               type: "help",
               size: "17",
               color: "white"
-            }),
-            h: common_vendor.o(($event) => showBackMoneyForm(order), index)
+            })
           } : {}, {
-            i: order.status == -1
-          }, order.status == -1 ? {
-            j: "b2d018fa-2-" + i0,
-            k: common_vendor.p({
+            h: order.status == 1 && !checkTime(order.playDate)
+          }, order.status == 1 && !checkTime(order.playDate) ? {
+            i: "b2d018fa-2-" + i0,
+            j: common_vendor.p({
               type: "help",
               size: "17",
               color: "white"
-            })
+            }),
+            k: common_vendor.o(($event) => showBackMoneyForm(order), index)
           } : {}, {
-            l: order.status == 0
-          }, order.status == 0 ? {
+            l: order.status == -1
+          }, order.status == -1 ? {
             m: "b2d018fa-3-" + i0,
             n: common_vendor.p({
               type: "help",
               size: "17",
               color: "white"
-            }),
-            o: common_vendor.o(($event) => orderPayment(order), index)
+            })
           } : {}, {
-            p: order.status == 2
+            o: order.status == 0
+          }, order.status == 0 ? {
+            p: "b2d018fa-4-" + i0,
+            q: common_vendor.p({
+              type: "help",
+              size: "17",
+              color: "white"
+            }),
+            r: common_vendor.o(($event) => orderPayment(order), index)
+          } : {}, {
+            s: order.status == 2
           }, order.status == 2 ? {
-            q: "b2d018fa-4-" + i0,
-            r: common_vendor.p({
+            t: "b2d018fa-5-" + i0,
+            v: common_vendor.p({
               type: "help",
               size: "17",
               color: "white"
             })
           } : {}, {
-            s: index
+            w: index
           });
         }),
         b: common_vendor.p({
