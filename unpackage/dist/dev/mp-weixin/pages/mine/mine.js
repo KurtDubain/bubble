@@ -171,6 +171,7 @@ const _sfc_main = {
         userInfo.value.avatar = res.data.data.avatar;
         userInfo.value.id = res.data.data.id;
         userInfo.value.bindingPhone = res.data.data.bindingPhone;
+        userInfo.value.platform = res.data.data.platform;
         token.value = res.data.data.token;
         console.log(userInfo.value);
         isLogIn.value = true;
@@ -182,7 +183,7 @@ const _sfc_main = {
         console.error("发送code到后端失败", error);
       }
     };
-    const getUserPhoneNumber = async (e) => {
+    const getUserPhoneNumberByWx = async (e) => {
       console.log(e);
       try {
         const res = await common_vendor.index.request({
@@ -190,7 +191,8 @@ const _sfc_main = {
           method: "POST",
           data: {
             code: e.detail.code,
-            id: userInfo.value.id
+            id: userInfo.value.id,
+            platform: "wx"
           }
         });
         console.log(res);
@@ -201,6 +203,35 @@ const _sfc_main = {
         common_vendor.index.setStorageSync("isLogIn", true);
       } catch (error) {
         console.error("WeChat login error:", error);
+      }
+    };
+    const getUserPhoneNumberByAli = async () => {
+      try {
+        my.getPhoneNumber({
+          scopes: "auth_user",
+          success: (res) => {
+            let resData = JSON.parse(res.response);
+            const resPhone = common_vendor.index.request({
+              url: `https://allmetaahome.com:2333/wxApp/bindPhone`,
+              method: "POST",
+              data: {
+                code: resData.response,
+                id: userInfo.value.id,
+                platform: "ali"
+              }
+            });
+            userInfo.value.phoneNumber = resPhone.data.data.phone;
+            isLogIn.value = true;
+            isBinding.value = true;
+            common_vendor.index.setStorageSync("isBinding", userInfo.value.bindingPhone);
+            common_vendor.index.setStorageSync("isLogIn", true);
+          },
+          fail: (err) => {
+            console.error("手机号获取异常", err);
+          }
+        });
+      } catch (error) {
+        console.error("获取阿里手机号失败", error);
       }
     };
     const getUserInfo = async () => {
@@ -333,10 +364,17 @@ const _sfc_main = {
           type: "compose",
           size: "26"
         }),
-        A: common_vendor.o(getUserPhoneNumber),
+        A: common_vendor.o(getUserPhoneNumberByWx),
         B: !common_vendor.unref(isBinding) && common_vendor.unref(isLogIn),
-        C: common_vendor.o(userLogin),
-        D: !common_vendor.unref(isLogIn)
+        C: common_vendor.p({
+          type: "compose",
+          size: "26"
+        }),
+        D: common_vendor.o(getUserPhoneNumberByAli),
+        E: common_vendor.o((...args) => _ctx.getUserPhoneNumberByAliError && _ctx.getUserPhoneNumberByAliError(...args)),
+        F: !common_vendor.unref(isBinding) && common_vendor.unref(isLogIn),
+        G: common_vendor.o(userLogin),
+        H: !common_vendor.unref(isLogIn)
       };
     };
   }

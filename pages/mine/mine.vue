@@ -82,7 +82,10 @@
 		</view>
 		<!-- 绑定手机号功能 -->
 		<view v-show="!isBinding&&isLogIn">
-			<button class="phone-button" open-type="getPhoneNumber" @getphonenumber="getUserPhoneNumber">绑定手机号<uni-icons type="compose" size="26" ></uni-icons></button>
+			<button class="phone-button" open-type="getPhoneNumber" @getphonenumber="getUserPhoneNumberByWx">绑定手机号<uni-icons type="compose" size="26" ></uni-icons></button>
+		</view>
+		<view v-show="!isBinding&&isLogIn">
+			<button class="phone-button" open-type="getAuthorize" scope="phoneNumber" @getAuthorize="getUserPhoneNumberByAli" @error="getUserPhoneNumberByAliError">绑定手机号(ali)<uni-icons type="compose" size="26" ></uni-icons></button>
 		</view>
 		<!-- 登陆按钮 -->
 		<view v-show="!isLogIn">
@@ -193,26 +196,7 @@
 	watch(curCity,async()=>{
 		await getTotalListByCity()
 	})
-	// 用户登陆操作
-	// const userLogin = async()=>{
-	// 	try{
-	// 		const loginRes = await uni.login({
-	// 			provider:"weixin",
-	// 			success:(res)=>{
-	// 				if(res.code){
-	// 					sendLoginCode(res.code)
-	// 				}else{
-	// 					console.error('获取用户凭证失败',res.errMsg)
-	// 				}
-	// 			},
-	// 			fail:(err)=>{
-	// 				console.error('登陆验证失败',err)
-	// 			}
-	// 		})
-	// 	}catch(error){
-	// 		console.log('userLogin执行失败',error)
-	// 	}
-	// }
+	
 	// 用户登陆操作
 	const userLogin = async()=>{
 		try{
@@ -288,6 +272,7 @@
 			userInfo.value.avatar = res.data.data.avatar
 			userInfo.value.id = res.data.data.id
 			userInfo.value.bindingPhone = res.data.data.bindingPhone
+			userInfo.value.platform = res.data.data.platform
 			token.value = res.data.data.token
 			console.log(userInfo.value)
 			isLogIn.value = true
@@ -300,7 +285,7 @@
 		}
 	}
 	// 用户手机号快速验证
-	const getUserPhoneNumber = async(e) => {
+	const getUserPhoneNumberByWx = async(e) => {
 		console.log(e)
 		  try {
 			const res = await uni.request({
@@ -308,7 +293,8 @@
 				method:'POST',
 				data:{
 					code:e.detail.code,
-					id:userInfo.value.id
+					id:userInfo.value.id,
+					platform:'wx'
 				}
 			})
 			console.log(res)
@@ -320,6 +306,36 @@
 		  } catch (error) {
 			console.error('WeChat login error:', error);
 		  }
+	}
+	const getUserPhoneNumberByAli =async()=>{
+		try{
+			my.getPhoneNumber({
+				scopes:'auth_user',
+				success:(res)=>{
+					let resData = JSON.parse(res.response)
+					const resPhone = uni.request({
+						url:`https://allmetaahome.com:2333/wxApp/bindPhone`,
+						method:'POST',
+						data:{
+							code:resData.response,
+							id:userInfo.value.id,
+							platform:'ali'
+						},
+					})
+					userInfo.value.phoneNumber = resPhone.data.data.phone
+					isLogIn.value = true
+					isBinding.value = true
+					uni.setStorageSync('isBinding',userInfo.value.bindingPhone)
+					uni.setStorageSync('isLogIn',true)
+					// console.log(resData)
+				},
+				fail:(err)=>{
+					console.error('手机号获取异常',err)
+				}
+			})
+		}catch(error){
+			console.error('获取阿里手机号失败',error)
+		}
 	}
 	// 获取用户信息数据
 	const getUserInfo = async()=>{
