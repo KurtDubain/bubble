@@ -219,6 +219,7 @@
 			const providerInfo = await uni.getProvider({
 				service:'oauth'
 			})
+			console.log(providerInfo.provider)
 			if(providerInfo.provider.indexOf('weixin')!==-1){
 				await wxLogin()
 			}else if(providerInfo.provider.indexOf('alipay')!==-1){
@@ -327,7 +328,7 @@
 				url:`https://allmetaahome.com:2333/wxApp/detail`,
 				method:"GET",
 				header:{
-					satoken:token.value
+					Authorization:token.value
 				}
 			})
 			userInfo.value.userName = res.data.data.nickName

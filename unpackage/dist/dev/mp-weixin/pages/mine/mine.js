@@ -105,6 +105,7 @@ const _sfc_main = {
         const providerInfo = await common_vendor.index.getProvider({
           service: "oauth"
         });
+        console.log(providerInfo.provider);
         if (providerInfo.provider.indexOf("weixin") !== -1) {
           await wxLogin();
         } else if (providerInfo.provider.indexOf("alipay") !== -1) {
@@ -208,7 +209,7 @@ const _sfc_main = {
           url: `https://allmetaahome.com:2333/wxApp/detail`,
           method: "GET",
           header: {
-            satoken: token.value
+            Authorization: token.value
           }
         });
         userInfo.value.userName = res.data.data.nickName;

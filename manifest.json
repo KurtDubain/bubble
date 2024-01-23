@@ -80,7 +80,7 @@
     },
 	"mp-alipay": {
 	    // 支付宝小程序配置项
-	    "appid": "2021004131698427",
+	    "appid": "2021004132661555",
 	    "usingComponents": true,
 	    "permission": {
 	      "scope.userLocation": {

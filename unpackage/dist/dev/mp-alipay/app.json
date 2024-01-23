@@ -11,6 +11,20 @@
     "titleBarColor": "#ffffff",
     "backgroundColor": "#f8f9fb"
   },
+  "permission": {
+    "scope.userLocation": {
+      "desc": "地图定位"
+    },
+    "scope.camera": {
+      "desc": "摄像头"
+    },
+    "scope.userProfile": {
+      "desc": "获取用户授权"
+    },
+    "scope.userInfo": {
+      "desc": "获取用户信息"
+    }
+  },
   "subPackageBuildType": "shared",
   "usingComponents": {}
 }

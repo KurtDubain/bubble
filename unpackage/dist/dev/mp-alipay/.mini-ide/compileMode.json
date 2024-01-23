@@ -1,0 +1,10 @@
+{
+  "modes": [
+    {
+      "title": "宽居E家泡泡车",
+      "page": "pages/index/index",
+      "launchMode": "common",
+      "pageQuery": "scene=0x1145141919810"
+    }
+  ]
+}

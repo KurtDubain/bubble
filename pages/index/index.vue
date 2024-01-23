@@ -481,7 +481,7 @@ import {
 				url:'https://allmetaahome.com:2333/order/getUnpaidOrders',
 				method:"GET",
 				header:{
-					satoken:token.value
+					Authorization:token.value
 				}
 			})
 			// 通过检测未支付订单的长度来判断是否存在未支付订单
@@ -523,7 +523,7 @@ import {
 				url:`https://allmetaahome.com:2333/equipment/startEquipment?equipmentNum=${curDeviceNum.value}`,
 				method:"GET",
 				header:{
-					satoken:token.value
+					Authorization:token.value
 				},
 				success(res) {
 					if(res.data.code===200&&res.data.message==='success'){
@@ -562,7 +562,7 @@ import {
 				url:`https://allmetaahome.com:2333/equipment/closeEquipmentByUser?equipmentNum=${curDeviceNum.value}`,
 				method:"POST",
 				header:{
-					satoken:token.value
+					Authorization:token.value
 				},
 			})
 			
@@ -596,7 +596,7 @@ import {
 					"equipmentId":deviceDetail.value.deviceId
 				},
 				header:{
-					satoken:token.value
+					Authorization:token.value
 				}
 			})
 			// 拿到订单号，用于后续支付
@@ -621,7 +621,7 @@ import {
 				    "times": lastOrder.value.min
 				},
 				header:{
-					satoken:token.value
+					Authorization:token.value
 				}
 			})
 			let orderInfo = {
@@ -662,7 +662,7 @@ import {
 					"timetamp":10
 				},
 				header:{
-					satoken:token.value
+					Authorization:token.value
 				}
 			})
 			let orderInfo = {

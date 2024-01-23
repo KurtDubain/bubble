@@ -72,7 +72,7 @@ const getUserHistroyList = async()=>{
 			url:`https://allmetaahome.com:2333/order/historyListByUser`,
 			method:"GET",
 			header:{
-				satoken:token.value
+				Authorization:token.value
 			}
 		})
 		orderList.value = res.data.data.map((item)=>({
@@ -99,7 +99,7 @@ const applyForRefund = async()=>{
 			url:`https://allmetaahome.com:2333/order/refundMini`,
 			method:"POST",
 			header:{
-				satoken:token.value
+				Authorization:token.value
 			},
 			data:{
 				orderNum:backMoneyDetail.value.orderNum,
@@ -136,7 +136,7 @@ const orderPayment = async(order)=>{
 			    "times": order.time
 			},
 			header:{
-				satoken:token.value
+				Authorization:token.value
 			}
 		})
 		let orderInfo = {

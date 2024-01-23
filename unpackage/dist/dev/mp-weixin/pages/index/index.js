@@ -290,7 +290,7 @@ const _sfc_main = {
           url: "https://allmetaahome.com:2333/order/getUnpaidOrders",
           method: "GET",
           header: {
-            satoken: token.value
+            Authorization: token.value
           }
         });
         if (res.data.data.length <= 0) {
@@ -327,7 +327,7 @@ const _sfc_main = {
           url: `https://allmetaahome.com:2333/equipment/startEquipment?equipmentNum=${curDeviceNum.value}`,
           method: "GET",
           header: {
-            satoken: token.value
+            Authorization: token.value
           },
           success(res2) {
             if (res2.data.code === 200 && res2.data.message === "success") {
@@ -360,7 +360,7 @@ const _sfc_main = {
           url: `https://allmetaahome.com:2333/equipment/closeEquipmentByUser?equipmentNum=${curDeviceNum.value}`,
           method: "POST",
           header: {
-            satoken: token.value
+            Authorization: token.value
           }
         });
         if (res.data.code == 200 && res.data.message == "success") {
@@ -384,7 +384,7 @@ const _sfc_main = {
             "equipmentId": deviceDetail.value.deviceId
           },
           header: {
-            satoken: token.value
+            Authorization: token.value
           }
         });
         orderNum.value = res.data.data;
@@ -404,7 +404,7 @@ const _sfc_main = {
             "times": lastOrder.value.min
           },
           header: {
-            satoken: token.value
+            Authorization: token.value
           }
         });
         let orderInfo = {
@@ -441,7 +441,7 @@ const _sfc_main = {
             "timetamp": 10
           },
           header: {
-            satoken: token.value
+            Authorization: token.value
           }
         });
         let orderInfo = {
